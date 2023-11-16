@@ -23,7 +23,6 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
-
       'axios',
     ],
 
@@ -95,6 +94,7 @@ module.exports = configure(function (/* ctx */) {
 
       // iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
+      lang: 'ca',
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),

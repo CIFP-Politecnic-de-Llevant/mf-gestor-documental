@@ -1,18 +1,17 @@
 import {axios}  from 'boot/axios'
-import {Reserva} from "../model/Reserva";
-import {Ref} from "vue";
-import {Calendari} from "src/model/Calendari";
+import {Document} from "../model/Document";
+import {Usuari} from "src/model/Usuari";
 
-export class ReservatService {
+export class DocumentService {
 
-  static async findAllCalendaris(): Promise<Array<Calendari>> {
-    const response = await axios.get(process.env.API + '/api/reserves/calendaris');
+  static async getAutoritzats(): Promise<Array<Usuari>> {
+    const response = await axios.get(process.env.API + '/api/gestordocumental/autoritzats');
     const data = await response.data;
-    return Promise.all(data.map(async (calendari:any):Promise<Calendari>=>{
-      return await this.fromJSONCalendar(calendari)
-    }).sort());
+    return data.map((usuari:any):Usuari=>{
+      return  this.fromJSONUsuari(usuari)
+    }).sort();
   }
-
+/*
   static async getCalendariById(idCalendari:string): Promise<Calendari> {
     const response = await axios.get(process.env.API + '/api/reserves/calendari/'+idCalendari);
     const data:any = await response.data;
@@ -48,23 +47,28 @@ export class ReservatService {
   static async esborrar(idReserva:number,idCalendari:string){
     await axios.delete(process.env.API + '/api/reserves/'+idCalendari+'/reserva/eliminar/'+idReserva);
   }
-
-  static async fromJSON(json:any):Promise<Reserva>{
-    return {
-      id: json.idReserva,
-      descripcio: json.descripcio,
-      dataInici: json.dataInici,
-      dataFi: json.dataFi,
-      idCalendar: json.idCalendar,
-      idCalendarEvent: json.idCalendarEvent,
-      usuariEmail: json.usuariEmail,
-      usuariNom: json.usuariNom
-    }
-  }
-  static async fromJSONCalendar(json:any):Promise<Calendari>{
+*/
+  static async fromJSONCalendar(json:any):Promise<Document>{
     return {
       id: json.idCalendari,
       nom: json.descripcio
+
+    }
+  }
+
+  static fromJSONUsuari(json:any):Usuari{
+    return {
+      cognom1: "",
+      cognom2: "",
+      email: "",
+      esAlumne: false,
+      esProfessor: false,
+      expedient: "",
+      id: 0,
+      label: "",
+      nom: "",
+      nomComplet: "",
+      value: ""
 
     }
   }
