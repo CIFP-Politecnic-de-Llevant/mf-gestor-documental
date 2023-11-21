@@ -11,6 +11,17 @@ export class DocumentService {
       return  this.fromJSONUsuari(usuari)
     }).sort();
   }
+
+  static async getDocumentsByPath(path:string,email:string):Promise<Array<Document>>{
+    const response = await axios.post(process.env.API + '/api/gestordocumental/documents',{
+      path: path,
+      email: email
+    });
+    const data = await response.data;
+    return data.map((document:any):Document=>{
+      return this.fromJSONDocument(document)
+    }).sort();
+  }
 /*
   static async getCalendariById(idCalendari:string): Promise<Calendari> {
     const response = await axios.get(process.env.API + '/api/reserves/calendari/'+idCalendari);
@@ -48,7 +59,7 @@ export class DocumentService {
     await axios.delete(process.env.API + '/api/reserves/'+idCalendari+'/reserva/eliminar/'+idReserva);
   }
 */
-  static async fromJSONCalendar(json:any):Promise<Document>{
+  static fromJSONDocument(json:any):Document{
     return {
       id: json.idCalendari,
       nom: json.descripcio
@@ -58,17 +69,11 @@ export class DocumentService {
 
   static fromJSONUsuari(json:any):Usuari{
     return {
-      cognom1: "",
-      cognom2: "",
-      email: "",
-      esAlumne: false,
-      esProfessor: false,
-      expedient: "",
-      id: 0,
-      label: "",
-      nom: "",
-      nomComplet: "",
-      value: ""
+      id: json.idusuari,
+      email: json.gsuiteEmail,
+      nomComplet: json.gsuiteFullName,
+      value: json.gsuiteEmail,
+      label: json.gsuiteFullName + ' <'+json.gsuiteEmail+'>'
 
     }
   }
