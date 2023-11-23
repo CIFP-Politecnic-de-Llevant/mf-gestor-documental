@@ -24,6 +24,8 @@ export class DocumentService {
   }
 
   static async traspassarDocument(pathOrigen:string,email:string){
+    const FOLDER_BASE:string = "FCT JOAN RESOLT";
+
     const documents:Document[] = await this.getDocumentsByPath(pathOrigen,email);
 
     for(const document of documents){
@@ -34,31 +36,19 @@ export class DocumentService {
           const cicle = documentParts[0];
           const nomDocument = documentParts[1];
 
-
-      } else if(documentParts.length === 4){
-        const cicle = documentParts[0];
-        const cognoms = documentParts[1];
-        const nom = documentParts[2];
-        const nomDocument = documentParts[3];
-
         //Creem l'estructura de carpetes
         await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
           path: "",
-          folderName: "FCT JOAN RESOLT",
+          folderName: FOLDER_BASE,
           email: email
         });
 
-        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: "FCT JOAN RESOLT",
+        const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: FOLDER_BASE,
           folderName: cicle,
           email: email
         });
-
-        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: `FCT JOAN RESOLT/${cicle}`,
-          folderName: cognoms+" "+nom,
-          email: email
-        });
+        const carpetaCicle = carpetaCicleFetch.data;
 
         //Permisos
         const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
@@ -70,7 +60,50 @@ export class DocumentService {
         await axios.post(process.env.API + '/api/gestordocumental/copy',{
           idFile: document.id_googleDrive,
           email: email,
-          filename: nomDocument
+          filename: nomDocument,
+          parentFolderId: carpetaCicle.id
+        });
+
+      } else if(documentParts.length === 4){ //Altres documents associats a un alumne
+        const cicle = documentParts[0];
+        const cognoms = documentParts[1];
+        const nom = documentParts[2];
+        const nomDocument = documentParts[3];
+
+        //Creem l'estructura de carpetes
+        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: "",
+          folderName: FOLDER_BASE,
+          email: email
+        });
+
+        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: FOLDER_BASE,
+          folderName: cicle,
+          email: email
+        });
+
+        const carpetaAlumneFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: `${FOLDER_BASE}/${cicle}`,
+          folderName: cognoms+" "+nom,
+          email: email
+        });
+        const carpetaAlumne = carpetaAlumneFetch.data
+        console.log("Carpeta alumne",carpetaAlumne)
+
+
+        //Permisos
+        const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
+        const usuariData = usuarisFetch.data;
+        const tutorFCT:Usuari = this.fromJSONUsuari(usuariData);
+        console.log("Tutor FCT",tutorFCT);
+
+        //Fer còpia
+        await axios.post(process.env.API + '/api/gestordocumental/copy',{
+          idFile: document.id_googleDrive,
+          email: email,
+          filename: cognoms+" "+nom+"_" + nomDocument,
+          parentFolderId: carpetaAlumne.id
         });
       }
     }
