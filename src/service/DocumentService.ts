@@ -66,7 +66,7 @@ export class DocumentService {
         const tutorFCT:Usuari = this.fromJSONUsuari(usuariData);
         console.log("Tutor FCT",tutorFCT);
 
-        //Fer copia
+        //Fer còpia
         await axios.post(process.env.API + '/api/gestordocumental/copy',{
           idFile: document.id_googleDrive,
           email: email,
