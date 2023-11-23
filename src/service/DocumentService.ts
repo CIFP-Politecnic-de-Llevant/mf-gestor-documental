@@ -69,7 +69,8 @@ export class DocumentService {
         //Fer copia
         await axios.post(process.env.API + '/api/gestordocumental/copy',{
           idFile: document.id_googleDrive,
-          email: email
+          email: email,
+          filename: nomDocument
         });
       }
     }
