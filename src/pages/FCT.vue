@@ -7,11 +7,6 @@
             <q-item-label>{{autoritzat.label}}</q-item-label>
           </q-item-section>
         </q-item>
-        <!--q-item clickable v-close-popup @click="onItemClick">
-          <q-item-section>
-            <q-item-label>Photos</q-item-label>
-          </q-item-section>
-        </q-item-->
       </q-list>
     </q-btn-dropdown>
     <div v-if="autoritzatSelected && autoritzatSelected.id">
@@ -19,6 +14,17 @@
       <q-input outlined v-model="path" label="Path origen" />
       <q-input outlined v-model="pathDesti" label="Path destí" />
       <q-btn label="Veure documents" @click="getDocuments()" />
+    </div>
+
+    <div v-if="documents.length>0">
+      <q-list>
+        <q-item v-for="document in documents">
+          <q-item-section>
+            <q-item-label>{{document.nom}}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+      <q-btn label="Traspassar documents" @click="traspassar()" />
     </div>
 
 
@@ -49,6 +55,10 @@ function selectAutoritzat(autoritzat:Usuari){
 
 async function getDocuments(){
   documents.value = await DocumentService.getDocumentsByPath(path.value,autoritzatSelected.value.email);
+}
+
+async function traspassar(){
+  await DocumentService.traspassarDocument(path.value,autoritzatSelected.value.email)
 }
 
 onMounted(async ()=>{

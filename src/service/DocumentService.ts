@@ -22,48 +22,66 @@ export class DocumentService {
       return this.fromJSONDocument(document)
     }).sort();
   }
-/*
-  static async getCalendariById(idCalendari:string): Promise<Calendari> {
-    const response = await axios.get(process.env.API + '/api/reserves/calendari/'+idCalendari);
-    const data:any = await response.data;
-    return this.fromJSONCalendar(data)
+
+  static async traspassarDocument(pathOrigen:string,email:string){
+    const documents:Document[] = await this.getDocumentsByPath(pathOrigen,email);
+
+    for(const document of documents){
+      const documentParts:string[] = document.nom.split("_");
+
+      //Compromís seguiment flexibilització
+      if(documentParts.length === 2){
+          const cicle = documentParts[0];
+          const nomDocument = documentParts[1];
+
+
+      } else if(documentParts.length === 4){
+        const cicle = documentParts[0];
+        const cognoms = documentParts[1];
+        const nom = documentParts[2];
+        const nomDocument = documentParts[3];
+
+        //Creem l'estructura de carpetes
+        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: "",
+          folderName: "FCT JOAN RESOLT",
+          email: email
+        });
+
+        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: "FCT JOAN RESOLT",
+          folderName: cicle,
+          email: email
+        });
+
+        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: `FCT JOAN RESOLT/${cicle}`,
+          folderName: cognoms+" "+nom,
+          email: email
+        });
+
+        //Permisos
+        const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
+        const usuariData = usuarisFetch.data;
+        const tutorFCT:Usuari = this.fromJSONUsuari(usuariData);
+        console.log("Tutor FCT",tutorFCT);
+
+        //Fer copia
+        await axios.post(process.env.API + '/api/gestordocumental/copy',{
+          idFile: document.id_googleDrive,
+          email: email
+        });
+      }
+    }
+
   }
 
-  static async getReservaById(id:string,idCalendari:string): Promise<Reserva> {
-    const response = await axios.get(process.env.API + '/api/reserves/'+idCalendari+'/reserva/' + id);
-    const data:any = await response.data;
-    return this.fromJSON(data)
-  }
 
-  static async findAllMyReserves(idCalendari:string): Promise<Array<Reserva>> {
-    const response = await axios.get(process.env.API + '/api/reserves/'+idCalendari+'/myreserves');
-    const data = await response.data;
-    return Promise.all(data.map(async (reserva:any):Promise<Reserva>=>{
-        return await this.fromJSON(reserva)
-    }));
-  }
-
-  static async findAllReserves(idCalendari:string): Promise<Array<Reserva>> {
-    const response = await axios.get(process.env.API + '/api/reserves/'+idCalendari+'/reserves');
-    const data = await response.data;
-    return Promise.all(data.map(async (reserva:any):Promise<Reserva>=>{
-      return await this.fromJSON(reserva)
-    }));
-  }
-
-  static async save(reserva:Reserva,idCalendari:string){
-    await axios.post(process.env.API + '/api/reserves/'+idCalendari+'/reserva/desar',reserva);
-  }
-
-  static async esborrar(idReserva:number,idCalendari:string){
-    await axios.delete(process.env.API + '/api/reserves/'+idCalendari+'/reserva/eliminar/'+idReserva);
-  }
-*/
   static fromJSONDocument(json:any):Document{
     return {
-      id: json.idCalendari,
-      nom: json.descripcio
-
+      id: json.idDocument,
+      nom: json.nom,
+      id_googleDrive: json.idGoogleDrive
     }
   }
 
