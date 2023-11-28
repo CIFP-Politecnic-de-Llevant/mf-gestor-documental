@@ -39,6 +39,7 @@ import {Document} from "src/model/Document";
 import {DocumentService} from "src/service/DocumentService";
 import {useRoute} from "vue-router";
 import {useQuasar} from "quasar";
+import {UsuariService} from "src/service/UsuariService";
 
 const $q = useQuasar();
 const $route = useRoute()
@@ -62,7 +63,7 @@ async function traspassar(){
 }
 
 onMounted(async ()=>{
-  autoritzats.value = await DocumentService.getAutoritzats();
+  autoritzats.value = await UsuariService.getAutoritzats();
 })
 
 </script>

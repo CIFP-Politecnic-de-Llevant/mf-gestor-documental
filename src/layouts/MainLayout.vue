@@ -27,15 +27,15 @@
       <q-list>
         <q-item clickable to="/fct/generateDocumentation">
           <q-item-section avatar>
-            <q-icon name="calendar_month" />
+            <q-icon name="description" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Generar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/generateDocumentation">
+        <q-item clickable to="/fct/group">
           <q-item-section avatar>
-            <q-icon name="calendar_month" />
+            <q-icon name="group" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Grup</q-item-label>

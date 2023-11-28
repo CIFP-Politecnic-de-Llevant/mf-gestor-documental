@@ -1,16 +1,9 @@
 import {axios}  from 'boot/axios'
 import {Document} from "../model/Document";
 import {Usuari} from "src/model/Usuari";
+import {UsuariService} from "./UsuariService";
 
 export class DocumentService {
-
-  static async getAutoritzats(): Promise<Array<Usuari>> {
-    const response = await axios.get(process.env.API + '/api/gestordocumental/autoritzats');
-    const data = await response.data;
-    return data.map((usuari:any):Usuari=>{
-      return  this.fromJSONUsuari(usuari)
-    }).sort();
-  }
 
   static async getDocumentsByPath(path:string,email:string):Promise<Array<Document>>{
     const response = await axios.post(process.env.API + '/api/gestordocumental/documents',{
@@ -53,7 +46,7 @@ export class DocumentService {
         //Permisos
         const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
         const usuariData = usuarisFetch.data;
-        const tutorFCT:Usuari = this.fromJSONUsuari(usuariData);
+        const tutorFCT:Usuari = UsuariService.fromJSONUsuari(usuariData);
         console.log("Tutor FCT",tutorFCT);
 
         //Fer còpia
@@ -95,7 +88,7 @@ export class DocumentService {
         //Permisos
         const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
         const usuariData = usuarisFetch.data;
-        const tutorFCT:Usuari = this.fromJSONUsuari(usuariData);
+        const tutorFCT:Usuari = UsuariService.fromJSONUsuari(usuariData);
         console.log("Tutor FCT",tutorFCT);
 
         //Fer còpia
@@ -116,17 +109,6 @@ export class DocumentService {
       id: json.idDocument,
       nom: json.nom,
       id_googleDrive: json.idGoogleDrive
-    }
-  }
-
-  static fromJSONUsuari(json:any):Usuari{
-    return {
-      id: json.idusuari,
-      email: json.gsuiteEmail,
-      nomComplet: json.gsuiteFullName,
-      value: json.gsuiteEmail,
-      label: json.gsuiteFullName + ' <'+json.gsuiteEmail+'>'
-
     }
   }
 
