@@ -6,10 +6,18 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'fct', component: () => import('pages/FCT.vue') },
+      { path: 'fct/generateDocumentation', component: () => import('pages/FCTGenerateDocumentation.vue') },
+      { path: 'fct/group', component: () => import('pages/FCTTeacherManager.vue') },
       { path: 'login', component: () => import('components/common/Login.vue'), props: { urlRedirect: "/" } },
       { path: 'logout', component: () => import('components/common/Logout.vue') },
     ],
+  },
+  {
+    path: '/mobile',
+    component: () => import('layouts/MobileLayout.vue'),
+    children:[
+      { path: 'fct/picture', component: () => import('pages/FCTPicture.vue') }
+    ]
   },
 
   // Always leave this as last one,

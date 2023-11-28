@@ -25,12 +25,20 @@
       bordered
     >
       <q-list>
-        <q-item clickable to="/fct">
+        <q-item clickable to="/fct/generateDocumentation">
           <q-item-section avatar>
             <q-icon name="calendar_month" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>FCT</q-item-label>
+            <q-item-label>FCT - Generar Documentació</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable to="/fct/generateDocumentation">
+          <q-item-section avatar>
+            <q-icon name="calendar_month" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>FCT - Grup</q-item-label>
           </q-item-section>
         </q-item>
         <q-item clickable to="/logout">
@@ -77,16 +85,12 @@ export default defineComponent({
 
     const enableApps = enableGrupsCooperatius || enableConvalidacions || enableProfessoratManager;
 
-    const c:Calendari[] = [] as Calendari[];
-    const calendaris:Ref<Calendari[]> = ref([] as Calendari[]);
-
 
     return {
       rolsUser,
       rols,
       enableApps,
       leftDrawerOpen,
-      calendaris,
       route,
       router,
       toggleLeftDrawer () {
