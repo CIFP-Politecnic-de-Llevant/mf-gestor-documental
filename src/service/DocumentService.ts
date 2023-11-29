@@ -45,9 +45,12 @@ export class DocumentService {
 
         //Permisos
         const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
-        const usuariData = usuarisFetch.data;
-        const tutorFCT:Usuari = UsuariService.fromJSONUsuari(usuariData);
-        console.log("Tutor FCT",tutorFCT);
+        const usuarisData = usuarisFetch.data;
+
+        const tutorsFCT:Usuari[] = usuarisData.map((usuari:any):Usuari=>{
+          return UsuariService.fromJSONUsuari(usuari)
+        }).sort();
+        console.log("Tutor FCT",tutorsFCT);
 
         //Fer còpia
         await axios.post(process.env.API + '/api/gestordocumental/copy',{
@@ -87,9 +90,12 @@ export class DocumentService {
 
         //Permisos
         const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
-        const usuariData = usuarisFetch.data;
-        const tutorFCT:Usuari = UsuariService.fromJSONUsuari(usuariData);
-        console.log("Tutor FCT",tutorFCT);
+        const usuarisData = usuarisFetch.data;
+
+        const tutorsFCT:Usuari[] = usuarisData.map((usuari:any):Usuari=>{
+          return UsuariService.fromJSONUsuari(usuari)
+        }).sort();
+        console.log("Tutor FCT",tutorsFCT);
 
         //Fer còpia
         await axios.post(process.env.API + '/api/gestordocumental/copy',{
@@ -100,9 +106,7 @@ export class DocumentService {
         });
       }
     }
-
   }
-
 
   static fromJSONDocument(json:any):Document{
     return {
