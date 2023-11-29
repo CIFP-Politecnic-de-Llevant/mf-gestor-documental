@@ -29,20 +29,6 @@ export class DocumentService {
           const cicle = documentParts[0];
           const nomDocument = documentParts[1];
 
-        //Creem l'estructura de carpetes
-        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: "",
-          folderName: FOLDER_BASE,
-          email: email
-        });
-
-        const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: FOLDER_BASE,
-          folderName: cicle,
-          email: email
-        });
-        const carpetaCicle = carpetaCicleFetch.data;
-
         //Permisos
         const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
         const usuarisData = usuarisFetch.data;
@@ -51,6 +37,23 @@ export class DocumentService {
           return UsuariService.fromJSONUsuari(usuari)
         }).sort();
         console.log("Tutor FCT",tutorsFCT);
+
+        //Creem l'estructura de carpetes
+        const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          folderName: FOLDER_BASE,
+          email: email,
+          parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
+        });
+        const carpetaRoot = carpetaRootFetch.data;
+
+        const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          path: FOLDER_BASE,
+          folderName: cicle,
+          email: email,
+          editors:tutorsFCT.map(t=>t.email),
+          parentFolderId: carpetaRoot.id
+        });
+        const carpetaCicle = carpetaCicleFetch.data;
 
         //Fer còpia
         await axios.post(process.env.API + '/api/gestordocumental/copy',{
@@ -67,22 +70,24 @@ export class DocumentService {
         const nomDocument = documentParts[3];
 
         //Creem l'estructura de carpetes
-        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: "",
+        const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
           folderName: FOLDER_BASE,
-          email: email
+          email: email,
+          parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
         });
+        const carpetaRoot = carpetaRootFetch.data;
 
-        await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: FOLDER_BASE,
+        const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
           folderName: cicle,
-          email: email
+          email: email,
+          parentFolderId: carpetaRoot.id
         });
+        const carpetaCicle = carpetaCicleFetch.data;
 
         const carpetaAlumneFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: `${FOLDER_BASE}/${cicle}`,
           folderName: cognoms+" "+nom,
-          email: email
+          email: email,
+          parentFolderId: carpetaCicle.id
         });
         const carpetaAlumne = carpetaAlumneFetch.data
         console.log("Carpeta alumne",carpetaAlumne)
