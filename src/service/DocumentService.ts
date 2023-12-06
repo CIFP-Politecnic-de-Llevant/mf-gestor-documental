@@ -56,11 +56,20 @@ export class DocumentService {
         const carpetaCicle = carpetaCicleFetch.data;
 
         //Fer còpia
-        await axios.post(process.env.API + '/api/gestordocumental/copy',{
+        const fitxerFetch = await axios.post(process.env.API + '/api/gestordocumental/copy',{
           idFile: document.id_googleDrive,
           email: email,
           filename: nomDocument,
           parentFolderId: carpetaCicle.id
+        });
+        const fitxer = fitxerFetch.data;
+
+        //Desem el fitxer
+        await axios.post(process.env.API + '/api/gestordocumental/documents/crear-document',{
+          idFile: fitxer.id,
+          path: `${FOLDER_BASE}/${cicle}/${nomDocument}`,
+          email: email,
+          tipus: nomDocument
         });
 
       } else if(documentParts.length === 4){ //Altres documents associats a un alumne
@@ -68,6 +77,16 @@ export class DocumentService {
         const cognoms = documentParts[1];
         const nom = documentParts[2];
         const nomDocument = documentParts[3];
+
+
+        //Permisos
+        const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
+        const usuarisData = usuarisFetch.data;
+
+        const tutorsFCT:Usuari[] = usuarisData.map((usuari:any):Usuari=>{
+          return UsuariService.fromJSONUsuari(usuari)
+        }).sort();
+        console.log("Tutor FCT",tutorsFCT);
 
         //Creem l'estructura de carpetes
         const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
@@ -90,24 +109,22 @@ export class DocumentService {
           parentFolderId: carpetaCicle.id
         });
         const carpetaAlumne = carpetaAlumneFetch.data
-        console.log("Carpeta alumne",carpetaAlumne)
-
-
-        //Permisos
-        const usuarisFetch = await axios.get(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+cicle);
-        const usuarisData = usuarisFetch.data;
-
-        const tutorsFCT:Usuari[] = usuarisData.map((usuari:any):Usuari=>{
-          return UsuariService.fromJSONUsuari(usuari)
-        }).sort();
-        console.log("Tutor FCT",tutorsFCT);
 
         //Fer còpia
-        await axios.post(process.env.API + '/api/gestordocumental/copy',{
+        const fitxerFetch = await axios.post(process.env.API + '/api/gestordocumental/copy',{
           idFile: document.id_googleDrive,
           email: email,
           filename: cognoms+" "+nom+"_" + nomDocument,
           parentFolderId: carpetaAlumne.id
+        });
+        const fitxer = fitxerFetch.data;
+
+        //Desem el fitxer
+        await axios.post(process.env.API + '/api/gestordocumental/documents/crear-document',{
+          idFile: fitxer.id,
+          path: `${FOLDER_BASE}/${cicle}/${cognoms} ${nom}/${cognoms} ${nom}_${nomDocument}`,
+          email: email,
+          tipus: nomDocument
         });
       }
     }
