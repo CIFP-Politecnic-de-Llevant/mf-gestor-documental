@@ -1,5 +1,5 @@
 export interface Document {
   id: string;
-  nom: string;
+  nomOriginal: string;
   id_googleDrive:string;
 }

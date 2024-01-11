@@ -20,7 +20,7 @@
       <q-list>
         <q-item v-for="document in documents">
           <q-item-section>
-            <q-item-label>{{document.nom}}</q-item-label>
+            <q-item-label>{{document.nomOriginal}}</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>

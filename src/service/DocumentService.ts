@@ -22,7 +22,7 @@ export class DocumentService {
     const documents:Document[] = await this.getDocumentsByPath(pathOrigen,email);
 
     for(const document of documents){
-      const documentParts:string[] = document.nom.split("_");
+      const documentParts:string[] = document.nomOriginal.split("_");
 
       //Compromís seguiment flexibilització
       if(documentParts.length === 2){
@@ -60,16 +60,18 @@ export class DocumentService {
           idFile: document.id_googleDrive,
           email: email,
           filename: nomDocument,
-          parentFolderId: carpetaCicle.id
+          parentFolderId: carpetaCicle.id,
+          originalName: document.nomOriginal
         });
         const fitxer = fitxerFetch.data;
 
         //Desem el fitxer
         await axios.post(process.env.API + '/api/gestordocumental/documents/crear-document',{
-          idFile: fitxer.id,
+          idFile: document.id_googleDrive,
           path: `${FOLDER_BASE}/${cicle}/${nomDocument}`,
           email: email,
-          tipus: nomDocument
+          tipus: nomDocument,
+          originalName: document.nomOriginal
         });
 
       } else if(documentParts.length === 4){ //Altres documents associats a un alumne
@@ -115,16 +117,18 @@ export class DocumentService {
           idFile: document.id_googleDrive,
           email: email,
           filename: cognoms+" "+nom+"_" + nomDocument,
-          parentFolderId: carpetaAlumne.id
+          parentFolderId: carpetaAlumne.id,
+          originalName: document.nomOriginal
         });
         const fitxer = fitxerFetch.data;
 
         //Desem el fitxer
         await axios.post(process.env.API + '/api/gestordocumental/documents/crear-document',{
-          idFile: fitxer.id,
+          idFile: document.id_googleDrive,
           path: `${FOLDER_BASE}/${cicle}/${cognoms} ${nom}/${cognoms} ${nom}_${nomDocument}`,
           email: email,
-          tipus: nomDocument
+          tipus: nomDocument,
+          originalName: document.nomOriginal
         });
       }
     }
@@ -133,7 +137,7 @@ export class DocumentService {
   static fromJSONDocument(json:any):Document{
     return {
       id: json.idDocument,
-      nom: json.nom,
+      nomOriginal: json.nomOriginal,
       id_googleDrive: json.idGoogleDrive
     }
   }
