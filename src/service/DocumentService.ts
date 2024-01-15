@@ -2,6 +2,8 @@ import {axios}  from 'boot/axios'
 import {Document} from "../model/Document";
 import {Usuari} from "src/model/Usuari";
 import {UsuariService} from "./UsuariService";
+import {TipusDocumentService} from "src/service/TipusDocumentService";
+import {SignaturaService} from "src/service/SignaturaService";
 
 export class DocumentService {
 
@@ -11,9 +13,28 @@ export class DocumentService {
       email: email
     });
     const data = await response.data;
-    return data.map((document:any):Document=>{
+    return Promise.all(data.map((document:any):Promise<Document>=>{
       return this.fromJSONDocument(document)
-    }).sort();
+    }).sort());
+  }
+
+  static async getDocumentsNoTraspassatsByPath(path:string,email:string):Promise<Array<Document>>{
+    const response = await axios.post(process.env.API + '/api/gestordocumental/documents-no-traspassats',{
+      path: path,
+      email: email
+    });
+    const data = await response.data;
+    return Promise.all(data.map((document:any):Promise<Document>=>{
+      return this.fromJSONDocument(document)
+    }).sort());
+  }
+
+  static async getDocumentsByGrupCodi(grupCodi:string):Promise<Array<Document>>{
+    const response = await axios.get(process.env.API + '/api/gestordocumental/documents-grup/'+grupCodi);
+    const data = await response.data;
+    return Promise.all(data.map((document:any):Promise<Document>=>{
+      return this.fromJSONDocument(document)
+    }).sort());
   }
 
   static async traspassarDocument(documents:Document[],email:string){
@@ -36,7 +57,7 @@ export class DocumentService {
         const tutorsFCT:Usuari[] = usuarisData.map((usuari:any):Usuari=>{
           return UsuariService.fromJSONUsuari(usuari)
         }).sort();
-        console.log("Tutor FCT",tutorsFCT);
+        //console.log("Tutor FCT",tutorsFCT);
 
         //Creem l'estructura de carpetes
         const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
@@ -72,7 +93,8 @@ export class DocumentService {
           email: email,
           tipus: nomDocument,
           originalName: document.nomOriginal,
-          tipusDocument: document.tipusDocument
+          tipusDocument: document.tipusDocument,
+          codiGrup: cicle
         });
 
       } else if(documentParts.length === 4){ //Altres documents associats a un alumne
@@ -89,7 +111,7 @@ export class DocumentService {
         const tutorsFCT:Usuari[] = usuarisData.map((usuari:any):Usuari=>{
           return UsuariService.fromJSONUsuari(usuari)
         }).sort();
-        console.log("Tutor FCT",tutorsFCT);
+        //console.log("Tutor FCT",tutorsFCT);
 
         //Creem l'estructura de carpetes
         const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
@@ -131,20 +153,35 @@ export class DocumentService {
           tipus: nomDocument,
           originalName: document.nomOriginal,
           tipusDocument: document.tipusDocument,
-          usuari: document.usuari
+          usuari: document.usuari,
+          codiGrup: cicle
         });
       }
     }
   }
 
-  static fromJSONDocument(json:any):Document{
-    return {
-      id: json.idDocument,
-      nomOriginal: json.nomOriginal,
-      id_googleDrive: json.idGoogleDrive,
-      tipusDocument: json.tipusDocument,
-      usuari: json.usuari
-    }
+  static fromJSONDocument(json:any):Promise<Document>{
+    return new Promise((resolve,reject)=>{
+      const document: Document = {
+        id: json.idDocument,
+        nomOriginal: json.nomOriginal,
+        id_googleDrive: json.idGoogleDrive,
+        tipusDocument: TipusDocumentService.fromJSON(json.tipusDocument),
+        signatures: TipusDocumentService.fromJSON(json.tipusDocument).signatures.map((signatura: any): any => {
+          return SignaturaService.fromJSON(signatura)
+        }).sort((a: any, b: any) => a.nom.localeCompare(b.nom))
+      }
+
+      if(json.idUsuari) {
+        const usuari: Promise<Usuari> = UsuariService.getById(json.idUsuari);
+        usuari.then((usuari: Usuari) => {
+          document.usuari = usuari;
+          resolve(document);
+        });
+      } else {
+        resolve(document);
+      }
+    });
   }
 
 }

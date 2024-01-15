@@ -10,10 +10,10 @@
       </q-list>
     </q-btn-dropdown>
     <div v-if="autoritzatSelected && autoritzatSelected.id">
-      <p>Usuari seleccionat:  {{autoritzatSelected.label}}</p>
+      <p class="q-mt-md">Usuari seleccionat:  {{autoritzatSelected.label}}</p>
       <q-input outlined v-model="path" label="Path origen" />
       <q-input outlined v-model="pathDesti" label="Path destí" />
-      <q-btn label="Veure documents" @click="getDocuments()" />
+      <q-btn label="Veure documents nous a traspassar" class="q-mt-md" color="primary" @click="getDocuments()" />
     </div>
 
     <div v-if="documents.length>0">
@@ -52,6 +52,10 @@
       <q-btn label="Traspassar documents" @click="traspassar()" />
     </div>
 
+    <div v-if="hasResponseDocument && documents.length===0">
+      <h5>No hi ha cap document nou a traspassar</h5>
+    </div>
+
 
   </q-page>
 </template>
@@ -79,13 +83,15 @@ const documents:Ref<Document[]> = ref([] as Document[]);
 const tipusDocuments:Ref<TipusDocument[]> = ref([] as TipusDocument[]);
 const alumnes:Ref<Usuari[]> = ref([] as Usuari[]);
 const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
+const hasResponseDocument:Ref<Boolean> = ref(false);
 
 function selectAutoritzat(autoritzat:Usuari){
   autoritzatSelected.value = autoritzat;
 }
 
 async function getDocuments(){
-  documents.value = await DocumentService.getDocumentsByPath(path.value,autoritzatSelected.value.email);
+  hasResponseDocument.value = true;
+  documents.value = await DocumentService.getDocumentsNoTraspassatsByPath(path.value,autoritzatSelected.value.email);
 }
 
 async function traspassar(){

@@ -12,6 +12,36 @@
     <div v-if="grupSelected && grupSelected.id">
       <p>Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
+
+      <q-table
+        flat bordered
+        title="Documents del grup"
+        :rows="documentsGrup"
+        :columns="columns"
+        row-key="name"
+        binary-state-sort
+      >
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="tipusDocument" :props="props">
+              {{ props.row.tipusDocument.nom }}
+            </q-td>
+            <q-td v-for="(signatura,idx) in signatures" :key="signatura.id" :props="props">
+              <q-checkbox v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)" v-model="props.row.signatures[idx]" />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+
+
+
+      {{documentsGrup}}
+      <p></p>
+      <p></p>
+      {{documentsUsuari}}
+      <p></p>
+      <p></p>
+      {{signatures}}
     </div>
   </q-page>
 </template>
@@ -20,21 +50,61 @@
 import {onMounted, Ref, ref} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
+import {Document} from "src/model/Document";
+import {Signatura} from "src/model/Signatura";
 import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
+import {DocumentService} from "src/service/DocumentService";
+import {SignaturaService} from "src/service/SignaturaService";
+import {QTableColumn} from "quasar";
 
 const grups:Ref<Grup[]> = ref([] as Grup[]);
 const grupSelected:Ref<Grup> = ref({} as Grup);
 const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
-const alumnesFCT:Ref<Usuari[]> = ref([] as Usuari[]);
+const documentsGrup:Ref<Document[]> = ref([] as Document[]);
+const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
+const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
+
+const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 async function selectGrup(grup:Grup){
   grupSelected.value = grup;
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
+
+  documentsUsuari.value = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
+    if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
+      return a.usuari.nomComplet2.localeCompare(b.usuari.nomComplet2);
+    }
+    if(a.tipusDocument.nom === b.tipusDocument.nom){
+      return a.tipusDocument.nom.localeCompare(b.tipusDocument.nom);
+    }
+    return 0;
+  });
+  documentsGrup.value = documentsAll.filter(d=>!d.usuari).sort((a:Document, b:Document)=>a.tipusDocument.nom.localeCompare(b.tipusDocument.nom));
 }
 
 
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
+  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+
+  signatures.value = await SignaturaService.findAll();
+
+  columns.value.push({
+    name: 'tipusDocument',
+    label: 'Document',
+    field: row => row.tipusDocument.nom,
+    sortable: true
+  });
+
+  for(const signatura of signatures.value){
+    columns.value.push({
+      name: signatura.id,
+      label: signatura.nom,
+      field: signatura.id,
+      sortable: true
+    });
+  }
 })
 </script>
