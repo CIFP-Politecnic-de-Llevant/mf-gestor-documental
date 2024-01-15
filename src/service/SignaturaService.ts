@@ -15,7 +15,8 @@ export class SignaturaService {
   static fromJSON(json:any):Signatura{
     return {
       id: json.idSignatura,
-      nom: json.nom
+      nom: json.nom,
+      signat: false
     }
   }
 }

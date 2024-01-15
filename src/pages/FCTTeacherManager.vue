@@ -17,31 +17,45 @@
         flat bordered
         title="Documents del grup"
         :rows="documentsGrup"
-        :columns="columns"
+        :columns="columnsGrup"
         row-key="name"
         binary-state-sort
+        class="q-mb-lg"
       >
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="tipusDocument" :props="props">
               {{ props.row.tipusDocument.nom }}
             </q-td>
-            <q-td v-for="(signatura,idx) in signatures" :key="signatura.id" :props="props">
-              <q-checkbox v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)" v-model="props.row.signatures[idx]" />
+            <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
+              <q-checkbox v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)" v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat" />
             </q-td>
           </q-tr>
         </template>
       </q-table>
 
-
-
-      {{documentsGrup}}
-      <p></p>
-      <p></p>
-      {{documentsUsuari}}
-      <p></p>
-      <p></p>
-      {{signatures}}
+      <q-table
+        flat bordered
+        title="Documents de l'usuari"
+        :rows="documentsUsuari"
+        :columns="columnsUsuari"
+        row-key="name"
+        binary-state-sort
+      >
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="alumne" :props="props">
+              {{ props.row.usuari.nomComplet2 }}
+            </q-td>
+            <q-td key="tipusDocument" :props="props">
+              {{ props.row.tipusDocument.nom }}
+            </q-td>
+            <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
+              <q-checkbox v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)" v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat" />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
     </div>
   </q-page>
 </template>
@@ -65,7 +79,8 @@ const documentsGrup:Ref<Document[]> = ref([] as Document[]);
 const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 
-const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[])
+const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
+const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 async function selectGrup(grup:Grup){
   grupSelected.value = grup;
@@ -91,7 +106,7 @@ onMounted(async ()=>{
 
   signatures.value = await SignaturaService.findAll();
 
-  columns.value.push({
+  columnsGrup.value.push({
     name: 'tipusDocument',
     label: 'Document',
     field: row => row.tipusDocument.nom,
@@ -99,7 +114,30 @@ onMounted(async ()=>{
   });
 
   for(const signatura of signatures.value){
-    columns.value.push({
+    columnsGrup.value.push({
+      name: signatura.id,
+      label: signatura.nom,
+      field: signatura.id,
+      sortable: true
+    });
+  }
+
+  columnsUsuari.value.push({
+    name: 'alumne',
+    label: 'Alumne',
+    field: row => row.usuari.nomComplet2,
+    sortable: true
+  });
+
+  columnsUsuari.value.push({
+    name: 'tipusDocument',
+    label: 'Document',
+    field: row => row.tipusDocument.nom,
+    sortable: true
+  });
+
+  for(const signatura of signatures.value){
+    columnsUsuari.value.push({
       name: signatura.id,
       label: signatura.nom,
       field: signatura.id,
