@@ -22,6 +22,31 @@
           <q-item-section>
             <q-item-label>{{document.nomOriginal}}</q-item-label>
           </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              <q-select v-model="document.tipusDocument"
+                        :options="tipusDocuments"
+                        option-value="id"
+                        option-label="nom"
+                        label="Tipus de document"
+                />
+            </q-item-label>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>
+              <q-select v-model="document.usuari"
+                        :options="alumnesFiltered"
+                        option-value="id"
+                        option-label="nomComplet2"
+                        label="Alumne"
+                        use-input
+                        hide-selected
+                        fill-input
+                        clearable
+                        @filter="filterFn"
+              />
+            </q-item-label>
+          </q-item-section>
         </q-item>
       </q-list>
       <q-btn label="Traspassar documents" @click="traspassar()" />
@@ -40,6 +65,8 @@ import {DocumentService} from "src/service/DocumentService";
 import {useRoute} from "vue-router";
 import {useQuasar} from "quasar";
 import {UsuariService} from "src/service/UsuariService";
+import {TipusDocumentService} from "src/service/TipusDocumentService";
+import {TipusDocument} from "src/model/TipusDocument";
 
 const $q = useQuasar();
 const $route = useRoute()
@@ -49,6 +76,9 @@ const autoritzatSelected:Ref<Usuari> = ref({} as Usuari);
 const path:Ref<string> = ref('/');
 const pathDesti:Ref<string> = ref('/');
 const documents:Ref<Document[]> = ref([] as Document[]);
+const tipusDocuments:Ref<TipusDocument[]> = ref([] as TipusDocument[]);
+const alumnes:Ref<Usuari[]> = ref([] as Usuari[]);
+const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
 
 function selectAutoritzat(autoritzat:Usuari){
   autoritzatSelected.value = autoritzat;
@@ -59,11 +89,21 @@ async function getDocuments(){
 }
 
 async function traspassar(){
-  await DocumentService.traspassarDocument(path.value,autoritzatSelected.value.email)
+  await DocumentService.traspassarDocument(documents.value,autoritzatSelected.value.email)
+}
+
+function filterFn (val:string, update:Function, abort:Function) {
+  update(() => {
+    const needle = val.toLowerCase()
+    alumnesFiltered.value = alumnes.value.filter( (v:Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
+  })
 }
 
 onMounted(async ()=>{
   autoritzats.value = await UsuariService.getAutoritzats();
+  tipusDocuments.value = await TipusDocumentService.findAllTipusDocument();
+  alumnes.value = await UsuariService.getAlumnes();
+  alumnesFiltered.value = await UsuariService.getAlumnes();
 })
 
 </script>

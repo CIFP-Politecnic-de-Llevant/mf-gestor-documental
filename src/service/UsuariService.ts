@@ -12,6 +12,14 @@ export class UsuariService {
     }).sort();
   }
 
+  static async getAlumnes(): Promise<Array<Usuari>> {
+    const response = await axios.get(process.env.API + '/api/core/usuaris/llistat/actius');
+    const data = await response.data;
+    return data.map((usuari:any):Usuari=>{
+      return  this.fromJSONUsuari(usuari)
+    }).filter((u:Usuari)=>u.esAlumne).sort();
+  }
+
   static async getTutorsFCT(): Promise<Array<Usuari>> {
     const response = await axios.get(process.env.API + '/api/core/usuaris/tutorfct');
     const data = await response.data;
@@ -39,6 +47,8 @@ export class UsuariService {
       id: json.idusuari,
       email: json.gsuiteEmail,
       nomComplet: json.gsuiteFullName,
+      nomComplet2: json.gestibCognom1 + " " + json.gestibCognom2 + ", " + json.gestibNom,
+      esAlumne: json.gestibAlumne,
       value: json.gsuiteEmail,
       label: json.gsuiteFullName + ' <'+json.gsuiteEmail+'>'
 

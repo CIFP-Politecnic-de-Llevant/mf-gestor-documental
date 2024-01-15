@@ -16,10 +16,10 @@ export class DocumentService {
     }).sort();
   }
 
-  static async traspassarDocument(pathOrigen:string,email:string){
+  static async traspassarDocument(documents:Document[],email:string){
     const FOLDER_BASE:string = "FCT JOAN RESOLT";
 
-    const documents:Document[] = await this.getDocumentsByPath(pathOrigen,email);
+    //const documents:Document[] = await this.getDocumentsByPath(pathOrigen,email);
 
     for(const document of documents){
       const documentParts:string[] = document.nomOriginal.split("_");
@@ -71,7 +71,8 @@ export class DocumentService {
           path: `${FOLDER_BASE}/${cicle}/${nomDocument}`,
           email: email,
           tipus: nomDocument,
-          originalName: document.nomOriginal
+          originalName: document.nomOriginal,
+          tipusDocument: document.tipusDocument
         });
 
       } else if(documentParts.length === 4){ //Altres documents associats a un alumne
@@ -128,7 +129,9 @@ export class DocumentService {
           path: `${FOLDER_BASE}/${cicle}/${cognoms} ${nom}/${cognoms} ${nom}_${nomDocument}`,
           email: email,
           tipus: nomDocument,
-          originalName: document.nomOriginal
+          originalName: document.nomOriginal,
+          tipusDocument: document.tipusDocument,
+          usuari: document.usuari
         });
       }
     }
@@ -138,7 +141,9 @@ export class DocumentService {
     return {
       id: json.idDocument,
       nomOriginal: json.nomOriginal,
-      id_googleDrive: json.idGoogleDrive
+      id_googleDrive: json.idGoogleDrive,
+      tipusDocument: json.tipusDocument,
+      usuari: json.usuari
     }
   }
 
