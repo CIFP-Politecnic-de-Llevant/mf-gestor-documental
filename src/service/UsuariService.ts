@@ -55,6 +55,7 @@ export class UsuariService {
       nomComplet: json.gsuiteFullName,
       nomComplet2: json.gestibCognom1 + " " + json.gestibCognom2 + ", " + json.gestibNom,
       esAlumne: json.gestibAlumne,
+      numExpedient: json.gestibExpedient,
       value: json.gsuiteEmail,
       label: json.gsuiteFullName + ' <'+json.gsuiteEmail+'>'
 

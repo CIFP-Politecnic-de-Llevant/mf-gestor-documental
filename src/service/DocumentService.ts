@@ -97,11 +97,12 @@ export class DocumentService {
           codiGrup: cicle
         });
 
-      } else if(documentParts.length === 4){ //Altres documents associats a un alumne
+      } else if(documentParts.length === 5){ //Altres documents associats a un alumne
         const cicle = documentParts[0];
         const cognoms = documentParts[1];
         const nom = documentParts[2];
-        const nomDocument = documentParts[3];
+        const numExpedient = documentParts[3];
+        const nomDocument = documentParts[4];
 
 
         //Permisos

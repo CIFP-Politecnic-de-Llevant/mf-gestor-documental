@@ -92,6 +92,24 @@ function selectAutoritzat(autoritzat:Usuari){
 async function getDocuments(){
   hasResponseDocument.value = true;
   documents.value = await DocumentService.getDocumentsNoTraspassatsByPath(path.value,autoritzatSelected.value.email);
+
+  documents.value = documents.value.map((document:Document)=>{
+    const documentParts:string[] = document.nomOriginal.split("_");
+
+    console.log("documentParts",documentParts);
+    let nomTipusDocument = '';
+    let numExpedient = '';
+    if(documentParts.length === 2){
+      nomTipusDocument = documentParts[1];
+    } else if(documentParts.length === 5){
+      nomTipusDocument = documentParts[4];
+      numExpedient = documentParts[3];
+    }
+
+    document.tipusDocument = tipusDocuments.value.find((tipusDocument:TipusDocument)=>tipusDocument.nom.trim()===nomTipusDocument.trim());
+    document.usuari = alumnes.value.find((alumne:Usuari)=>alumne.numExpedient===numExpedient);
+    return document;
+  });
 }
 
 async function traspassar(){
