@@ -91,12 +91,26 @@ async function selectGrup(grup:Grup){
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
       return a.usuari.nomComplet2.localeCompare(b.usuari.nomComplet2);
     }
+    if(!a.tipusDocument){
+      return -1;
+    }
+    if(!b.tipusDocument){
+      return 1;
+    }
     if(a.tipusDocument.nom === b.tipusDocument.nom){
       return a.tipusDocument.nom.localeCompare(b.tipusDocument.nom);
     }
     return 0;
   });
-  documentsGrup.value = documentsAll.filter(d=>!d.usuari).sort((a:Document, b:Document)=>a.tipusDocument.nom.localeCompare(b.tipusDocument.nom));
+  documentsGrup.value = documentsAll.filter(d=>!d.usuari).sort((a:Document, b:Document)=>{
+    if(!a.tipusDocument){
+      return -1;
+    }
+    if(!b.tipusDocument){
+      return 1;
+    }
+    return  a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
+  });
 }
 
 
