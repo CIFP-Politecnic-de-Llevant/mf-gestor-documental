@@ -6,7 +6,7 @@ export interface Document {
   id: string;
   nomOriginal: string;
   id_googleDrive:string;
-  tipusDocument: TipusDocument;
+  tipusDocument?: TipusDocument;
   usuari?: Usuari;
-  signatures: Array<Signatura>;
+  signatures?: Array<Signatura>;
 }

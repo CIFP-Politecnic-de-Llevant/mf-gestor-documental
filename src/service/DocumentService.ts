@@ -166,10 +166,10 @@ export class DocumentService {
         id: json.idDocument,
         nomOriginal: json.nomOriginal,
         id_googleDrive: json.idGoogleDrive,
-        tipusDocument: TipusDocumentService.fromJSON(json.tipusDocument),
-        signatures: TipusDocumentService.fromJSON(json.tipusDocument).signatures.map((signatura: any): any => {
+        tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
+        signatures: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument).signatures.map((signatura: any): any => {
           return SignaturaService.fromJSON(signatura)
-        }).sort((a: any, b: any) => a.nom.localeCompare(b.nom))
+        }).sort((a: any, b: any) => a.nom.localeCompare(b.nom)):undefined
       }
 
       if(json.idUsuari) {
