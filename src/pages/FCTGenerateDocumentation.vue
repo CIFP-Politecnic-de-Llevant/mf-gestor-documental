@@ -114,7 +114,8 @@ async function getDocuments(){
 }
 
 async function traspassar(){
-  await DocumentService.traspassarDocument(documents.value,autoritzatSelected.value.email)
+  const documentsTraspas:Document[] = documents.value.filter(d=>d.tipusDocument && (d.tipusDocument.propietari===TipusDocumentPropietari.GRUP || (d.tipusDocument.propietari===TipusDocumentPropietari.ALUMNE && d.usuari)))
+  await DocumentService.traspassarDocument(documentsTraspas,autoritzatSelected.value.email)
 }
 
 function filterFn (val:string, update:Function, abort:Function) {
