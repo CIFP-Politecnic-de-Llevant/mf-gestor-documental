@@ -5,7 +5,7 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
+      { path: '', component: () => import('pages/FCTTeacherManager.vue') },
       { path: 'fct/generateDocumentation', component: () => import('pages/FCTGenerateDocumentation.vue') },
       { path: 'fct/group', component: () => import('pages/FCTTeacherManager.vue') },
       { path: 'login', component: () => import('components/common/Login.vue'), props: { urlRedirect: "/" } },

@@ -33,7 +33,7 @@
             </q-item-label>
           </q-item-section>
           <q-item-section>
-            <q-item-label>
+            <q-item-label v-if="document.tipusDocument?.propietari===TipusDocumentPropietari.ALUMNE">
               <q-select v-model="document.usuari"
                         :options="alumnesFiltered"
                         option-value="id"
@@ -71,6 +71,7 @@ import {useQuasar} from "quasar";
 import {UsuariService} from "src/service/UsuariService";
 import {TipusDocumentService} from "src/service/TipusDocumentService";
 import {TipusDocument} from "src/model/TipusDocument";
+import {TipusDocumentPropietari} from "src/model/TipusDocumentPropietari";
 
 const $q = useQuasar();
 const $route = useRoute()

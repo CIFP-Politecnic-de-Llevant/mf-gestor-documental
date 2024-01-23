@@ -17,6 +17,7 @@ export class TipusDocumentService {
     return {
       id: json.idTipusDocument,
       nom: json.nom,
+      propietari: json.propietari,
       signatures: json.signatures.map((signatura: any): any => {
         return SignaturaService.fromJSON(signatura)
       }).sort((a: any, b: any) => a.nom.localeCompare(b.nom))
