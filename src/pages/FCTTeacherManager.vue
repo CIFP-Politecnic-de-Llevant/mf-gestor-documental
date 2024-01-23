@@ -21,7 +21,6 @@
         row-key="name"
         binary-state-sort
         class="q-mb-lg"
-        dense
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -42,9 +41,9 @@
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
-                v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)"
-                v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat"
-                @update:model-value="signDocGroup(props.row)"
+                v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
+                v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
+                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
               />
             </q-td>
           </q-tr>
@@ -81,10 +80,22 @@
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
-                v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)"
+                v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
                 v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                @update:model-value="signDocStudent(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
+                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
               />
+            </q-td>
+            <q-td>
+              <q-file
+                v-model="props.row.file"
+                label="Fitxer"
+                clearable
+                :disable="props.row.documentSignatures.some(s=>!s.signat)"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="attach_file" />
+                </template>
+              </q-file>
             </q-td>
           </q-tr>
         </template>
@@ -146,12 +157,7 @@ async function selectGrup(grup:Grup){
   });
 }
 
-function signDocGroup(row:any){
-  console.log("Entra sign")
-  console.log(row)
-}
-
-function signDocStudent(document:Document, signatura:Signatura, signat:boolean){
+function signDoc(document:Document, signatura:Signatura, signat:boolean){
   console.log("Entra sign student")
   DocumentService.signarDocument(document,signatura,signat);
 }
@@ -201,6 +207,13 @@ onMounted(async ()=>{
       sortable: true
     });
   }
+
+  columnsUsuari.value.push({
+    name: 'document',
+    label: 'Document',
+    field: row => row,
+    sortable: true
+  });
 })
 </script>
 

@@ -1,6 +1,5 @@
 import {TipusDocument} from "src/model/TipusDocument";
 import {Usuari} from "src/model/Usuari";
-import {Signatura} from "src/model/Signatura";
 import {DocumentSignatura} from "src/model/DocumentSignatura";
 
 export interface Document {
@@ -10,4 +9,5 @@ export interface Document {
   tipusDocument?: TipusDocument;
   usuari?: Usuari;
   documentSignatures: Array<DocumentSignatura>;
+  file?: File;
 }

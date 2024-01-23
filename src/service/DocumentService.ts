@@ -172,22 +172,21 @@ export class DocumentService {
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
+    console.log(json)
     return new Promise((resolve,reject)=>{
       const document: Document = {
         id: json.idDocument,
         nomOriginal: json.nomOriginal,
         id_googleDrive: json.idGoogleDrive,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
-        documentSignatures: json.documentSignatures.map((documentSignatura:any):any=>{
+        documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
+          console.log(documentSignatura)
           return {
             document: documentSignatura.document,
             signatura: SignaturaService.fromJSON(documentSignatura.signatura),
             signat: documentSignatura.signat
           }
-        })
-        /*signatures: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument).signatures.map((signatura: any): any => {
-          return SignaturaService.fromJSON(signatura)
-        }).sort((a: any, b: any) => a.nom.localeCompare(b.nom)):undefined*/
+        }):undefined
       }
 
       if(json.idUsuari) {
