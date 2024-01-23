@@ -4,6 +4,7 @@ import {Usuari} from "src/model/Usuari";
 import {UsuariService} from "./UsuariService";
 import {TipusDocumentService} from "src/service/TipusDocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
+import {Signatura} from "src/model/Signatura";
 
 export class DocumentService {
 
@@ -159,6 +160,15 @@ export class DocumentService {
         });
       }
     }
+  }
+
+
+  static async signarDocument(document:Document,signatura: Signatura, signat:boolean){
+    const response = await axios.post(process.env.API + '/api/gestordocumental/document/signar',{
+      idDocument: document.id,
+      idSignatura: signatura.id,
+      signat: signat
+    });
   }
 
   static fromJSONDocument(json:any):Promise<Document>{

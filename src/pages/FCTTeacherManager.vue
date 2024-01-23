@@ -21,14 +21,31 @@
         row-key="name"
         binary-state-sort
         class="q-mb-lg"
+        dense
       >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th
+              v-for="col in props.cols"
+              :key="col.name"
+              :props="props"
+              class="header-cell"
+            >
+              {{ col.label }}
+            </q-th>
+          </q-tr>
+        </template>
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="tipusDocument" :props="props">
               {{ props.row.tipusDocument.nom }}
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-              <q-checkbox v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)" v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat" />
+              <q-checkbox
+                v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)"
+                v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat"
+                @update:model-value="signDocGroup(props.row)"
+              />
             </q-td>
           </q-tr>
         </template>
@@ -42,6 +59,18 @@
         row-key="name"
         binary-state-sort
       >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th
+              v-for="col in props.cols"
+              :key="col.name"
+              :props="props"
+              class="header-cell"
+            >
+              {{ col.label }}
+            </q-th>
+          </q-tr>
+        </template>
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="alumne" :props="props">
@@ -51,7 +80,11 @@
               {{ props.row.tipusDocument.nom }}
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-              <q-checkbox v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)" v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat" />
+              <q-checkbox
+                v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)"
+                v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat"
+                @update:model-value="signDocStudent(props.row,signatura,props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat)"
+              />
             </q-td>
           </q-tr>
         </template>
@@ -113,6 +146,16 @@ async function selectGrup(grup:Grup){
   });
 }
 
+function signDocGroup(row:any){
+  console.log("Entra sign")
+  console.log(row)
+}
+
+function signDocStudent(document:Document, signatura:Signatura, signat:boolean){
+  console.log("Entra sign student")
+  DocumentService.signarDocument(document,signatura,signat);
+}
+
 
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
@@ -160,3 +203,9 @@ onMounted(async ()=>{
   }
 })
 </script>
+
+<style scoped>
+.header-cell{
+  text-wrap: wrap;
+}
+</style>
