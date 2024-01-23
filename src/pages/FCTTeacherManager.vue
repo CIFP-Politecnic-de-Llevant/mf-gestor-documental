@@ -82,8 +82,8 @@
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
                 v-if="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id)"
-                v-model="props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat"
-                @update:model-value="signDocStudent(props.row,signatura,props.row.tipusDocument.signatures.find(s=>s.id===signatura.id).signat)"
+                v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
+                @update:model-value="signDocStudent(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
               />
             </q-td>
           </q-tr>
