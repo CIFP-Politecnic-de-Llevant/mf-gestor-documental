@@ -171,6 +171,26 @@ export class DocumentService {
     });
   }
 
+  static async uploadDocument(document:Document){
+    if(document.file) {
+      const formData = new FormData();
+      formData.append("arxiu", document.file);
+      formData.append("id", document.id);
+
+      const response = await axios.post(
+        process.env.API + "/api/gestordocumental/uploadfile",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          withCredentials: true,
+        }
+      );
+    }
+  }
+
   static fromJSONDocument(json:any):Promise<Document>{
     console.log(json)
     return new Promise((resolve,reject)=>{

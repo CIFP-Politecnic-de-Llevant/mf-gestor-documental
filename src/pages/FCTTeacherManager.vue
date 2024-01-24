@@ -96,6 +96,13 @@
                   <q-icon name="attach_file" />
                 </template>
               </q-file>
+
+              <q-btn
+                @click="sendFile(props.row)"
+                :color="props.row.documentSignatures.some(s=>!s.signat) ? 'light' : 'primary'"
+                :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                label="Enviar"
+              />
             </q-td>
           </q-tr>
         </template>
@@ -160,6 +167,11 @@ async function selectGrup(grup:Grup){
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
   console.log("Entra sign student")
   DocumentService.signarDocument(document,signatura,signat);
+}
+
+async function sendFile(document:Document){
+  console.log("Entra send file")
+  await DocumentService.uploadDocument(document);
 }
 
 
