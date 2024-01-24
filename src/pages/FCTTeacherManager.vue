@@ -46,12 +46,35 @@
                 @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
               />
             </q-td>
+            <q-td>
+              <q-file
+                v-model="props.row.file"
+                accept=".pdf"
+                label="Fitxer"
+                hint=".pdf"
+                clearable
+                :disable="props.row.documentSignatures.some(s=>!s.signat)"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="attach_file" />
+                </template>
+              </q-file>
+
+              <q-btn
+                @click="sendFile(props.row)"
+                :color="props.row.documentSignatures.some(s=>!s.signat) ? 'light' : 'primary'"
+                :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                dense
+                label="Enviar"
+              />
+            </q-td>
           </q-tr>
         </template>
       </q-table>
 
       <q-table
-        flat bordered
+        flat
+        bordered
         title="Documents de l'usuari"
         :rows="documentsUsuari"
         :columns="columnsUsuari"
@@ -86,23 +109,27 @@
               />
             </q-td>
             <q-td>
-              <q-file
-                v-model="props.row.file"
-                label="Fitxer"
-                clearable
-                :disable="props.row.documentSignatures.some(s=>!s.signat)"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="attach_file" />
-                </template>
-              </q-file>
+                <q-file
+                  v-model="props.row.file"
+                  accept=".pdf"
+                  label="Fitxer"
+                  hint=".pdf"
+                  clearable
+                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" />
+                  </template>
+                </q-file>
 
-              <q-btn
-                @click="sendFile(props.row)"
-                :color="props.row.documentSignatures.some(s=>!s.signat) ? 'light' : 'primary'"
-                :disable="props.row.documentSignatures.some(s=>!s.signat)"
-                label="Enviar"
-              />
+                <q-btn
+                  @click="sendFile(props.row)"
+                  :color="props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
+                  :text-color="props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
+                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  dense
+                  label="Enviar"
+                />
             </q-td>
           </q-tr>
         </template>
@@ -181,6 +208,7 @@ onMounted(async ()=>{
 
   signatures.value = await SignaturaService.findAll();
 
+  //Grup
   columnsGrup.value.push({
     name: 'tipusDocument',
     label: 'Document',
@@ -196,7 +224,14 @@ onMounted(async ()=>{
       sortable: true
     });
   }
+  columnsGrup.value.push({
+    name: 'document',
+    label: 'Document',
+    field: row => row,
+    sortable: true
+  });
 
+  //Usuari
   columnsUsuari.value.push({
     name: 'alumne',
     label: 'Alumne',
