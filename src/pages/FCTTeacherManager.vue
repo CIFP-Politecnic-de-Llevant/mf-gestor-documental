@@ -28,7 +28,7 @@
               v-for="col in props.cols"
               :key="col.name"
               :props="props"
-              class="header-cell"
+              class="text-wrap-center"
             >
               {{ col.label }}
             </q-th>
@@ -36,7 +36,7 @@
         </template>
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="tipusDocument" :props="props">
+            <q-td key="tipusDocument" :props="props" class="text-wrap">
               {{ props.row.tipusDocument.nom }}
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
@@ -47,26 +47,33 @@
               />
             </q-td>
             <q-td>
-              <q-file
-                v-model="props.row.file"
-                accept=".pdf"
-                label="Fitxer"
-                hint=".pdf"
-                clearable
-                :disable="props.row.documentSignatures.some(s=>!s.signat)"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="attach_file" />
-                </template>
-              </q-file>
+              <div class="flex flex-center" style="width: 120px;">
+                <q-file
+                  v-model="props.row.file"
+                  accept=".pdf"
+                  label="Fitxer"
+                  hint=".pdf"
+                  clearable
+                  dense
+                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  input-style="width: 50px;"
+                  class="q-mr-xs"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="attach_file" />
+                  </template>
+                </q-file>
 
-              <q-btn
-                @click="sendFile(props.row)"
-                :color="props.row.documentSignatures.some(s=>!s.signat) ? 'light' : 'primary'"
-                :disable="props.row.documentSignatures.some(s=>!s.signat)"
-                dense
-                label="Enviar"
-              />
+                <q-btn
+                  @click="sendFile(props.row)"
+                  :color="props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
+                  :text-color="props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
+                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  round
+                  dense
+                  icon="send"
+                />
+              </div>
             </q-td>
           </q-tr>
         </template>
@@ -87,7 +94,7 @@
               v-for="col in props.cols"
               :key="col.name"
               :props="props"
-              class="header-cell"
+              class="text-wrap-center"
             >
               {{ col.label }}
             </q-th>
@@ -95,10 +102,10 @@
         </template>
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="alumne" :props="props">
+            <q-td key="alumne" :props="props" class="text-wrap">
               {{ props.row.usuari.nomComplet2 }}
             </q-td>
-            <q-td key="tipusDocument" :props="props">
+            <q-td key="tipusDocument" :props="props" class="text-wrap">
               {{ props.row.tipusDocument.nom }}
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
@@ -109,13 +116,17 @@
               />
             </q-td>
             <q-td>
+              <div class="flex flex-center" style="width: 120px;">
                 <q-file
                   v-model="props.row.file"
                   accept=".pdf"
                   label="Fitxer"
                   hint=".pdf"
                   clearable
+                  dense
                   :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  input-style="width: 50px;"
+                  class="q-mr-xs"
                 >
                   <template v-slot:prepend>
                     <q-icon name="attach_file" />
@@ -127,9 +138,11 @@
                   :color="props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
                   :text-color="props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
                   :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  round
                   dense
-                  label="Enviar"
+                  icon="send"
                 />
+              </div>
             </q-td>
           </q-tr>
         </template>
@@ -221,14 +234,14 @@ onMounted(async ()=>{
       name: signatura.id,
       label: signatura.nom,
       field: signatura.id,
-      sortable: true
+      sortable: false
     });
   }
   columnsGrup.value.push({
     name: 'document',
     label: 'Document',
     field: row => row,
-    sortable: true
+    sortable: false
   });
 
   //Usuari
@@ -251,7 +264,7 @@ onMounted(async ()=>{
       name: signatura.id,
       label: signatura.nom,
       field: signatura.id,
-      sortable: true
+      sortable: false
     });
   }
 
@@ -259,13 +272,18 @@ onMounted(async ()=>{
     name: 'document',
     label: 'Document',
     field: row => row,
-    sortable: true
+    sortable: false
   });
 })
 </script>
 
 <style scoped>
-.header-cell{
+.text-wrap-center{
   text-wrap: wrap;
+  text-align: center;
+}
+.text-wrap{
+  text-wrap: wrap;
+  text-align: left;
 }
 </style>
