@@ -47,7 +47,7 @@
               />
             </q-td>
             <q-td>
-              <div class="flex flex-center" style="width: 120px;">
+              <div class="flex flex-center" style="width: 150px;">
                 <q-file
                   v-model="props.row.file"
                   accept=".pdf"
@@ -116,7 +116,7 @@
               />
             </q-td>
             <q-td>
-              <div class="flex flex-center" style="width: 120px;">
+              <div class="flex flex-center" style="width: 150px;">
                 <q-file
                   v-model="props.row.file"
                   accept=".pdf"

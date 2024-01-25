@@ -178,7 +178,7 @@ export class DocumentService {
       formData.append("id", document.id);
 
       const response = await axios.post(
-        process.env.API + "/api/gestordocumental/uploadfile",
+        process.env.API + "/api/gestordocumental/document/uploadFile",
         formData,
         {
           headers: {
