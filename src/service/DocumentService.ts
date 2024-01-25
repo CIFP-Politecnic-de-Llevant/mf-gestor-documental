@@ -5,6 +5,7 @@ import {UsuariService} from "./UsuariService";
 import {TipusDocumentService} from "src/service/TipusDocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {Signatura} from "src/model/Signatura";
+import {FitxerBucket} from "src/model/google/FitxerBucket";
 
 export class DocumentService {
 
@@ -189,6 +190,25 @@ export class DocumentService {
         }
       );
     }
+  }
+
+  static async getURLFitxerDocument(id:number):Promise<null | FitxerBucket>{
+    const response = await axios.get(process.env.API + '/api/gestordocumental/documents/' + id);
+    const data = await response.data;
+    const document: Document = await this.fromJSONDocument(data);
+
+    let fitxerResolucio:FitxerBucket|null = null;
+    if(document.fitxer){
+      const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer.id);
+      const fitxerBucket: FitxerBucket = f.data;
+      if (fitxerBucket){
+        const url: any = await axios.post(process.env.API + '/api/core/googlestorage/generate-signed-url', fitxerBucket);
+        fitxerBucket.url = url.data;
+
+        fitxerResolucio = fitxerBucket;
+      }
+    }
+    return fitxerResolucio;
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
