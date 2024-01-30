@@ -282,7 +282,9 @@ onMounted(async ()=>{
 
   myUser.value = await UsuariService.getProfile();
 
-  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email);
+  const rolsUser = JSON.parse(localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
+
+  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r==="ADMINISTRADOR");
 
   //Grup
   columnsGrup.value.push({
