@@ -25,7 +25,7 @@
       bordered
     >
       <q-list>
-        <q-item clickable to="/fct/generateDocumentation">
+        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR)">
           <q-item-section avatar>
             <q-icon name="description" />
           </q-item-section>

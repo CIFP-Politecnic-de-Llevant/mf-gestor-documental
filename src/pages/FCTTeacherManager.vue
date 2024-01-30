@@ -9,7 +9,13 @@
         </q-item>
       </q-list>
     </q-btn-dropdown>
-    <div v-if="grupSelected && grupSelected.id">
+    <div v-if="isSearching">
+      <h2>Cercant...</h2>
+    </div>
+    <div v-if="grupSelected && grupSelected.id && !isAuthorized && !isSearching">
+      <h2>Usuari no autoritzat</h2>
+    </div>
+    <div v-if="grupSelected && grupSelected.id && isAuthorized">
       <p>Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
 
@@ -185,6 +191,9 @@ import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn} from "quasar";
 
+const myUser:Ref<Usuari> = ref({} as Usuari);
+const isSearching:Ref<boolean> = ref(false);
+const isAuthorized:Ref<boolean> = ref(false);
 const grups:Ref<Grup[]> = ref([] as Grup[]);
 const grupSelected:Ref<Grup> = ref({} as Grup);
 const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
@@ -196,6 +205,7 @@ const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 async function selectGrup(grup:Grup){
+  isSearching.value = true;
   grupSelected.value = grup;
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
@@ -229,6 +239,7 @@ async function selectGrup(grup:Grup){
   //URL documents
   console.log(documentsUsuari.value)
   console.log(documentsGrup.value)
+  isSearching.value = false;
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
@@ -268,6 +279,10 @@ onMounted(async ()=>{
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   signatures.value = await SignaturaService.findAll();
+
+  myUser.value = await UsuariService.getProfile();
+
+  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email);
 
   //Grup
   columnsGrup.value.push({

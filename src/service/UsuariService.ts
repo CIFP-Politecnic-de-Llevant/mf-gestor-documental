@@ -48,6 +48,12 @@ export class UsuariService {
     return this.fromJSONUsuari(usuari);
   }
 
+  static async getProfile(): Promise<Usuari> {
+    const responseUser = await axios.get(process.env.API + '/api/core/usuaris/profile');
+    const usuari:any = await responseUser.data;
+    return this.fromJSONUsuari(usuari);
+  }
+
   static fromJSONUsuari(json:any):Usuari{
     return {
       id: json.idusuari,
