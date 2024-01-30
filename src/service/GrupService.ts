@@ -9,7 +9,7 @@ import {Curs} from "src/model/Curs";
 export class GrupService {
 
   static async findAllGrups(): Promise<Array<Grup>> {
-    const response = await axios.get(process.env.API + '/api/core/grup/llistat');
+    const response = await axios.get(process.env.API + '/api/core/grup/llistatprofessorat');
     const grups = await response.data;
 
     return Promise.all(grups.map((grup:any)=>{
