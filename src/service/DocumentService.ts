@@ -192,11 +192,7 @@ export class DocumentService {
     }
   }
 
-  static async getURLFitxerDocument(id:number):Promise<null | FitxerBucket>{
-    const response = await axios.get(process.env.API + '/api/gestordocumental/documents/' + id);
-    const data = await response.data;
-    const document: Document = await this.fromJSONDocument(data);
-
+  static async getURLFitxerDocument(document:Document):Promise<null | FitxerBucket>{
     let fitxerResolucio:FitxerBucket|null = null;
     if(document.fitxer){
       const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer.id);
@@ -229,6 +225,17 @@ export class DocumentService {
         }):undefined
       }
 
+      if(json.idFitxer){
+        console.log(json.idFitxer);
+        const fitxerBucket:FitxerBucket = {
+          id: json.idFitxer,
+          nom: "",
+          path: "",
+          bucket: ""
+        }
+        document.fitxer = fitxerBucket;
+      }
+
       if(json.idUsuari) {
         const usuari: Promise<Usuari> = UsuariService.getById(json.idUsuari);
         usuari.then((usuari: Usuari) => {
@@ -238,6 +245,7 @@ export class DocumentService {
       } else {
         resolve(document);
       }
+
     });
   }
 

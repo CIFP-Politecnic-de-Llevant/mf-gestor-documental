@@ -47,7 +47,7 @@
               />
             </q-td>
             <q-td>
-              <div class="flex flex-center" style="width: 150px;">
+              <div class="flex flex-center" style="width: 200px;">
                 <q-file
                   v-model="props.row.file"
                   accept=".pdf"
@@ -72,6 +72,17 @@
                   round
                   dense
                   icon="send"
+                />
+
+                <q-btn
+                  @click="getURL(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!props.row.fitxer"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="picture_as_pdf"
                 />
               </div>
             </q-td>
@@ -116,7 +127,7 @@
               />
             </q-td>
             <q-td>
-              <div class="flex flex-center" style="width: 150px;">
+              <div class="flex flex-center" style="width: 200px;">
                 <q-file
                   v-model="props.row.file"
                   accept=".pdf"
@@ -141,6 +152,17 @@
                   round
                   dense
                   icon="send"
+                />
+
+                <q-btn
+                  @click="getURL(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!props.row.fitxer"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="picture_as_pdf"
                 />
               </div>
             </q-td>
@@ -193,6 +215,7 @@ async function selectGrup(grup:Grup){
     }
     return 0;
   });
+
   documentsGrup.value = documentsAll.filter(d=>!d.usuari).sort((a:Document, b:Document)=>{
     if(!a.tipusDocument){
       return -1;
@@ -202,6 +225,10 @@ async function selectGrup(grup:Grup){
     }
     return  a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
   });
+
+  //URL documents
+  console.log(documentsUsuari.value)
+  console.log(documentsGrup.value)
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
@@ -212,6 +239,14 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
 async function sendFile(document:Document){
   console.log("Entra send file")
   await DocumentService.uploadDocument(document);
+}
+
+async function getURL(document:Document){
+  console.log("Entra get url")
+  const fitxer = await DocumentService.getURLFitxerDocument(document);
+  if(fitxer) {
+    window.open(fitxer.url, '_blank');
+  }
 }
 
 
