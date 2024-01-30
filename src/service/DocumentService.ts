@@ -39,6 +39,12 @@ export class DocumentService {
     }).sort());
   }
 
+  static async getDocumentById(id:string):Promise<Document>{
+    const response = await axios.get(process.env.API + '/api/gestordocumental/documents/'+id);
+    const data = await response.data;
+    return this.fromJSONDocument(data);
+  }
+
   static async traspassarDocument(documents:Document[],email:string){
     const FOLDER_BASE:string = "FCT JOAN RESOLT";
 

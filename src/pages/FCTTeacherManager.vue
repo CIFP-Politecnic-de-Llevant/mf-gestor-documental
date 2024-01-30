@@ -239,14 +239,38 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
 async function sendFile(document:Document){
   console.log("Entra send file")
   await DocumentService.uploadDocument(document);
+  const documentSaved:Document = await DocumentService.getDocumentById(document.id);
+  const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
+  console.log("Fitxer",fitxer,documentSaved);
+  if(fitxer) {
+    const documentGrup = documentsGrup.value.find(d=>d.id===documentSaved.id);
+    const documentUsuari = documentsUsuari.value.find(d=>d.id===documentSaved.id);
+
+    console.log("has fitxer",fitxer)
+    if(documentGrup){
+      console.log("Entra send file grup")
+      documentsGrup.value.find(d=>d.id===documentSaved.id)!.fitxer = fitxer;
+    }
+
+    if(documentUsuari){
+      console.log("Entra send file usuari")
+      documentsUsuari.value.find(d=>d.id===documentSaved.id)!.fitxer = fitxer;
+    }
+  }
 }
 
 async function getURL(document:Document){
-  console.log("Entra get url")
-  const fitxer = await DocumentService.getURLFitxerDocument(document);
+  console.log("Entra get url",document)
+  const documentSaved:Document = await DocumentService.getDocumentById(document.id);
+  const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
+  console.log("Fitxer",fitxer,documentSaved);
   if(fitxer) {
     window.open(fitxer.url, '_blank');
   }
+  /*const fitxer = await DocumentService.getURLFitxerDocument(document);
+  if(fitxer) {
+    window.open(fitxer.url, '_blank');
+  }*/
 }
 
 
