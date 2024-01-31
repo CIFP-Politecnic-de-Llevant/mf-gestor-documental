@@ -15,7 +15,7 @@
     <div v-if="grupSelected && grupSelected.id && !isAuthorized && !isSearching">
       <h2>Usuari no autoritzat</h2>
     </div>
-    <div v-if="grupSelected && grupSelected.id && isAuthorized">
+    <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
       <p>Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
 
