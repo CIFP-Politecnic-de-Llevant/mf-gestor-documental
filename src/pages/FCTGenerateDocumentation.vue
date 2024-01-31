@@ -107,10 +107,14 @@ async function getDocuments(){
       numExpedient = documentParts[3];
     }
 
-    document.tipusDocument = tipusDocuments.value.find((tipusDocument:TipusDocument)=>tipusDocument.nom.trim()===nomTipusDocument.trim());
+    document.tipusDocument = tipusDocuments.value.find((tipusDocument:TipusDocument)=>removeIllegalCharacters(tipusDocument.nom.trim())===removeIllegalCharacters(nomTipusDocument.trim()));
     document.usuari = alumnes.value.find((alumne:Usuari)=>alumne.numExpedient===numExpedient);
     return document;
   });
+}
+
+function removeIllegalCharacters(text:string){
+  return text.replace(/[^a-zA-Z0-9]/g, '');
 }
 
 async function traspassar(){
