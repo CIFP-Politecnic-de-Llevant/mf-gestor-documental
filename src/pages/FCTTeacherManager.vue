@@ -240,6 +240,10 @@ async function selectGrup(grup:Grup){
   console.log(documentsUsuari.value)
   console.log(documentsGrup.value)
   isSearching.value = false;
+
+  const rolsUser = JSON.parse(localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
+  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r==="ADMINISTRADOR");
+
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
@@ -281,10 +285,6 @@ onMounted(async ()=>{
   signatures.value = await SignaturaService.findAll();
 
   myUser.value = await UsuariService.getProfile();
-
-  const rolsUser = JSON.parse(localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
-
-  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r==="ADMINISTRADOR");
 
   //Grup
   columnsGrup.value.push({
