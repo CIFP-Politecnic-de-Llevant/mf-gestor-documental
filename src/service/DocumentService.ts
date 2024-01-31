@@ -46,7 +46,7 @@ export class DocumentService {
   }
 
   static async traspassarDocument(documents:Document[],email:string){
-    const FOLDER_BASE:string = "FCT JOAN RESOLT";
+    const FOLDER_BASE:string = "Curs Actual/0206 FCT i FP Dual/Documentació FCT alumnes 23-24/Documentació en tràmit";
 
     //const documents:Document[] = await this.getDocumentsByPath(pathOrigen,email);
 
