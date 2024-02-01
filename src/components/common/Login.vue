@@ -1,5 +1,5 @@
 <template>
-  <div class="fullscreen flex flex-center" :style="`background-image:url(${background})`">
+  <div class="fullscreen flex flex-center background" :style="`background-image:url(${background})`">
     <!--img src="logo/hiclipart.com.png" class="logologin" alt="logo"-->
     <q-card class="bg-negative text-white q-mb-md" v-if="displayError">
       <q-card-section>
