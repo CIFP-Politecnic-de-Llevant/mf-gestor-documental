@@ -76,7 +76,7 @@ export class DocumentService {
         const carpetaRoot = carpetaRootFetch.data;
 
         const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-          path: FOLDER_BASE,
+          //path: FOLDER_BASE,
           folderName: cicle,
           email: email,
           editors:tutorsFCT.map(t=>t.email),
@@ -131,6 +131,7 @@ export class DocumentService {
         const carpetaRoot = carpetaRootFetch.data;
 
         const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+          //path: FOLDER_BASE,
           folderName: cicle,
           email: email,
           editors:tutorsFCT.map(t=>t.email),
