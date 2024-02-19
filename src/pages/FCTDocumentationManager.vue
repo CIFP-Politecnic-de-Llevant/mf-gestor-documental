@@ -8,7 +8,7 @@
       <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')" />
     </q-btn-group>
 
-    <div v-for="grupFCT in grupsFCTFiltered">
+    <div v-for="grupFCT in grupsFCT">
       <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
       <p>Tutor FCT: {{grupFCT.tutorsFCT.map(t=>t.label).join(", ")}}</p>
 
@@ -152,7 +152,6 @@ const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
-const grupsFCTFiltered = ref([] as any[]);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -203,7 +202,6 @@ async function setGrup(grup:Grup){
   }
 
   grupsFCT.value.push(documentFCT);
-  grupsFCTFiltered.value.push(documentFCT);
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
@@ -224,25 +222,41 @@ async function getURL(document:Document){
 }
 
 
-function filterDocuments(filter:string){
-  if(filter==='all'){
-    grupsFCTFiltered.value = grupsFCT.value;
-  }else if(filter==='pending'){
-    grupsFCTFiltered.value = grupsFCT.value.filter(grupFCT=>grupFCT.documentsGrup.find((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES));
+async function filterDocuments(filter:string){
+  await loadGrups()
+  if(filter==='pending'){
+    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
+      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
+      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
+      return grupFCT;
+    });
   }else if(filter==='accepted'){
-    grupsFCTFiltered.value = grupsFCT.value.filter(grupFCT=>grupFCT.documentsGrup.find((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT));
+    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
+      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
+      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
+      return grupFCT;
+    });
   } else if(filter==='rejected'){
-    grupsFCTFiltered.value = grupsFCT.value.filter(grupFCT=>grupFCT.documentsGrup.find((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT));
+    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
+      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
+      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
+      return grupFCT;
+    });
+  }
+}
+
+async function loadGrups(){
+  grups.value = await GrupService.findAllGrups();
+  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+
+  grupsFCT.value = [];
+  for(const grup of grups.value){
+    await setGrup(grup);
   }
 }
 
 onMounted(async ()=>{
-  grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
-
-  for(const grup of grups.value){
-    await setGrup(grup);
-  }
+  await loadGrups();
 
   signatures.value = await SignaturaService.findAll();
 
