@@ -91,6 +91,12 @@ function selectAutoritzat(autoritzat:Usuari){
 }
 
 async function getDocuments(){
+  const dialog = $q.dialog({
+    message: 'Carregant...',
+    progress: true, // we enable default settings
+    persistent: true, // we want the user to not be able to close it
+    ok: false // we want the user to not be able to close it
+  })
   hasResponseDocument.value = true;
   documents.value = await DocumentService.getDocumentsNoTraspassatsByPath(path.value,autoritzatSelected.value.email);
 
@@ -111,6 +117,7 @@ async function getDocuments(){
     document.usuari = alumnes.value.find((alumne:Usuari)=>alumne.numExpedient===numExpedient);
     return document;
   });
+  dialog.hide();
 }
 
 function removeIllegalCharacters(text:string){
@@ -118,8 +125,15 @@ function removeIllegalCharacters(text:string){
 }
 
 async function traspassar(){
+  const dialog = $q.dialog({
+    message: 'Traspassant document. NO TANQUI LA FINESTRA',
+    progress: true, // we enable default settings
+    persistent: true, // we want the user to not be able to close it
+    ok: false // we want the user to not be able to close it
+  })
   const documentsTraspas:Document[] = documents.value.filter(d=>d.tipusDocument && (d.tipusDocument.propietari===TipusDocumentPropietari.GRUP || (d.tipusDocument.propietari===TipusDocumentPropietari.ALUMNE && d.usuari)))
   await DocumentService.traspassarDocument(documentsTraspas,autoritzatSelected.value.email)
+  dialog.hide();
 }
 
 function filterFn (val:string, update:Function, abort:Function) {
