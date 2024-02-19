@@ -230,7 +230,7 @@ export class DocumentService {
         id: json.idDocument,
         nomOriginal: json.nomOriginal,
         id_googleDrive: json.idGoogleDrive,
-        documentEstat: json.documentEstat,
+        documentEstat: json.estat,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
         documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
           console.log(documentSignatura)

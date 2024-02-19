@@ -94,7 +94,6 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="tipusDocument" :props="props" class="text-wrap">
-              {{props.row.documentEstat}}
               <q-select v-model="props.row.documentEstat" :options="[
                 'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
               ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
