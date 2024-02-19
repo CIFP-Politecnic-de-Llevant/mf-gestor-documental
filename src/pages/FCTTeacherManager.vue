@@ -27,6 +27,7 @@
         row-key="name"
         binary-state-sort
         class="q-mb-lg"
+        :pagination="initialPagination"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -104,6 +105,7 @@
         :columns="columnsUsuari"
         row-key="name"
         binary-state-sort
+        :pagination="initialPagination"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -203,6 +205,13 @@ const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 
 const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
+
+const initialPagination = {
+  sortBy: 'desc',
+  descending: false,
+  page: 1,
+  rowsPerPage: 0
+}
 
 async function selectGrup(grup:Grup){
   isSearching.value = true;
