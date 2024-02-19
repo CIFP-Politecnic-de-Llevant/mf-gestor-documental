@@ -6,6 +6,7 @@ import {TipusDocumentService} from "src/service/TipusDocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {Signatura} from "src/model/Signatura";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
+import {DocumentEstat} from "src/model/DocumentEstat";
 
 export class DocumentService {
 
@@ -172,6 +173,13 @@ export class DocumentService {
   }
 
 
+  static async changeEstatDocument(document:Document,estat:string){
+    const response = await axios.post(process.env.API + '/api/gestordocumental/document/canviarEstatDocument',{
+      idDocument: document.id,
+      estat: estat
+    });
+  }
+
   static async signarDocument(document:Document,signatura: Signatura, signat:boolean){
     const response = await axios.post(process.env.API + '/api/gestordocumental/document/signar',{
       idDocument: document.id,
@@ -222,6 +230,7 @@ export class DocumentService {
         id: json.idDocument,
         nomOriginal: json.nomOriginal,
         id_googleDrive: json.idGoogleDrive,
+        documentEstat: json.documentEstat,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
         documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
           console.log(documentSignatura)

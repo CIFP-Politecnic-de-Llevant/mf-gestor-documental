@@ -1,8 +1,15 @@
 <template>
   <q-page padding>
 
-    <div v-for="grupFCT in grupsFCT">
-      <p>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</p>
+    <q-btn-group push>
+      <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')" />
+      <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')" />
+      <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')" />
+      <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')" />
+    </q-btn-group>
+
+    <div v-for="grupFCT in grupsFCTFiltered">
+      <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
       <p>Tutor FCT: {{grupFCT.tutorsFCT.map(t=>t.label).join(", ")}}</p>
 
       <q-table
@@ -29,6 +36,11 @@
         </template>
         <template v-slot:body="props">
           <q-tr :props="props">
+            <q-td key="tipusDocument" :props="props" class="text-wrap">
+              <q-select v-model="props.row.documentEstat" :options="[
+                'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
+              ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
+            </q-td>
             <q-td key="tipusDocument" :props="props" class="text-wrap">
               {{ props.row.tipusDocument.nom }}
             </q-td>
@@ -81,6 +93,12 @@
         </template>
         <template v-slot:body="props">
           <q-tr :props="props">
+            <q-td key="tipusDocument" :props="props" class="text-wrap">
+              {{props.row.documentEstat}}
+              <q-select v-model="props.row.documentEstat" :options="[
+                'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
+              ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
+            </q-td>
             <q-td key="alumne" :props="props" class="text-wrap">
               {{ props.row.usuari.nomComplet2 }}
             </q-td>
@@ -120,6 +138,7 @@ import {onMounted, Ref, ref} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
+import {DocumentEstat} from "src/model/DocumentEstat";
 import {Signatura} from "src/model/Signatura";
 import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
@@ -134,6 +153,7 @@ const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
+const grupsFCTFiltered = ref([] as any[]);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -184,11 +204,16 @@ async function setGrup(grup:Grup){
   }
 
   grupsFCT.value.push(documentFCT);
+  grupsFCTFiltered.value.push(documentFCT);
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
   console.log("Entra sign student")
   DocumentService.signarDocument(document,signatura,signat);
+}
+
+function changeEstatDocument(document:Document, estat:string){
+  DocumentService.changeEstatDocument(document, estat);
 }
 
 async function getURL(document:Document){
@@ -199,6 +224,18 @@ async function getURL(document:Document){
   }
 }
 
+
+function filterDocuments(filter:string){
+  if(filter==='all'){
+    grupsFCTFiltered.value = grupsFCT.value;
+  }else if(filter==='pending'){
+    grupsFCTFiltered.value = grupsFCT.value.filter(grupFCT=>grupFCT.documentsGrup.find((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES));
+  }else if(filter==='accepted'){
+    grupsFCTFiltered.value = grupsFCT.value.filter(grupFCT=>grupFCT.documentsGrup.find((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT));
+  } else if(filter==='rejected'){
+    grupsFCTFiltered.value = grupsFCT.value.filter(grupFCT=>grupFCT.documentsGrup.find((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT));
+  }
+}
 
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
@@ -211,6 +248,13 @@ onMounted(async ()=>{
   signatures.value = await SignaturaService.findAll();
 
   //Grup
+  columnsGrup.value.push({
+    name: 'validat',
+    label: 'Validat?',
+    field: row => row.documentEstat,
+    sortable: true
+  });
+
   columnsGrup.value.push({
     name: 'tipusDocument',
     label: 'Document',
@@ -234,6 +278,13 @@ onMounted(async ()=>{
   });
 
   //Usuari
+  columnsUsuari.value.push({
+    name: 'validat',
+    label: 'Validat?',
+    field: row => row.documentEstat,
+    sortable: true
+  });
+
   columnsUsuari.value.push({
     name: 'alumne',
     label: 'Alumne',
