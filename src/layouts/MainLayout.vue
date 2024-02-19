@@ -25,12 +25,20 @@
       bordered
     >
       <q-list>
-        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR)">
+        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="description" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Generar Documentació</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable to="/fct/manageDocumentation" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+          <q-item-section avatar>
+            <q-icon name="description" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>FCT - Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
         <q-item clickable to="/fct/group">
