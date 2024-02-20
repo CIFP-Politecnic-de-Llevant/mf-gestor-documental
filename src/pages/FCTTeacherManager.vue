@@ -16,8 +16,9 @@
       <h2>Usuari no autoritzat</h2>
     </div>
     <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
-      <p>Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
+      <p class="text-h5 q-mt-lg">Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
+      <!--q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" /-->
 
       <q-table
         flat bordered
@@ -178,6 +179,67 @@
         </template>
       </q-table>
     </div>
+
+    <q-dialog v-model="addDocument">
+      <q-card style="width: 400px;">
+        <q-card-section>
+          <q-card-section class="bg-primary text-white">
+            <div class="text-h6">Afegir documentació</div>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-section>
+            <q-select
+              v-model="tipusDocumentExtra"
+              :options="['Grup','Alumnat']"
+              label="Tipus"
+              input-debounce="0"
+              clearable
+              class="q-mb-md"
+              @update:model-value="updateDocuments"
+            />
+
+            <q-select
+              v-model="documentExtra.nomOriginal"
+              :options="optionsDocumentExtra"
+              label="Document"
+              input-debounce="0"
+              clearable
+              class="q-mb-md"
+            />
+
+            <q-select v-if="tipusDocumentExtra==='Alumnat'" v-model="documentExtra.usuari"
+                      :options="alumnesFiltered"
+                      option-value="id"
+                      option-label="nomComplet2"
+                      label="Alumne"
+                      use-input
+                      hide-selected
+                      fill-input
+                      clearable
+                      @filter="filterFn"
+            />
+
+            <q-file
+              v-model="documentExtra.file"
+              accept=".pdf"
+              label="Fitxer"
+              hint=".pdf"
+              clearable
+              dense
+              class="q-mt-lg"
+            >
+              <template v-slot:prepend>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
+
+            <q-btn color="primary" class="q-mt-lg" @click="saveDocument(documentExtra,tipusDocumentExtra,documentExtra.usuari?.id)">Enviar document</q-btn>
+          </q-card-section>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -192,6 +254,7 @@ import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn} from "quasar";
+import {Rol} from "src/model/Rol";
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
@@ -202,9 +265,16 @@ const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
 const documentsGrup:Ref<Document[]> = ref([] as Document[]);
 const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
+const addDocument = ref(false);
 
 const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
+
+const documentExtra:Ref<Document> = ref({} as Document);
+const tipusDocumentExtra:Ref<string> = ref("");
+const alumnes:Ref<Usuari[]> = ref([] as Usuari[]);
+const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
+const optionsDocumentExtra:Ref<string[]> = ref([]);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -251,13 +321,22 @@ async function selectGrup(grup:Grup){
   isSearching.value = false;
 
   const rolsUser = JSON.parse(localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
-  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r==="ADMINISTRADOR");
-
+  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
   console.log("Entra sign student")
   DocumentService.signarDocument(document,signatura,signat);
+}
+
+async function saveDocument(document:Document,tipus:string,idusuari?:number){
+  const documentSaved:Document= await DocumentService.save(document,grupSelected.value.curs.nom+grupSelected.value.nom,idusuari);
+  await sendFile(documentSaved);
+  if(tipus==='Grup'){
+    documentsGrup.value.push(documentSaved);
+  } else {
+    documentsUsuari.value.push(documentSaved);
+  }
 }
 
 async function sendFile(document:Document){
@@ -287,6 +366,22 @@ async function getURL(document:Document){
 }
 
 
+function filterFn (val:string, update:Function, abort:Function) {
+  update(() => {
+    const needle = val.toLowerCase()
+    alumnesFiltered.value = alumnes.value.filter( (v:Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
+  })
+}
+
+function updateDocuments(){
+  optionsDocumentExtra.value = [];
+
+  if(tipusDocumentExtra.value==='Alumnat'){
+    optionsDocumentExtra.value.push("Annex 4");
+  }
+  optionsDocumentExtra.value.push("Altra documentació");
+}
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
@@ -294,6 +389,10 @@ onMounted(async ()=>{
   signatures.value = await SignaturaService.findAll();
 
   myUser.value = await UsuariService.getProfile();
+
+  alumnes.value = await UsuariService.getAlumnes();
+  alumnesFiltered.value = await UsuariService.getAlumnes();
+
 
   //Grup
   columnsGrup.value.push({

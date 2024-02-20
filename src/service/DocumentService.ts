@@ -47,7 +47,7 @@ export class DocumentService {
   }
 
   static async traspassarDocument(documents:Document[],email:string){
-    const FOLDER_BASE:string = "Curs Actual/0206 FCT i FP Dual/Documentació FCT alumnes 23-24/Documentació en tràmit";
+    const FOLDER_BASE:string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
 
     //const documents:Document[] = await this.getDocumentsByPath(pathOrigen,email);
 
@@ -186,6 +186,15 @@ export class DocumentService {
       idSignatura: signatura.id,
       signat: signat
     });
+  }
+
+  static async save(document:Document, curs:string, idusuari?:number):Promise<Document>{
+    const response = await axios.post(process.env.API + '/api/gestordocumental/documents/save',{
+      document: document,
+      curs: curs,
+      idusuari: idusuari
+    });
+    return response.data;
   }
 
   static async uploadDocument(document:Document){
