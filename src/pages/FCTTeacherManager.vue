@@ -351,10 +351,12 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
 
 async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
   const documentSaved:Document= await DocumentService.saveDocumentExtra(document,grupSelected.value.curs.nom+grupSelected.value.nom,tipusDocument, idusuari);
-  documentSaved.file = document.file;
 
-  console.log(documentSaved);
+  documentSaved.file = document.file;
   await sendFile(documentSaved);
+
+  await getURL(documentSaved);
+
   if(tipus==='Grup'){
     documentsGrup.value.push(documentSaved);
   } else {
