@@ -199,6 +199,7 @@ export class DocumentService {
   }
 
   static async uploadDocument(document:Document){
+    console.log("Upload document",document)
     if(document.file) {
       const formData = new FormData();
       formData.append("arxiu", document.file);

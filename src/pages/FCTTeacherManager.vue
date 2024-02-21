@@ -351,6 +351,8 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
 
 async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
   const documentSaved:Document= await DocumentService.saveDocumentExtra(document,grupSelected.value.curs.nom+grupSelected.value.nom,tipusDocument, idusuari);
+  documentSaved.file = document.file;
+
   console.log(documentSaved);
   await sendFile(documentSaved);
   if(tipus==='Grup'){
@@ -362,6 +364,7 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
 }
 
 async function sendFile(document:Document){
+  console.log("Entra send file")
   await DocumentService.uploadDocument(document);
   const documentSaved:Document = await DocumentService.getDocumentById(document.id);
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
