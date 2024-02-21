@@ -9,125 +9,127 @@
     </q-btn-group>
 
     <div v-for="grupFCT in grupsFCT">
-      <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
-      <p>Tutor FCT: {{grupFCT.tutorsFCT.map(t=>t.label).join(", ")}}</p>
+      <div v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
+        <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
+        <p>Tutor FCT: {{grupFCT.tutorsFCT.map(t=>t.label).join(", ")}}</p>
 
-      <q-table
-        flat bordered
-        title="Documents del grup"
-        :rows="grupFCT.documentsGrup"
-        :columns="columnsGrup"
-        row-key="name"
-        binary-state-sort
-        class="q-mb-lg"
-        :pagination="initialPagination"
-      >
-        <template v-slot:header="props">
-          <q-tr :props="props">
-            <q-th
-              v-for="col in props.cols"
-              :key="col.name"
-              :props="props"
-              class="text-wrap-center"
-            >
-              {{ col.label }}
-            </q-th>
-          </q-tr>
-        </template>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="tipusDocument" :props="props" class="text-wrap">
-              <q-select v-model="props.row.documentEstat" :options="[
-                'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
-              ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
-            </q-td>
-            <q-td key="tipusDocument" :props="props" class="text-wrap">
-              {{ props.row.tipusDocument.nom }}
-            </q-td>
-            <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-              <q-checkbox
-                v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
-                v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
-              />
-            </q-td>
-            <q-td>
-              <div class="flex flex-center" style="width: 200px;">
-                <q-btn
-                  @click="getURL(props.row)"
-                  :color="!props.row.fitxer ? 'white' : 'primary'"
-                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                  :disable="!props.row.fitxer"
-                  round
-                  dense
-                  class="q-ml-xs"
-                  icon="picture_as_pdf"
+        <q-table
+          flat bordered
+          title="Documents del grup"
+          :rows="grupFCT.documentsGrup"
+          :columns="columnsGrup"
+          row-key="name"
+          binary-state-sort
+          class="q-mb-lg"
+          :pagination="initialPagination"
+        >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                class="text-wrap-center"
+              >
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="tipusDocument" :props="props" class="text-wrap">
+                <q-select v-model="props.row.documentEstat" :options="[
+                  'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
+                ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
+              </q-td>
+              <q-td key="tipusDocument" :props="props" class="text-wrap">
+                {{ props.row.tipusDocument.nom }}
+              </q-td>
+              <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
+                <q-checkbox
+                  v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
+                  v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
+                  @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
                 />
-              </div>
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+              </q-td>
+              <q-td>
+                <div class="flex flex-center" style="width: 200px;">
+                  <q-btn
+                    @click="getURL(props.row)"
+                    :color="!props.row.fitxer ? 'white' : 'primary'"
+                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                    :disable="!props.row.fitxer"
+                    round
+                    dense
+                    class="q-ml-xs"
+                    icon="picture_as_pdf"
+                  />
+                </div>
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
 
-      <q-table
-        flat
-        bordered
-        title="Documents de l'usuari"
-        :rows="grupFCT.documentsUsuari"
-        :columns="columnsUsuari"
-        row-key="name"
-        binary-state-sort
-        :pagination="initialPagination"
-      >
-        <template v-slot:header="props">
-          <q-tr :props="props">
-            <q-th
-              v-for="col in props.cols"
-              :key="col.name"
-              :props="props"
-              class="text-wrap-center"
-            >
-              {{ col.label }}
-            </q-th>
-          </q-tr>
-        </template>
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="tipusDocument" :props="props" class="text-wrap">
-              <q-select v-model="props.row.documentEstat" :options="[
-                'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
-              ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
-            </q-td>
-            <q-td key="alumne" :props="props" class="text-wrap">
-              {{ props.row.usuari.nomComplet2 }}
-            </q-td>
-            <q-td key="tipusDocument" :props="props" class="text-wrap">
-              {{ props.row.tipusDocument.nom }}
-            </q-td>
-            <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-              <q-checkbox
-                v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
-                v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
-              />
-            </q-td>
-            <q-td>
-              <div class="flex flex-center" style="width: 200px;">
-                <q-btn
-                  @click="getURL(props.row)"
-                  :color="!props.row.fitxer ? 'white' : 'primary'"
-                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                  :disable="!props.row.fitxer"
-                  round
-                  dense
-                  class="q-ml-xs"
-                  icon="picture_as_pdf"
+        <q-table
+          flat
+          bordered
+          title="Documents de l'usuari"
+          :rows="grupFCT.documentsUsuari"
+          :columns="columnsUsuari"
+          row-key="name"
+          binary-state-sort
+          :pagination="initialPagination"
+        >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                class="text-wrap-center"
+              >
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="tipusDocument" :props="props" class="text-wrap">
+                <q-select v-model="props.row.documentEstat" :options="[
+                  'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
+                ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
+              </q-td>
+              <q-td key="alumne" :props="props" class="text-wrap">
+                {{ props.row.usuari.nomComplet2 }}
+              </q-td>
+              <q-td key="tipusDocument" :props="props" class="text-wrap">
+                {{ props.row.tipusDocument.nom }}
+              </q-td>
+              <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
+                <q-checkbox
+                  v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
+                  v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
+                  @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
                 />
-              </div>
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+              </q-td>
+              <q-td>
+                <div class="flex flex-center" style="width: 200px;">
+                  <q-btn
+                    @click="getURL(props.row)"
+                    :color="!props.row.fitxer ? 'white' : 'primary'"
+                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                    :disable="!props.row.fitxer"
+                    round
+                    dense
+                    class="q-ml-xs"
+                    icon="picture_as_pdf"
+                  />
+                </div>
+              </q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </div>
     </div>
   </q-page>
 </template>
@@ -143,7 +145,9 @@ import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
-import {QTableColumn} from "quasar";
+import {QTableColumn, useQuasar} from "quasar";
+
+const $q = useQuasar();
 
 const grups:Ref<Grup[]> = ref([] as Grup[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
@@ -152,6 +156,8 @@ const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
+
+const abortController = new AbortController();
 
 const initialPagination = {
   sortBy: 'desc',
@@ -223,6 +229,21 @@ async function getURL(document:Document){
 
 
 async function filterDocuments(filter:string){
+  let tipusDocuments = 'tots els documents'
+  if(filter==='pending'){
+    tipusDocuments = 'els documents pendents de validar'
+  }else if(filter==='accepted'){
+    tipusDocuments = 'els documents acceptats'
+  } else if(filter==='rejected'){
+    tipusDocuments = 'els documents rebutjats'
+  }
+
+  const dialog = $q.dialog({
+    message: 'Carregant '+tipusDocuments+'...',
+    progress: true, // we enable default settings
+    persistent: true, // we want the user to not be able to close it
+    ok: false // we want the user to not be able to close it
+  })
   await loadGrups()
   if(filter==='pending'){
     grupsFCT.value = grupsFCT.value.map(grupFCT=>{
@@ -243,19 +264,28 @@ async function filterDocuments(filter:string){
       return grupFCT;
     });
   }
+  dialog.hide();
 }
 
 async function loadGrups(){
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
+  const promises = [];
   grupsFCT.value = [];
   for(const grup of grups.value){
-    await setGrup(grup);
+    promises.push(setGrup(grup));
   }
+  await Promise.all(promises);
 }
 
 onMounted(async ()=>{
+  const dialog = $q.dialog({
+    message: 'Carregant...',
+    progress: true, // we enable default settings
+    persistent: true, // we want the user to not be able to close it
+    ok: false // we want the user to not be able to close it
+  })
   await loadGrups();
 
   signatures.value = await SignaturaService.findAll();
@@ -327,6 +357,8 @@ onMounted(async ()=>{
     field: row => row,
     sortable: false
   });
+
+  dialog.hide();
 })
 </script>
 
