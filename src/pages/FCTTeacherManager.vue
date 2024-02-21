@@ -18,7 +18,7 @@
     <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
       <p class="text-h5 q-mt-lg">Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
-      <!--q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" /-->
+      <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" />
 
       <q-table
         flat bordered
@@ -49,7 +49,7 @@
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
-                v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
+                v-if="props.row.documentSignatures && props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
                 v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
                 @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
               />
@@ -63,7 +63,7 @@
                   hint=".pdf"
                   clearable
                   dense
-                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
                   input-style="width: 50px;"
                   class="q-mr-xs"
                 >
@@ -74,9 +74,9 @@
 
                 <q-btn
                   @click="sendFile(props.row)"
-                  :color="props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
-                  :text-color="props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
-                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  :color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
+                  :text-color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
+                  :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
                   round
                   dense
                   icon="send"
@@ -130,7 +130,7 @@
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
-                v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
+                v-if="props.row.documentSignatures && props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
                 v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
                 @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
               />
@@ -144,7 +144,7 @@
                   hint=".pdf"
                   clearable
                   dense
-                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
                   input-style="width: 50px;"
                   class="q-mr-xs"
                 >
@@ -155,9 +155,9 @@
 
                 <q-btn
                   @click="sendFile(props.row)"
-                  :color="props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
-                  :text-color="props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
-                  :disable="props.row.documentSignatures.some(s=>!s.signat)"
+                  :color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
+                  :text-color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
+                  :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
                   round
                   dense
                   icon="send"
@@ -201,12 +201,21 @@
             />
 
             <q-select
-              v-model="documentExtra.nomOriginal"
+              v-if="tipusDocumentExtra"
+              v-model="optionsDocumentExtraSelected"
               :options="optionsDocumentExtra"
               label="Document"
               input-debounce="0"
               clearable
               class="q-mb-md"
+              @update:model-value="updateNomOriginal"
+            />
+
+            <q-input
+              v-if="optionsDocumentExtraSelected"
+              v-model="documentExtra.nomOriginal"
+              label="Nom del document"
+              hint="Annex 4, Justificant del metge..."
             />
 
             <q-select v-if="tipusDocumentExtra==='Alumnat'" v-model="documentExtra.usuari"
@@ -235,7 +244,8 @@
               </template>
             </q-file>
 
-            <q-btn color="primary" class="q-mt-lg" @click="saveDocument(documentExtra,tipusDocumentExtra,documentExtra.usuari?.id)">Enviar document</q-btn>
+            <q-btn color="primary" class="q-mt-lg" @click="saveDocumentExtra(documentExtra,tipusDocumentExtra,optionsDocumentExtraSelected,documentExtra.usuari?.id)">Enviar document</q-btn>
+            <q-btn color="primary" class="q-ml-md q-mt-lg" @click="addDocument=false">Tancar</q-btn>
           </q-card-section>
         </q-card-section>
       </q-card>
@@ -274,6 +284,7 @@ const documentExtra:Ref<Document> = ref({} as Document);
 const tipusDocumentExtra:Ref<string> = ref("");
 const alumnes:Ref<Usuari[]> = ref([] as Usuari[]);
 const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
+const optionsDocumentExtraSelected:Ref<string> = ref('');
 const optionsDocumentExtra:Ref<string[]> = ref([]);
 
 const initialPagination = {
@@ -286,6 +297,15 @@ const initialPagination = {
 async function selectGrup(grup:Grup){
   isSearching.value = true;
   grupSelected.value = grup;
+
+  console.log("Entra filtre")
+  alumnesFiltered.value = [];
+  alumnesFiltered.value = alumnes.value.filter(a=>{
+    return (a.grup && parseInt(a.grup))===grup.id ||
+      (a.grup2 && parseInt(a.grup2))===grup.id ||
+      (a.grup3 && parseInt(a.grup3))===grup.id;
+  });
+
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
 
@@ -329,14 +349,16 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
   DocumentService.signarDocument(document,signatura,signat);
 }
 
-async function saveDocument(document:Document,tipus:string,idusuari?:number){
-  const documentSaved:Document= await DocumentService.save(document,grupSelected.value.curs.nom+grupSelected.value.nom,idusuari);
+async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
+  const documentSaved:Document= await DocumentService.saveDocumentExtra(document,grupSelected.value.curs.nom+grupSelected.value.nom,tipusDocument, idusuari);
+  console.log(documentSaved);
   await sendFile(documentSaved);
   if(tipus==='Grup'){
     documentsGrup.value.push(documentSaved);
   } else {
     documentsUsuari.value.push(documentSaved);
   }
+  addDocument.value = false;
 }
 
 async function sendFile(document:Document){
@@ -367,9 +389,18 @@ async function getURL(document:Document){
 
 
 function filterFn (val:string, update:Function, abort:Function) {
+  console.log("Entra filtre")
+  console.log('grup selected',grupSelected.value)
+  console.log('alumnes',alumnes.value)
   update(() => {
     const needle = val.toLowerCase()
-    alumnesFiltered.value = alumnes.value.filter( (v:Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
+    alumnesFiltered.value = alumnes.value
+      .filter(a=>{
+          return (a.grup && a.grup)===grupSelected.value.gestibCodi ||
+            (a.grup2 && a.grup2)===grupSelected.value.gestibCodi ||
+            (a.grup3 && a.grup3)===grupSelected.value.gestibCodi;
+        })
+      .filter( (v:Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
   })
 }
 
@@ -378,8 +409,15 @@ function updateDocuments(){
 
   if(tipusDocumentExtra.value==='Alumnat'){
     optionsDocumentExtra.value.push("Annex 4");
+    optionsDocumentExtra.value.push("Altra documentació alumne");
+  } else {
+    optionsDocumentExtra.value.push("Altra documentació grup");
   }
-  optionsDocumentExtra.value.push("Altra documentació");
+
+}
+
+function updateNomOriginal(v:string){
+  documentExtra.value.nomOriginal = v;
 }
 
 onMounted(async ()=>{

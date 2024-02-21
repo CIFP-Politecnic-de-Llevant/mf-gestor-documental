@@ -8,4 +8,5 @@ export interface Grup {
   tutor2?: Usuari;
   tutor3?: Usuari;
   curs: Curs;
+  gestibCodi: string;
 }

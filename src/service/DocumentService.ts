@@ -188,13 +188,14 @@ export class DocumentService {
     });
   }
 
-  static async save(document:Document, curs:string, idusuari?:number):Promise<Document>{
-    const response = await axios.post(process.env.API + '/api/gestordocumental/documents/save',{
+  static async saveDocumentExtra(document:Document, curs:string, tipusDocument:string, idusuari?:number):Promise<Document>{
+    const response = await axios.post(process.env.API + '/api/gestordocumental/documents/saveDocumentExtra',{
       document: document,
       curs: curs,
-      idusuari: idusuari
+      idusuari: idusuari,
+      tipusDocument: tipusDocument
     });
-    return response.data;
+    return this.fromJSONDocument(response.data);
   }
 
   static async uploadDocument(document:Document){

@@ -6,6 +6,9 @@ export interface Usuari {
   nomComplet2: string;
   esAlumne: boolean;
   numExpedient: string;
+  grup?: string;
+  grup2?: string;
+  grup3?: string;
   label?: string;
   value?: string;
 }

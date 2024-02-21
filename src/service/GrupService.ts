@@ -38,6 +38,7 @@ export class GrupService {
         return {
           id: json.idgrup,
           nom: json.gestibNom,
+          gestibCodi: json.gestibIdentificador,
           tutor1: g[0],
           tutor2: g[1],
           tutor3: g[2],
