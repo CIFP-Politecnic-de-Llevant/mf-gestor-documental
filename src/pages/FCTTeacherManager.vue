@@ -355,7 +355,12 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
   documentSaved.file = document.file;
   await sendFile(documentSaved);
 
-  await getURL(documentSaved);
+  const documentFitxer:Document = await DocumentService.getDocumentById(documentSaved.id);
+  const fitxer = await DocumentService.getURLFitxerDocument(documentFitxer);
+
+  if(fitxer){
+    documentSaved.fitxer = fitxer;
+  }
 
   if(tipus==='Grup'){
     documentsGrup.value.push(documentSaved);
