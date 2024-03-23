@@ -20,6 +20,11 @@
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
       <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" />
 
+      <q-btn @click="showAlumnes = true" label="Alumnes" color="primary" class="q-mt-md q-mb-lg q-mr-sm" />
+      <q-btn @click="showAlumnes = false" label="Documents" color="primary" class="q-mt-md q-mb-lg" />
+
+
+
       <q-table
         flat bordered
         title="Documents del grup"
@@ -98,7 +103,39 @@
         </template>
       </q-table>
 
-      <q-table
+      <q-table v-if="showAlumnes"
+        flat
+        bordered
+        title="Documents de l'usuari"
+        :rows="alumnesGrup"
+        :columns="columnsUsuari"
+        row-key="name"
+        binary-state-sort
+        :pagination="initialPagination"
+      >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th>
+              {{ columnsUsuari[0].label }}
+            </q-th>
+            <q-th>
+              Accions
+            </q-th>
+          </q-tr>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="alumne" :props="props" class="text-wrap-center">
+              {{ props.row.nomComplet2 }}
+            </q-td>
+            <q-td class="text-wrap-center">
+              <q-btn label="" icon="delete" color="primary" />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+
+      <q-table v-else
         flat
         bordered
         title="Documents de l'usuari"
@@ -287,6 +324,10 @@ const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
 const optionsDocumentExtraSelected:Ref<string> = ref('');
 const optionsDocumentExtra:Ref<string[]> = ref([]);
 
+const showAlumnes = ref(false);
+const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
+const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
+
 const initialPagination = {
   sortBy: 'desc',
   descending: false,
@@ -308,6 +349,9 @@ async function selectGrup(grup:Grup){
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
+  allDocumentsGrup.value = documentsAll;
+
+  alumnesGrup.value = await getAlumnesAmbDocsFCT();
 
   documentsUsuari.value = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -428,6 +472,27 @@ function updateDocuments(){
 
 function updateNomOriginal(v:string){
   documentExtra.value.nomOriginal = v;
+}
+
+async function getAlumnesAmbDocsFCT() {
+
+  // TODO intentar fer-ho amb mappings en lloc de bucles
+  const alumnesIds: number[] = [];
+
+  for (const doc of allDocumentsGrup.value) {
+    if (doc.usuari !== undefined) {
+      alumnesIds.push(doc.usuari.id);
+    }
+  }
+
+  const idsUnics = [...new Set(alumnesIds)];
+  const alumnesFCT: Usuari[] = [];
+
+  for (const id of idsUnics) {
+    alumnesFCT.push(await UsuariService.getById(String (id)));
+  }
+
+  return alumnesFCT;
 }
 
 onMounted(async ()=>{
