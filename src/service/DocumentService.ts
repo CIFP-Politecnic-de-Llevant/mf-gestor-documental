@@ -242,6 +242,7 @@ export class DocumentService {
         nomOriginal: json.nomOriginal,
         id_googleDrive: json.idGoogleDrive,
         documentEstat: json.estat,
+        visibilitat: json.visibilitat,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
         documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
           console.log(documentSignatura)

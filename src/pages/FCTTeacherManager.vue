@@ -92,6 +92,16 @@
                   class="q-ml-xs"
                   icon="picture_as_pdf"
                 />
+
+                <q-btn
+                  @click="getURL(props.row)"
+                  :color="'white'"
+                  :text-color="'primary'"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  :icon="props.row.visibilitat ? symOutlinedVisibility : symOutlinedVisibilityOff"
+                />
               </div>
             </q-td>
           </q-tr>
@@ -265,6 +275,8 @@ import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn} from "quasar";
 import {Rol} from "src/model/Rol";
+import { symOutlinedVisibility } from '@quasar/extras/material-symbols-outlined'
+import { symOutlinedVisibilityOff } from '@quasar/extras/material-symbols-outlined'
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
