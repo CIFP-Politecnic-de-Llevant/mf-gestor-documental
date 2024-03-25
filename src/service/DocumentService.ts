@@ -46,6 +46,14 @@ export class DocumentService {
     return this.fromJSONDocument(data);
   }
 
+  static async deleteDocumentByGoogleDriveId(id:string) {
+    // TODO canviar l'usuari hardcoded per l'actual (és per fer proves)
+    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-document', {
+      documentId: id,
+      email: 'provesfct@politecnicllevant.cat'
+    });
+  }
+
   static async traspassarDocument(documents:Document[],email:string){
     const FOLDER_BASE:string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
 

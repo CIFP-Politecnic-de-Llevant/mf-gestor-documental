@@ -495,12 +495,18 @@ async function getAlumnesAmbDocsFCT() {
   return alumnesFCT;
 }
 
-function provaGetAllDocumentsAlumneId(id:number) {
+async function provaGetAllDocumentsAlumneId(id:number) {
   console.log("***********" + "ID alumne:");
   console.log(id);
 
   const docsAlumne: Document[] = allDocumentsGrup.value.filter(doc => doc.usuari !== undefined && doc.usuari.id === id);
   console.log(docsAlumne);
+  for (const doc of docsAlumne) {
+    console.log(doc.id_googleDrive);
+  }
+
+  // TODO fer que s'eliminin tots els documents (és per fer proves)
+  await DocumentService.deleteDocumentByGoogleDriveId(docsAlumne[0].id_googleDrive);
 }
 
 onMounted(async ()=>{
