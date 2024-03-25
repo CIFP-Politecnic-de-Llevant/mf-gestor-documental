@@ -129,7 +129,7 @@
               {{ props.row.nomComplet2 }}
             </q-td>
             <q-td class="text-wrap-center">
-              <q-btn label="" icon="delete" color="primary" />
+              <q-btn :props="props" @click="provaGetAllDocumentsAlumneId(props.row.id)" label="" icon="delete" color="primary" />
             </q-td>
           </q-tr>
         </template>
@@ -493,6 +493,14 @@ async function getAlumnesAmbDocsFCT() {
   }
 
   return alumnesFCT;
+}
+
+function provaGetAllDocumentsAlumneId(id:number) {
+  console.log("***********" + "ID alumne:");
+  console.log(id);
+
+  const docsAlumne: Document[] = allDocumentsGrup.value.filter(doc => doc.usuari !== undefined && doc.usuari.id === id);
+  console.log(docsAlumne);
 }
 
 onMounted(async ()=>{
