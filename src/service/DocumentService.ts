@@ -179,6 +179,12 @@ export class DocumentService {
       estat: estat
     });
   }
+  static async changeVisibilitatDcument(id:number,visibilitat:boolean){
+    const response = await axios.post(process.env.API + '/api/gestordocumental/document/canviarVisibilitatDocument',{
+      idDocument: id,
+      visibilitat: visibilitat
+    });
+  }
 
   static async signarDocument(document:Document,signatura: Signatura, signat:boolean){
     const response = await axios.post(process.env.API + '/api/gestordocumental/document/signar',{

@@ -93,26 +93,22 @@
                   icon="picture_as_pdf"
                 />
 
-                <q-btn
-                  @click="getURL(props.row)"
-                  :color="'white'"
-                  :text-color="'primary'"
-                  round
-                  dense
-                  class="q-ml-xs"
-                  :icon="props.row.visibilitat ? symOutlinedVisibility : symOutlinedVisibilityOff"
-                />
               </div>
             </q-td>
           </q-tr>
         </template>
       </q-table>
 
+      <q-btn-group  class="q-mt-md q-mb-lg">
+        <q-btn @click="docuemntsVisibles" color="primary" label="Documemnts visibles" />
+        <q-btn @click="docuemntsNoVisibles" color="primary" label="Documemnts no visibles" />
+      </q-btn-group>
+
       <q-table
         flat
         bordered
         title="Documents de l'usuari"
-        :rows="documentsUsuari"
+        :rows="documentsUsuariFiltrats"
         :columns="columnsUsuari"
         row-key="name"
         binary-state-sort
@@ -130,7 +126,7 @@
             </q-th>
           </q-tr>
         </template>
-        <template v-slot:body="props">
+        <template v-slot:body="props" >
           <q-tr :props="props">
             <q-td key="alumne" :props="props" class="text-wrap">
               {{ props.row.usuari.nomComplet2 }}
@@ -182,6 +178,16 @@
                   dense
                   class="q-ml-xs"
                   icon="picture_as_pdf"
+                />
+
+                <q-btn
+                  @click="canviarVisibilitat(props.row.id,props.row.visibilitat? false : true)"
+                  :color="'primary'"
+                  :text-color="'white'"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  :icon="props.row.visibilitat ? symOutlinedVisibility : symOutlinedVisibilityOff"
                 />
               </div>
             </q-td>
@@ -286,6 +292,7 @@ const grupSelected:Ref<Grup> = ref({} as Grup);
 const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
 const documentsGrup:Ref<Document[]> = ref([] as Document[]);
 const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
+const documentsUsuariFiltrats:Ref<Document[]> = ref([] as Document[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 const addDocument = ref(false);
 
@@ -345,6 +352,13 @@ async function selectGrup(grup:Grup){
       return 1;
     }
     return  a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
+  });
+
+  console.log(documentsUsuari.value)
+
+  //Que es mostrin es visibles per defecte
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return d.visibilitat;
   });
 
   //URL documents
@@ -442,6 +456,22 @@ function updateNomOriginal(v:string){
   documentExtra.value.nomOriginal = v;
 }
 
+function docuemntsVisibles(){
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return d.visibilitat;
+  });
+}
+function docuemntsNoVisibles(){
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return !d.visibilitat;
+  });
+}
+
+function canviarVisibilitat(id:number,visibilitat:boolean){
+
+  DocumentService.changeVisibilitatDcument(id,visibilitat);
+}
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
@@ -452,7 +482,6 @@ onMounted(async ()=>{
 
   alumnes.value = await UsuariService.getAlumnes();
   alumnesFiltered.value = await UsuariService.getAlumnes();
-
 
   //Grup
   columnsGrup.value.push({
