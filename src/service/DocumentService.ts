@@ -46,10 +46,10 @@ export class DocumentService {
     return this.fromJSONDocument(data);
   }
 
-  static async deleteDocumentByGoogleDriveId(id:string) {
+  static async deleteDocumentByGoogleDriveId(ids:string[]) {
     // TODO canviar l'usuari hardcoded per l'actual (és per fer proves)
-    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-document', {
-      documentId: id,
+    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne', {
+      documentIds: ids,
       email: 'provesfct@politecnicllevant.cat'
     });
   }
