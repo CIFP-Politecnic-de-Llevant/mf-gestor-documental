@@ -129,7 +129,7 @@
               {{ props.row.nomComplet2 }}
             </q-td>
             <q-td class="text-wrap-center">
-              <q-btn :props="props" @click="provaGetAllDocumentsAlumneId(props.row.id, props.row.nomComplet2)" label="" icon="delete" color="primary" />
+              <q-btn :props="props" @click="deleteAllDocumentsAlumneId(props.row.id)" label="" icon="delete" color="primary" />
             </q-td>
           </q-tr>
         </template>
@@ -475,9 +475,8 @@ function updateNomOriginal(v:string){
 }
 
 async function getAlumnesAmbDocsFCT() {
-
-  // TODO intentar fer-ho amb mappings en lloc de bucles
   const alumnesIds: number[] = [];
+  const alumnesFCT: Usuari[] = [];
 
   for (const doc of allDocumentsGrup.value) {
     if (doc.usuari !== undefined) {
@@ -486,7 +485,6 @@ async function getAlumnesAmbDocsFCT() {
   }
 
   const idsUnics = [...new Set(alumnesIds)];
-  const alumnesFCT: Usuari[] = [];
 
   for (const id of idsUnics) {
     alumnesFCT.push(await UsuariService.getById(String (id)));
@@ -495,8 +493,7 @@ async function getAlumnesAmbDocsFCT() {
   return alumnesFCT;
 }
 
-async function provaGetAllDocumentsAlumneId(id:number) {
-  console.log(id);
+async function deleteAllDocumentsAlumneId(id:number) {
   const documentIds: string[] = [];
 
   const docsAlumne: Document[] = allDocumentsGrup.value.filter(doc => doc.usuari !== undefined && doc.usuari.id === id);
@@ -508,11 +505,7 @@ async function provaGetAllDocumentsAlumneId(id:number) {
     documentIds.push(doc.id_googleDrive);
   }
 
-  console.log(documentIds);
-
   // TODO afegir una confirmació abans d'eliminar (abans de que s'executi aquest mètode)
-  // TODO canviar el nom del mètode
-  // TODO passar el nom de la carpeta i el parentId per paràmetre
   await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle);
 }
 
