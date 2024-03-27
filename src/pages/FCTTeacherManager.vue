@@ -129,7 +129,7 @@
               {{ props.row.nomComplet2 }}
             </q-td>
             <q-td class="text-wrap-center">
-              <q-btn :props="props" @click="provaGetAllDocumentsAlumneId(props.row.id)" label="" icon="delete" color="primary" />
+              <q-btn :props="props" @click="provaGetAllDocumentsAlumneId(props.row.id, props.row.nomComplet2)" label="" icon="delete" color="primary" />
             </q-td>
           </q-tr>
         </template>
@@ -500,6 +500,10 @@ async function provaGetAllDocumentsAlumneId(id:number) {
   const documentIds: string[] = [];
 
   const docsAlumne: Document[] = allDocumentsGrup.value.filter(doc => doc.usuari !== undefined && doc.usuari.id === id);
+  const docParts: string[] = docsAlumne[0].nomOriginal.split("_");
+  const nomComplet: string = docParts[1] + " " + docParts[2];
+  const cicle: string = docParts[0];
+
   for (const doc of docsAlumne) {
     documentIds.push(doc.id_googleDrive);
   }
@@ -507,7 +511,9 @@ async function provaGetAllDocumentsAlumneId(id:number) {
   console.log(documentIds);
 
   // TODO afegir una confirmació abans d'eliminar (abans de que s'executi aquest mètode)
-  await DocumentService.deleteDocumentByGoogleDriveId(documentIds);
+  // TODO canviar el nom del mètode
+  // TODO passar el nom de la carpeta i el parentId per paràmetre
+  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle);
 }
 
 onMounted(async ()=>{

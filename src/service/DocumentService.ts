@@ -46,11 +46,34 @@ export class DocumentService {
     return this.fromJSONDocument(data);
   }
 
-  static async deleteDocumentByGoogleDriveId(ids:string[]) {
+  static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string) {
+    // agafa el parentId de la carpeta de l'alumne
     // TODO canviar l'usuari hardcoded per l'actual (és per fer proves)
+
+    const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
+    const email: string = 'provesfct@politecnicllevant.cat';
+
+    const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+      folderName: FOLDER_BASE,
+      email: email,
+      parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
+    });
+    const carpetaRoot = carpetaRootFetch.data;
+
+    const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+      //path: FOLDER_BASE,
+      folderName: cicle,
+      email: email,
+      parentFolderId: carpetaRoot.id
+    });
+    const carpetaCicle = carpetaCicleFetch.data;
+
+
     return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne', {
       documentIds: ids,
-      email: 'provesfct@politecnicllevant.cat'
+      email: email,
+      folderName: nomAlumne,
+      parentFolderId: carpetaCicle.id
     });
   }
 
