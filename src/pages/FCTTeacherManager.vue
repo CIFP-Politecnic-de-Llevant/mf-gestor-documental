@@ -512,6 +512,7 @@ async function deleteAllDocumentsAlumneId(id:number) {
 
   // TODO afegir una confirmació abans d'eliminar (abans de que s'executi aquest mètode)
   await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle);
+  alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
 }
 
 onMounted(async ()=>{
