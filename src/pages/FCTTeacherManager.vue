@@ -19,10 +19,10 @@
       <p class="text-h5 q-mt-lg">Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
       <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" />
+      <br>
 
       <q-btn @click="showAlumnes = true" label="Alumnes" color="primary" class="q-mt-md q-mb-lg q-mr-sm" />
       <q-btn @click="showAlumnes = false" label="Documents" color="primary" class="q-mt-md q-mb-lg" />
-
 
 
       <q-table
@@ -103,6 +103,10 @@
         </template>
       </q-table>
 
+      <div v-if="!isAuthorizedDeleteDocuments && showAlumnes">
+        <p class="text-negative">No tens autorització per eliminar documents d'alumnes</p>
+      </div>
+
       <q-table v-if="showAlumnes"
         flat
         bordered
@@ -118,7 +122,7 @@
             <q-th>
               {{ columnsUsuari[0].label }}
             </q-th>
-            <q-th>
+            <q-th v-if="isAuthorizedDeleteDocuments">
               Accions
             </q-th>
           </q-tr>
@@ -128,7 +132,7 @@
             <q-td key="alumne" :props="props" class="text-wrap-center">
               {{ props.row.nomComplet2 }}
             </q-td>
-            <q-td class="text-wrap-center">
+            <q-td class="text-wrap-center" v-if="isAuthorizedDeleteDocuments">
               <q-btn :props="props" @click="deleteAllDocumentsAlumneId(props.row.id)" label="" icon="delete" color="primary" />
             </q-td>
           </q-tr>
@@ -306,6 +310,7 @@ import {Rol} from "src/model/Rol";
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
 const isAuthorized:Ref<boolean> = ref(false);
+const isAuthorizedDeleteDocuments:Ref<boolean> = ref(false);
 const grups:Ref<Grup[]> = ref([] as Grup[]);
 const grupSelected:Ref<Grup> = ref({} as Grup);
 const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
@@ -519,6 +524,8 @@ onMounted(async ()=>{
 
   alumnes.value = await UsuariService.getAlumnes();
   alumnesFiltered.value = await UsuariService.getAlumnes();
+
+  isAuthorizedDeleteDocuments.value = JSON.parse(localStorage.getItem("rol")).some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
 
 
   //Grup
