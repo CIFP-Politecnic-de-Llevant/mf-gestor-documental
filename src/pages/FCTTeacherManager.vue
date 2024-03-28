@@ -133,7 +133,7 @@
               {{ props.row.nomComplet2 }}
             </q-td>
             <q-td class="text-wrap-center" v-if="isAuthorizedDeleteDocuments">
-              <q-btn :props="props" @click="deleteAllDocumentsAlumneId(props.row.id)" label="" icon="delete" color="primary" />
+              <q-btn :props="props" @click="confirmDelete(props.row.id)" label="" icon="delete" color="primary" />
             </q-td>
           </q-tr>
         </template>
@@ -304,7 +304,7 @@ import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
-import {QTableColumn} from "quasar";
+import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
@@ -332,6 +332,8 @@ const optionsDocumentExtra:Ref<string[]> = ref([]);
 const showAlumnes = ref(false);
 const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
 const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
+
+const $q = useQuasar();
 
 const initialPagination = {
   sortBy: 'desc',
@@ -479,6 +481,15 @@ function updateNomOriginal(v:string){
   documentExtra.value.nomOriginal = v;
 }
 
+function confirmDelete(id:number) {
+  $q.dialog( {
+    title: "Procedir amb l'eliminació?",
+    cancel: true
+  }).onOk(() => {
+    deleteAllDocumentsAlumneId(id);
+  });
+}
+
 async function getAlumnesAmbDocsFCT() {
   const alumnesIds: number[] = [];
   const alumnesFCT: Usuari[] = [];
@@ -499,6 +510,10 @@ async function getAlumnesAmbDocsFCT() {
 }
 
 async function deleteAllDocumentsAlumneId(id:number) {
+  const token = localStorage.getItem("token");
+  const payload = token.split(".")[1];
+  const email = JSON.parse(atob(payload)).email;
+
   const documentIds: string[] = [];
 
   const docsAlumne: Document[] = allDocumentsGrup.value.filter(doc => doc.usuari !== undefined && doc.usuari.id === id);
@@ -510,8 +525,7 @@ async function deleteAllDocumentsAlumneId(id:number) {
     documentIds.push(doc.id_googleDrive);
   }
 
-  // TODO afegir una confirmació abans d'eliminar (abans de que s'executi aquest mètode)
-  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle);
+  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email);
   alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
 }
 

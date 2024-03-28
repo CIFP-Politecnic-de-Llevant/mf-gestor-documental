@@ -46,12 +46,10 @@ export class DocumentService {
     return this.fromJSONDocument(data);
   }
 
-  static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string) {
+  static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string, email:string) {
     // agafa el parentId de la carpeta de l'alumne
-    // TODO canviar l'usuari hardcoded per l'actual (és per fer proves)
 
     const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
-    const email: string = 'provesfct@politecnicllevant.cat';
 
     const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
       folderName: FOLDER_BASE,
