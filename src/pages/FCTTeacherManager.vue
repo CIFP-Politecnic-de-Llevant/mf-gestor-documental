@@ -100,8 +100,8 @@
       </q-table>
 
       <q-btn-group  class="q-mt-md q-mb-lg">
-        <q-btn @click="docuemntsVisibles" color="primary" label="Documemnts visibles" />
-        <q-btn @click="docuemntsNoVisibles" color="primary" label="Documemnts no visibles" />
+        <q-btn @click="documentsVisibles" color="primary" label="Documemnts visibles" />
+        <q-btn @click="documentsNoVisibles" color="primary" label="Documemnts no visibles" />
       </q-btn-group>
 
       <q-table
@@ -187,7 +187,7 @@
                   round
                   dense
                   class="q-ml-xs"
-                  :icon="props.row.visibilitat ? symOutlinedVisibility : symOutlinedVisibilityOff"
+                  :icon="props.row.visibilitat ? symOutlinedVisibilityOff : symOutlinedVisibility"
                 />
               </div>
             </q-td>
@@ -270,7 +270,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref} from "vue";
+import {nextTick, onMounted, Ref, ref} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
@@ -456,20 +456,37 @@ function updateNomOriginal(v:string){
   documentExtra.value.nomOriginal = v;
 }
 
-function docuemntsVisibles(){
+function canviarVisibilitat(id:number,visibilitat:boolean){
+
+    DocumentService.changeVisibilitatDcument(id,visibilitat);
+
+    documentsUsuari.value = documentsUsuari.value.map(d => {
+
+        if(d.id == id.toString()){
+            console.log("Entra dedins id")
+            return { ...d, visibilitat };
+        }
+        return d;
+    })
+  //Actualitza la pàgina sense tornar a fer la petició axios
+    if(visibilitat){
+      documentsNoVisibles();
+    }else {
+      documentsVisibles();
+    }
+}
+
+function documentsVisibles(){
+
   documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
     return d.visibilitat;
   });
 }
-function docuemntsNoVisibles(){
+function documentsNoVisibles(){
+
   documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
     return !d.visibilitat;
   });
-}
-
-function canviarVisibilitat(id:number,visibilitat:boolean){
-
-  DocumentService.changeVisibilitatDcument(id,visibilitat);
 }
 
 onMounted(async ()=>{
@@ -536,6 +553,7 @@ onMounted(async ()=>{
     field: row => row,
     sortable: false
   });
+
 })
 </script>
 
