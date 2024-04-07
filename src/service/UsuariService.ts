@@ -71,4 +71,13 @@ export class UsuariService {
     }
   }
 
+  //ALUMNES
+   static async saveFileStudents(file:File):Promise<void>{
+
+    const formData = new FormData();
+    formData.append('file',file);
+
+    await axios.post(process.env.API + '/api/gestordocumental/alumnes/saveFile',formData);
+   }
+
 }
