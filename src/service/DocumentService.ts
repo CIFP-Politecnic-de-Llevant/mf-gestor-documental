@@ -47,19 +47,17 @@ export class DocumentService {
   }
 
   static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string, email:string) {
-    // agafa el parentId de la carpeta de l'alumne
 
     const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
 
-    const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
+    const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: FOLDER_BASE,
       email: email,
       parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
     });
     const carpetaRoot = carpetaRootFetch.data;
 
-    const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/crear-carpeta',{
-      //path: FOLDER_BASE,
+    const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: cicle,
       email: email,
       parentFolderId: carpetaRoot.id
@@ -248,7 +246,7 @@ export class DocumentService {
     }
   }
 
-  static async getURLFitxerDocument(document:Document):Promise<null | FitxerBucket>{
+  static async  getURLFitxerDocument(document:Document):Promise<null | FitxerBucket>{
     let fitxerResolucio:FitxerBucket|null = null;
     if(document.fitxer){
       const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer.id);
