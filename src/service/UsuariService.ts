@@ -1,6 +1,7 @@
 import {axios}  from 'boot/axios'
 import {Document} from "../model/Document";
 import {Usuari} from "src/model/Usuari";
+import {Alumne} from "src/model/Alumne";
 
 export class UsuariService {
 
@@ -80,4 +81,53 @@ export class UsuariService {
     await axios.post(process.env.API + '/api/gestordocumental/alumnes/saveFile',formData);
    }
 
+  static async allStudents():Promise<Array<Alumne>>{
+
+    const response = await axios.get(process.env.API + '/api/gestordocumental/alumnes/allStudents');
+    const data = await response.data;
+    return data.map((alumne:any):Alumne=>{
+      return this.fromJSONAlumne(alumne)
+    }).sort();
+  }
+
+  static async deleteStudent(nExp:number){
+
+    await axios.get(process.env.API + `/api/gestordocumental/alumnes/deleteStudent/${nExp}`)
+  }
+
+  static fromJSONAlumne(json:any):Alumne{
+    return {
+      idAlumne: json.idAlumne,
+      nom: json.nom,
+      cognom1: json.cognom1,
+      cognom2: json.cognom2,
+      ensenyament: json.ensenyament,
+      estudis: json.estudis,
+      grup: json.grup,
+      numeroExpedient: json.numeroExpedient,
+      sexe: json.sexe,
+      dataNaixement: json.dataNaixement,
+      nacionalitat: json.nacionalitat,
+      paisNaixement: json.paisNaixement,
+      provinciaNaixement: json.provinciaNaixement,
+      localitatNaixement: json.localitatNaixement,
+      dni: json.dni,
+      targetaSanitaria: json.targetaSanitaria,
+      CIP: json.CIP,
+      adreçaCompleta: json.adreçaCompleta,
+      minucipi: json.minucipi,
+      localitat: json.localitat,
+      CP: json.CP,
+      telefon: json.telefon,
+      telefonFix: json.telefonFix,
+      email: json.email,
+      tutor: json.tutor,
+      telefonTutor: json.telefonTutor,
+      emailTutor: json.emailTutor,
+      dniTutor: json.dniTutor,
+      adreçaTutor: json.adreçaTutor,
+      nacionalitatTutor: json.nacionalitatTutor
+
+    }
+  }
 }
