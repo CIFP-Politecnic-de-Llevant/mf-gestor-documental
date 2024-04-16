@@ -11,7 +11,12 @@
     <div v-for="grupFCT in grupsFCT">
       <div v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
         <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
-        <p>Tutor FCT: {{grupFCT.tutorsFCT.map(t=>t.label).join(", ")}}</p>
+        <p v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)">
+          Tutor FCT: {{tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t=>t.label).join(", ")}}
+        </p>
+        <p v-else>
+          Tutor FCT: Carregant tutors...
+        </p>
 
         <q-table
           flat bordered
@@ -156,6 +161,7 @@ const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
+const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 
 const abortController = new AbortController();
 
@@ -167,7 +173,26 @@ const initialPagination = {
 }
 
 async function setGrup(grup:Grup){
-  const tutorsFCT = await UsuariService.getTutorsFCTByCodiGrup(grup.curs.nom+grup.nom);
+  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
+  const token = localStorage.getItem("token");
+  const tutors: Usuari[] = [];
+  const codiGrup = grup.curs.nom + grup.nom;
+  if (!tutorsGrupsFCT.value.size) {
+    worker.onmessage = (e) => {
+      for (const tutor of e.data)
+        tutors.push(tutor);
+
+      const documentIndex = grupsFCT.value.findIndex(d => d.grup === documentFCT.grup);
+      grupsFCT.value[documentIndex].tutorsFCT = tutors;
+
+      tutorsGrupsFCT.value.set(codiGrup, tutors);
+
+      worker.terminate();
+    }
+    worker.postMessage(codiGrup + "|" + token);
+  }
+
+  //const tutorsFCT = await UsuariService.getTutorsFCTByCodiGrup(grup.curs.nom+grup.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
 
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
@@ -202,12 +227,13 @@ async function setGrup(grup:Grup){
 
   const documentFCT = {
     grup: grup,
-    tutorsFCT: tutorsFCT,
+    tutorsFCT: tutors,
     documentsUsuari: documentsUsuari,
     documentsGrup: documentsGrup,
   }
 
   grupsFCT.value.push(documentFCT);
+  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
@@ -276,7 +302,6 @@ async function loadGrups(){
   for(const grup of grups.value){
     promises.push(setGrup(grup));
   }
-  await Promise.all(promises);
 }
 
 onMounted(async ()=>{

@@ -19,6 +19,11 @@
       <p class="text-h5 q-mt-lg">Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
       <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" />
+      <br>
+
+      <q-btn @click="showAlumnes = true" label="Alumnes" color="primary" class="q-mt-md q-mb-lg q-mr-sm" />
+      <q-btn @click="showAlumnes = false" label="Documents" color="primary" class="q-mt-md q-mb-lg" />
+
 
       <q-table
         flat bordered
@@ -98,7 +103,43 @@
         </template>
       </q-table>
 
-      <q-table
+      <div v-if="!isAuthorizedDeleteDocuments && showAlumnes">
+        <p class="text-negative">No tens autorització per eliminar documents d'alumnes</p>
+      </div>
+
+      <q-table v-if="showAlumnes"
+        flat
+        bordered
+        title="Documents de l'usuari"
+        :rows="alumnesGrup"
+        :columns="columnsUsuari"
+        row-key="name"
+        binary-state-sort
+        :pagination="initialPagination"
+      >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th>
+              {{ columnsUsuari[0].label }}
+            </q-th>
+            <q-th v-if="isAuthorizedDeleteDocuments">
+              Accions
+            </q-th>
+          </q-tr>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="alumne" :props="props" class="text-wrap-center">
+              {{ props.row.nomComplet2 }}
+            </q-td>
+            <q-td class="text-wrap-center" v-if="isAuthorizedDeleteDocuments">
+              <q-btn :props="props" @click="confirmDelete(props.row.id)" label="" icon="delete" color="primary" />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+
+      <q-table v-else
         flat
         bordered
         title="Documents de l'usuari"
@@ -264,12 +305,13 @@ import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
-import {QTableColumn} from "quasar";
+import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
 const isAuthorized:Ref<boolean> = ref(false);
+const isAuthorizedDeleteDocuments:Ref<boolean> = ref(false);
 const grups:Ref<Grup[]> = ref([] as Grup[]);
 const grupSelected:Ref<Grup> = ref({} as Grup);
 const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
@@ -287,6 +329,12 @@ const alumnes:Ref<Usuari[]> = ref([] as Usuari[]);
 const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
 const optionsDocumentExtraSelected:Ref<string> = ref('');
 const optionsDocumentExtra:Ref<string[]> = ref([]);
+
+const showAlumnes = ref(false);
+const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
+const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
+
+const $q = useQuasar();
 
 const initialPagination = {
   sortBy: 'desc',
@@ -309,6 +357,9 @@ async function selectGrup(grup:Grup){
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
+  allDocumentsGrup.value = documentsAll;
+
+  alumnesGrup.value = await getAlumnesAmbDocsFCT();
 
   documentsUsuari.value = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -431,6 +482,54 @@ function updateNomOriginal(v:string){
   documentExtra.value.nomOriginal = v;
 }
 
+function confirmDelete(id:number) {
+  $q.dialog( {
+    title: "Procedir amb l'eliminació?",
+    cancel: true
+  }).onOk(() => {
+    deleteAllDocumentsAlumneId(id);
+  });
+}
+
+async function getAlumnesAmbDocsFCT() {
+  const alumnesIds: number[] = [];
+  const alumnesFCT: Usuari[] = [];
+
+  for (const doc of allDocumentsGrup.value) {
+    if (doc.usuari !== undefined) {
+      alumnesIds.push(doc.usuari.id);
+    }
+  }
+
+  const idsUnics = [...new Set(alumnesIds)];
+
+  for (const id of idsUnics) {
+    alumnesFCT.push(await UsuariService.getById(String (id)));
+  }
+
+  return alumnesFCT;
+}
+
+async function deleteAllDocumentsAlumneId(id:number) {
+  const token = localStorage.getItem("token");
+  const payload = token.split(".")[1];
+  const email = JSON.parse(atob(payload)).email;
+
+  const documentIds: string[] = [];
+
+  const docsAlumne: Document[] = allDocumentsGrup.value.filter(doc => doc.usuari !== undefined && doc.usuari.id === id);
+  const docParts: string[] = docsAlumne[0].nomOriginal.split("_");
+  const nomComplet: string = docParts[1] + " " + docParts[2];
+  const cicle: string = docParts[0];
+
+  for (const doc of docsAlumne) {
+    documentIds.push(doc.id_googleDrive);
+  }
+
+  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email);
+  alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
+}
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
@@ -441,6 +540,8 @@ onMounted(async ()=>{
 
   alumnes.value = await UsuariService.getAlumnes();
   alumnesFiltered.value = await UsuariService.getAlumnes();
+
+  isAuthorizedDeleteDocuments.value = JSON.parse(localStorage.getItem("rol")).some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
 
 
   //Grup
