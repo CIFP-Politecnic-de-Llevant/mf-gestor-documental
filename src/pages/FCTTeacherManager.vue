@@ -187,7 +187,7 @@
                   round
                   dense
                   class="q-ml-xs"
-                  :icon="props.row.visibilitat ? symOutlinedVisibilityOff : symOutlinedVisibility"
+                  :icon="props.row.visibilitat ? 'visibility_off' : 'visibility'"
                 />
               </div>
             </q-td>
@@ -281,8 +281,6 @@ import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn} from "quasar";
 import {Rol} from "src/model/Rol";
-import { symOutlinedVisibility } from '@quasar/extras/material-symbols-outlined'
-import { symOutlinedVisibilityOff } from '@quasar/extras/material-symbols-outlined'
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
@@ -458,7 +456,7 @@ function updateNomOriginal(v:string){
 
 function canviarVisibilitat(id:number,visibilitat:boolean){
 
-    DocumentService.changeVisibilitatDcument(id,visibilitat);
+    DocumentService.changeVisibilitatDocument(id,visibilitat);
 
     documentsUsuari.value = documentsUsuari.value.map(d => {
 
