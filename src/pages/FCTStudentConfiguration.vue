@@ -62,7 +62,7 @@
                   :text-color="'white'"
                   round
                   dense
-                  :icon="outlinedDriveFileRenameOutline"
+                  icon="drive_file_rename_outline"
               />
 
               <q-btn
@@ -72,7 +72,7 @@
                   round
                   dense
                   class="q-ml-lg"
-                  :icon="outlinedDelete"
+                  icon="delete"
               />
             </div>
           </q-td>
@@ -84,7 +84,11 @@
         <q-card-section>
           <q-card-section>
             <q-form @submit="updateStudent"  class="q-gutter-md">
-
+                <q-input
+                filled
+                type="text"
+                :v-model="studentSelect.nom"
+                />
 
             </q-form>
           </q-card-section>
@@ -166,28 +170,28 @@ onMounted(async () =>{
 columns.value.push({
     name:'NumExp',
     label:'NºExpedient',
-    field: 'NumExp',
+    field: row => row.numeroExpedient,
     sortable: true
 
 });
 columns.value.push({
     name:'nom',
     label:'Nom',
-    field: 'nom',
+    field: row => row.nom,
     sortable: true
 
 });
 columns.value.push({
     name:'cognom1',
     label:'1er Llinatge',
-    field: 'cognom1',
+    field: row => row.cognom1,
     sortable: true
 
 });
 columns.value.push({
     name:'cognom2',
     label:'2on Llinatge',
-    field: 'cognom2',
+    field: row => row.cognom2,
     sortable: true
 
 });

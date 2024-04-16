@@ -78,12 +78,12 @@ export class UsuariService {
     const formData = new FormData();
     formData.append('file',file);
 
-    await axios.post(process.env.API + '/api/gestordocumental/alumnes/saveFile',formData);
+    await axios.post(process.env.API + '/api/gestordocumental/alumnes/save-file',formData);
    }
 
   static async allStudents():Promise<Array<Alumne>>{
 
-    const response = await axios.get(process.env.API + '/api/gestordocumental/alumnes/allStudents');
+    const response = await axios.get(process.env.API + '/api/gestordocumental/alumnes/all-students');
     const data = await response.data;
     return data.map((alumne:any):Alumne=>{
       return this.fromJSONAlumne(alumne)
@@ -92,7 +92,7 @@ export class UsuariService {
 
   static async deleteStudent(nExp:number){
 
-    await axios.get(process.env.API + `/api/gestordocumental/alumnes/deleteStudent/${nExp}`)
+    await axios.get(process.env.API + `/api/gestordocumental/alumnes/delete-student/${nExp}`)
   }
 
   static fromJSONAlumne(json:any):Alumne{
@@ -114,7 +114,7 @@ export class UsuariService {
       dni: json.dni,
       targetaSanitaria: json.targetaSanitaria,
       CIP: json.CIP,
-      adreçaCompleta: json.adreçaCompleta,
+      adrecaCompleta: json.adrecaCompleta,
       minucipi: json.minucipi,
       localitat: json.localitat,
       CP: json.CP,
@@ -125,7 +125,7 @@ export class UsuariService {
       telefonTutor: json.telefonTutor,
       emailTutor: json.emailTutor,
       dniTutor: json.dniTutor,
-      adreçaTutor: json.adreçaTutor,
+      adrecaTutor: json.adrecaTutor,
       nacionalitatTutor: json.nacionalitatTutor
 
     }

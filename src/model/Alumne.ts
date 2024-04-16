@@ -18,7 +18,7 @@ export interface Alumne{
   dni?:string;
   targetaSanitaria?:string;
   CIP?:string;
-  adreçaCompleta?:string;
+  adrecaCompleta?:string;
   minucipi?:string;
   localitat?:string;
   CP?:string;
@@ -29,7 +29,7 @@ export interface Alumne{
   telefonTutor?:string;
   emailTutor?:string;
   dniTutor?:string;
-  adreçaTutor?:string;
+  adrecaTutor?:string;
   nacionalitatTutor?:string;
 
 }
