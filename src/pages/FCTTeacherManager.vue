@@ -116,6 +116,7 @@
         row-key="name"
         binary-state-sort
         :pagination="initialPagination"
+        class="sticky-header-table"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
