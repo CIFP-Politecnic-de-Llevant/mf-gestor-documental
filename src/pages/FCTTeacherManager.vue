@@ -615,8 +615,8 @@ onMounted(async ()=>{
   /* height or max-height is important */
   height: calc(100vh - 200px);
 
-  . q-table__top,
-  . q-table__bottom,
+  .q-table__top,
+  .q-table__bottom,
   thead tr:first-child th {
     /* bg color is important for th; just specify one */
     background-color: #00b4ff;
