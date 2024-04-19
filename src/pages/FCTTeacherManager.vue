@@ -120,10 +120,10 @@
       >
         <template v-slot:header="props">
           <q-tr :props="props">
-            <q-th>
+            <q-th class="text-wrap-center">
               {{ columnsUsuari[0].label }}
             </q-th>
-            <q-th v-if="isAuthorizedDeleteDocuments">
+            <q-th v-if="isAuthorizedDeleteDocuments" class="text-wrap-center">
               Accions
             </q-th>
           </q-tr>
