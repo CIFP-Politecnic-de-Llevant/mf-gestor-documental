@@ -31,6 +31,7 @@ export interface Alumne{
   dniTutor?:string;
   adrecaTutor?:string;
   nacionalitatTutor?:string;
+  noExisteix?:boolean;
 
 }
 

@@ -14,7 +14,7 @@
         style="max-width: 300px;  margin-right: 10px;"
       ></q-file>
       <div>
-        <q-btn label="Guardar" type="submit" color="primary"/>
+        <q-btn label="Obrir" type="submit" color="primary"/>
       </div>
     </q-form>
 
@@ -42,20 +42,20 @@
       </template>
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="numeroExpedient" :props="props" class="text-wrap">
+          <q-td key="numeroExpedient" :props="props" class="text-wrap-center">
             {{ props.row.numeroExpedient }}
           </q-td>
-          <q-td key="nom" :props="props" class="text-wrap">
+          <q-td key="nom" :props="props" class="text-wrap-center">
             {{ props.row.nom }}
           </q-td>
-          <q-td key="cognom1" :props="props" class="text-wrap">
+          <q-td key="cognom1" :props="props" class="text-wrap-center">
             {{ props.row.cognom1 }}
           </q-td>
-          <q-td key="cognom2" :props="props" class="text-wrap">
+          <q-td key="cognom2" :props="props" class="text-wrap-center">
             {{ props.row.cognom2 }}
           </q-td>
-          <q-td>
-            <div class="flex flex-end" style="width: 200px;">
+          <q-td class="text-wrap-center">
+            <div>
               <q-btn
                   @click="editStudent(props.row.idAlumne)"
                   :color="'primary'"
@@ -79,27 +79,54 @@
         </q-tr>
       </template>
     </q-table>
-    <q-dialog v-model="seeStudentEdition">
-      <q-card style="width: 400px;">
+    <q-dialog v-model="seeStudentEdition" persistent>
+      <q-card style="max-width: 1000px;">
         <q-card-section>
-          <q-card-section>
-            <q-form @submit="updateStudent"  class="q-gutter-md">
+          <q-form @submit="updateStudent"  class="q-gutter-md ">
+            <p class="text-h5 q-mt-lg">Editar Alumne</p>
+            <div class="row flex justify-center q-gutter-y-md">
+              <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne'">
                 <q-input
                 filled
                 type="text"
-                :v-model="studentSelect.nom"
+                :label="labels[index]"
+                :readonly=" key === 'numeroExpedient'"
+                v-model="studentSelect[key]"
+                :model-value="studentSelect[key]"
                 />
-
-            </q-form>
-          </q-card-section>
-
-          <q-separator />
-
-          <q-card-section>
-
-            <q-btn label="Guardar" type="submit" color="primary" v-close-popup/>
-            <q-btn label="Tancar"  color="primary" v-close-popup/>
-          </q-card-section>
+              </div>
+                <div class="col-md-3 q-mx-sm">
+                </div>
+            </div>
+            <div class="flex justify-end q-gutter-sm">
+              <q-btn label="Guardar" type="submit" color="primary" v-close-popup/>
+              <q-btn label="Tancar"  color="primary"  v-close-popup/>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="listStudents" persistent>
+      <q-card style="max-width: 1000px;">
+        <q-card-section>
+          <q-form @submit="saveStudents"  class="q-gutter-md ">
+            <p class="text-h5 q-mt-lg">Alumnes a guardar</p>
+            <div class="row flex justify-center">
+              <div class="col-5 q-mx-sm" v-for="(student, index) in selectListStudents" :key="index">
+                  <q-checkbox
+                    dense
+                    v-model="student.noExisteix"
+                    :label=" student.numeroExpedient + ' - ' + student.nom + ' '  + student.cognom1 + ' ' + student.cognom2"
+                    color="teal" />
+              </div>
+                <div v-if="selectListStudents.length % 2 !== 0" class="col-5 q-mx-sm">
+                </div>
+            </div>
+            <div class="flex justify-end q-gutter-sm">
+              <q-btn label="Guardar Alumnes" type="submit" color="primary" v-close-popup/>
+              <q-btn label="Tancar"  color="primary"  v-close-popup/>
+            </div>
+          </q-form>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -113,39 +140,52 @@ import {UsuariService} from "src/service/UsuariService";
 import {Ref} from "vue/dist/vue";
 import {QTableColumn} from "quasar";
 import {Alumne} from "src/model/Alumne";
-const seeStudentEdition = ref(false);
 import { outlinedDriveFileRenameOutline } from '@quasar/extras/material-icons-outlined'
-import { outlinedDelete } from '@quasar/extras/material-icons-outlined'
 
+
+const seeStudentEdition = ref(false);
+const listStudents = ref(false);
 const studentData:Ref<Alumne[]> = ref([] as Alumne[]);
 const studentSelect:Ref<Alumne> = ref({} as Alumne);
+const selectListStudents:Ref<Alumne[]> = ref([] as Alumne[]);
 const file = ref<File | null>(null);
-const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[])
+const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[]);
 const initialPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
   rowsPerPage: 0
-}
+};
+const labels = ["Id","Nom","1er Llinatge","2on Llinatge","Ensenyament","Estudis","Grup","Número d'Expedient",
+  "Sexe","Data Naixement","Nacionalitat","País Naixement","Província Naixement","Localitat Naixement",
+  "DNI","Targeta Sanitària","CIP","Adreça Completa","Municipi","Localitat","Codi Postal","Telèfon",
+  "Telèfon Fix","E-mail","Tutor","Telèfon Tutor","E-mail Tutor","DNI Tutor","Adreça Tutor","Nacionalitat Tutor"];
 
 async function saveFile(){
     if(file !== null && file.value instanceof File){
-        console.log(file.value);
-        UsuariService.saveFileStudents(file.value);
+
+      selectListStudents.value = await UsuariService.getStudentFromFile(file.value);
+      listStudents.value = true;
     }else {
-        console.log("El fitxer no s'ha guardat correctament");
     }
     file.value = null;
+    //studentData.value = await UsuariService.allStudents();
+}
+async function saveStudents(){
+
+    const studentsToSave = selectListStudents.value.filter(student => student.noExisteix);
+    await UsuariService.saveStudents(studentsToSave);
     studentData.value = await UsuariService.allStudents();
 }
-function updateStudent(){
+
+async function updateStudent(){
+
+  await UsuariService.updateStudent(studentSelect.value);
 
 }
-
-
 function editStudent(id:number){
 
-  const student  = studentData.value.find(a => a.idAlumne = id);
+  const student  = studentData.value.find(a => a.idAlumne === id);
 
   if(student){
     studentSelect.value = student;
@@ -168,7 +208,7 @@ onMounted(async () =>{
   studentData.value = await UsuariService.allStudents();
 
 columns.value.push({
-    name:'NumExp',
+    name:'numeroExpedient',
     label:'NºExpedient',
     field: row => row.numeroExpedient,
     sortable: true
@@ -184,14 +224,14 @@ columns.value.push({
 columns.value.push({
     name:'cognom1',
     label:'1er Llinatge',
-    field: row => row.cognom1,
+    field: row => row.alumne.cognom1,
     sortable: true
 
 });
 columns.value.push({
     name:'cognom2',
     label:'2on Llinatge',
-    field: row => row.cognom2,
+    field: row => row.alumne.cognom2,
     sortable: true
 
 });

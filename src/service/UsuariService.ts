@@ -1,5 +1,4 @@
-import {axios}  from 'boot/axios'
-import {Document} from "../model/Document";
+import {axios} from 'boot/axios'
 import {Usuari} from "src/model/Usuari";
 import {Alumne} from "src/model/Alumne";
 
@@ -73,12 +72,25 @@ export class UsuariService {
   }
 
   //ALUMNES
-   static async saveFileStudents(file:File):Promise<void>{
+   static async getStudentFromFile(file:File):Promise<Array<Alumne>>{
 
     const formData = new FormData();
     formData.append('file',file);
 
-    await axios.post(process.env.API + '/api/gestordocumental/alumnes/save-file',formData);
+    const response= await axios.post(process.env.API + '/api/gestordocumental/alumnes/get-students-from-file',formData);
+     const data = await response.data;
+     const alumnesbd = await this.allStudents()
+     const alumnes:Alumne[] = data.map((alumne:any):Alumne=>{
+
+       return this.fromJSONAlumne(alumne)
+     }).sort();
+
+     alumnes.forEach(a => {
+
+         a.noExisteix = !alumnesbd.some(abd => abd.numeroExpedient === a.numeroExpedient);
+     });
+
+     return alumnes;
    }
 
   static async allStudents():Promise<Array<Alumne>>{
@@ -86,8 +98,15 @@ export class UsuariService {
     const response = await axios.get(process.env.API + '/api/gestordocumental/alumnes/all-students');
     const data = await response.data;
     return data.map((alumne:any):Alumne=>{
+
       return this.fromJSONAlumne(alumne)
     }).sort();
+  }
+
+  static async updateStudent(alumne:Object){
+
+    await axios.post(process.env.API + `/api/gestordocumental/alumnes/update-student`,alumne)
+
   }
 
   static async deleteStudent(nExp:number){
@@ -95,7 +114,13 @@ export class UsuariService {
     await axios.get(process.env.API + `/api/gestordocumental/alumnes/delete-student/${nExp}`)
   }
 
+  static async saveStudents(alumnes:Alumne[]){
+
+      await axios.post(process.env.API + `/api/gestordocumental/alumnes/save-student`,alumnes)
+  }
+
   static fromJSONAlumne(json:any):Alumne{
+
     return {
       idAlumne: json.idAlumne,
       nom: json.nom,
@@ -113,11 +138,11 @@ export class UsuariService {
       localitatNaixement: json.localitatNaixement,
       dni: json.dni,
       targetaSanitaria: json.targetaSanitaria,
-      CIP: json.CIP,
+      CIP: json.cip,
       adrecaCompleta: json.adrecaCompleta,
       minucipi: json.minucipi,
       localitat: json.localitat,
-      CP: json.CP,
+      CP: json.cp,
       telefon: json.telefon,
       telefonFix: json.telefonFix,
       email: json.email,
