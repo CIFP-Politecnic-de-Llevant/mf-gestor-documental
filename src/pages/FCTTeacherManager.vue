@@ -285,7 +285,10 @@
               </template>
             </q-file>
 
-            <q-btn color="primary" class="q-mt-lg" @click="saveDocumentExtra(documentExtra,tipusDocumentExtra,optionsDocumentExtraSelected,documentExtra.usuari?.id)">Enviar document</q-btn>
+            <q-btn color="primary" class="q-mt-lg"
+                   @click="saveDocumentExtra(documentExtra,tipusDocumentExtra,optionsDocumentExtraSelected,documentExtra.usuari?.id)"
+                   :disable="uploadDocument"
+            >Enviar document</q-btn>
             <q-btn color="primary" class="q-ml-md q-mt-lg" @click="addDocument=false">Tancar</q-btn>
           </q-card-section>
         </q-card-section>
@@ -332,6 +335,8 @@ const optionsDocumentExtra:Ref<string[]> = ref([]);
 const showAlumnes = ref(false);
 const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
 const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
+
+const uploadDocument = ref(false);
 
 const $q = useQuasar();
 
@@ -401,6 +406,7 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
 }
 
 async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
+  uploadDocument.value = true;
   const documentSaved:Document= await DocumentService.saveDocumentExtra(document,grupSelected.value.curs.nom+grupSelected.value.nom,tipusDocument, idusuari);
 
   documentSaved.file = document.file;
@@ -419,6 +425,7 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
     documentsUsuari.value.push(documentSaved);
   }
   addDocument.value = false;
+  uploadDocument.value = false;
 }
 
 async function sendFile(document:Document){
