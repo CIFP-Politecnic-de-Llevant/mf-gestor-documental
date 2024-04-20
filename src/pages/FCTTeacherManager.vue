@@ -619,7 +619,7 @@ onMounted(async ()=>{
   .q-table__bottom,
   thead tr:first-child th {
     /* bg color is important for th; just specify one */
-    background-color: #00b4ff;
+    background-color: #eec005;
   }
 
   thead tr th {
