@@ -49,17 +49,18 @@ export class DocumentService {
   static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string, email:string) {
 
     const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
+    const APP_MAIL: string = process.env.APP_MAIL_GESTORDOCUMENTAL!;
 
     const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: FOLDER_BASE,
-      email: email,
+      email: APP_MAIL,
       parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
     });
     const carpetaRoot = carpetaRootFetch.data;
 
     const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: cicle,
-      email: email,
+      email: APP_MAIL,
       parentFolderId: carpetaRoot.id
     });
     const carpetaCicle = carpetaCicleFetch.data;
@@ -67,7 +68,7 @@ export class DocumentService {
 
     return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne', {
       documentIds: ids,
-      email: email,
+      email: APP_MAIL,
       folderName: nomAlumne,
       parentFolderId: carpetaCicle.id
     });
