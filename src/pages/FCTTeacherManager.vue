@@ -103,6 +103,11 @@
         </template>
       </q-table>
 
+      <q-btn-group  class="q-mt-md q-mb-lg">
+        <q-btn @click="documentsVisibles" color="primary" label="Documents visibles" icon="visibility" />
+        <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
+      </q-btn-group>
+
       <div v-if="!isAuthorizedDeleteDocuments && showAlumnes">
         <p class="text-negative">No tens autorització per eliminar documents d'alumnes</p>
       </div>
@@ -144,7 +149,7 @@
         flat
         bordered
         title="Documents de l'usuari"
-        :rows="documentsUsuari"
+        :rows="documentsUsuariFiltrats"
         :columns="columnsUsuari"
         row-key="name"
         binary-state-sort
@@ -216,6 +221,20 @@
                   class="q-ml-xs"
                   icon="picture_as_pdf"
                 />
+
+                <q-btn
+                  @click="canviarVisibilitat(props.row.id,props.row.visibilitat? false : true)"
+                  :color="'primary'"
+                  :text-color="'white'"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  :icon="props.row.visibilitat ? 'visibility_off' : 'visibility'"
+                >
+                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">
+                    <strong>Posar el document com a {{props.row.visibilitat?'no visible':'visible'}}</strong>
+                  </q-tooltip>
+                </q-btn>
               </div>
             </q-td>
           </q-tr>
@@ -321,6 +340,7 @@ const grupSelected:Ref<Grup> = ref({} as Grup);
 const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
 const documentsGrup:Ref<Document[]> = ref([] as Document[]);
 const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
+const documentsUsuariFiltrats:Ref<Document[]> = ref([] as Document[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 const addDocument = ref(false);
 
@@ -391,6 +411,11 @@ async function selectGrup(grup:Grup){
       return 1;
     }
     return  a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
+  });
+
+  //Que es mostrin es visibles per defecte
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return d.visibilitat;
   });
 
   //URL documents
@@ -538,6 +563,39 @@ async function deleteAllDocumentsAlumneId(id:number) {
   alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
 }
 
+function canviarVisibilitat(id:number,visibilitat:boolean){
+
+  DocumentService.changeVisibilitatDocument(id,visibilitat);
+
+  documentsUsuari.value = documentsUsuari.value.map(d => {
+
+    if(d.id == id.toString()){
+      console.log("Entra dedins id")
+      return { ...d, visibilitat };
+    }
+    return d;
+  })
+  //Actualitza la pàgina sense tornar a fer la petició axios
+  if(visibilitat){
+    documentsNoVisibles();
+  }else {
+    documentsVisibles();
+  }
+}
+
+function documentsVisibles(){
+
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return d.visibilitat;
+  });
+}
+function documentsNoVisibles(){
+
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return !d.visibilitat;
+  });
+}
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
@@ -620,7 +678,7 @@ onMounted(async ()=>{
 
 .sticky-header-table {
   /* height or max-height is important */
-  height: calc(100vh - 200px);
+  height: calc(100vh - 130px);
 
   .q-table__top,
   .q-table__bottom,
