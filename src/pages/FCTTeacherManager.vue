@@ -18,11 +18,8 @@
     <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
       <p class="text-h5 q-mt-lg">Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
-      <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" />
-      <br>
 
-      <q-btn @click="showAlumnes = true" label="Alumnes" color="primary" class="q-mt-md q-mb-lg q-mr-sm" />
-      <q-btn @click="showAlumnes = false" label="Documents" color="primary" class="q-mt-md q-mb-lg" />
+      <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" icon="post_add" />
 
 
       <q-table
@@ -103,10 +100,16 @@
         </template>
       </q-table>
 
-      <q-btn-group  class="q-mt-md q-mb-lg">
+      <q-btn-group  class="q-mt-md q-mb-lg q-mr-lg">
+        <q-btn @click="showAlumnes = false" label="Documents" :color="(!showAlumnes)?'primary':'grey'" icon="description" />
+        <q-btn @click="showAlumnes = true" label="Alumnes" :color="(showAlumnes)?'primary':'grey'" icon="person" />
+      </q-btn-group>
+
+      <q-btn-group  class="q-mt-md q-mb-lg" v-if="!showAlumnes">
         <q-btn @click="documentsVisibles" color="primary" label="Documents visibles" icon="visibility" />
         <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
       </q-btn-group>
+
 
       <div v-if="!isAuthorizedDeleteDocuments && showAlumnes">
         <p class="text-negative">No tens autorització per eliminar documents d'alumnes</p>
@@ -517,7 +520,8 @@ function updateNomOriginal(v:string){
 
 function confirmDelete(id:number) {
   $q.dialog( {
-    title: "Procedir amb l'eliminació?",
+    title: "Està segur que vol eliminar l'alumne?",
+    message: "Aquesta acció no es pot desfer",
     cancel: true
   }).onOk(() => {
     deleteAllDocumentsAlumneId(id);
