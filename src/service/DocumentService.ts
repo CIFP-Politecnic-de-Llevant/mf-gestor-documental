@@ -49,7 +49,7 @@ export class DocumentService {
   static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string, email:string) {
 
     const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
-    const APP_MAIL: string = process.env.APP_MAIL_GESTORDOCUMENTAL!;
+    const APP_MAIL: string = process.env.APP_EMAIL_GESTORDOCUMENTAL!;
 
     const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: FOLDER_BASE,
