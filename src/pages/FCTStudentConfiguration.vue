@@ -66,7 +66,8 @@
               />
 
               <q-btn
-                  @click="deleteConfirmation(props.row.numeroExpedient)"
+                  @click="deleteConfirmation(props.row.numeroExpedient,props.row.nom,
+                  props.row.cognom1,props.row.cognom2)"
                   :color="'primary'"
                   :text-color="'white'"
                   round
@@ -136,7 +137,7 @@
               <div class="text-h6">Esborrar Alumne</div>
           </q-card-section>
         <q-card-section class="q-pt-md">
-          ¿Segur que vols esborrar l'alumne?
+          ¿Vols esborrar a {{fulNameSelected}}?
         </q-card-section>
         <q-card-actions align="right" class="bg-white text-teal">
           <q-btn color="primary" @click="deleteStudent" label="SI" v-close-popup />
@@ -160,7 +161,8 @@ import { outlinedDriveFileRenameOutline } from '@quasar/extras/material-icons-ou
 const seeStudentEdition = ref(false);
 const listStudents = ref(false);
 const confirmation = ref(false);
-const nExpAlumne = ref<number>(0);
+const nExpAlumneSelected = ref<number>(0);
+const fulNameSelected = ref<string>('');
 const studentData:Ref<Alumne[]> = ref([] as Alumne[]);
 const studentSelect:Ref<Alumne> = ref({} as Alumne);
 const selectListStudents:Ref<Alumne[]> = ref([] as Alumne[]);
@@ -210,19 +212,20 @@ function editStudent(id:number){
 
 }
 
-function deleteConfirmation(exp:number){
+function deleteConfirmation(exp:number, nom:string, cognom1:string, cognom2:string){
 
-  nExpAlumne.value = exp;
+  fulNameSelected.value = nom + " " + cognom1 + " " + cognom2;
+  nExpAlumneSelected.value = exp;
   confirmation.value = true;
 }
 
 async function deleteStudent(){
 
-  const index = studentData.value.findIndex(a => a.numeroExpedient == nExpAlumne.value)
+  const index = studentData.value.findIndex(a => a.numeroExpedient == nExpAlumneSelected.value)
 
   if(index !== -1){
     studentData.value.splice(index,1);
-    await UsuariService.deleteStudent(nExpAlumne.value);
+    await UsuariService.deleteStudent(nExpAlumneSelected.value);
   }
 }
 onMounted(async () =>{
