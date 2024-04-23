@@ -2,14 +2,14 @@
 
   <q-page padding>
     <div>
-      <p class="text-h5 q-mt-lg q-mb-lg">llistat d'Empreses</p>
-      <q-btn icon="add" label="Empresa" type="submit" color="primary"/>
+      <p class="text-h5 q-mt-lg q-mb-lg">Llistat d'Empreses</p>
+      <q-btn icon="add" @click="addCompany = true" label="Empresa" type="submit" color="primary"/>
     </div>
 
     <q-table
       flat bordered
       title="Empreses"
-      :rows="companyData"
+      :rows="companiesData"
       :columns="columns"
       row-key="nom"
       binary-state-sort
@@ -38,7 +38,7 @@
           </q-td>
           <q-td class="text-wrap-center">
             <div>
-                <router-link :to="{ path: 'fct/empresaForm', params: {id: props.row.idEmpresa}}">
+                <router-link :to="{ path: '/empresaForm', params: {id: props.row.idEmpresa}}">
                   <q-btn
                     :color="'primary'"
                     :text-color="'white'"
@@ -49,7 +49,7 @@
                 </router-link>
 
               <q-btn
-                @click="deleteCompany(props.row.idEmpresa)"
+                @click="deleteConfirmation(props.row.idEmpresa, props.row.nom)"
                 :color="'primary'"
                 :text-color="'white'"
                 round
@@ -68,14 +68,12 @@
           <q-form @submit="saveCompany"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Empresa</p>
             <div class="row flex justify-center">
-              <div class="col-5 q-mx-sm" v-for="(value,key, index) in company" :key="index" v-show="key !== 'idEmpresa'">
+              <div class="col-5 q-mx-sm q-my-sm" v-for="(value,key, index) in company" :key="index">
                 <q-input
                   filled
                   type="text"
                   :label="labels[index]"
-                  :readonly=" key === 'numeroExpedient'"
                   v-model="company[key]"
-                  :model-value="company[key]"
                 />
               </div>
               <div class="col-5 q-mx-sm">
@@ -83,10 +81,24 @@
             </div>
             <div class="flex justify-end q-gutter-sm">
               <q-btn label="Guardar Empresa" type="submit" color="primary" v-close-popup/>
-              <q-btn label="Tancar"  color="primary"  v-close-popup/>
+              <q-btn label="Tancar" color="primary"  v-close-popup/>
             </div>
           </q-form>
         </q-card-section>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="confirmation" persistent>
+      <q-card style="width: 300px">
+        <q-card-section class="bg-primary">
+          <div class="text-h6">Esborrar Empresa</div>
+        </q-card-section>
+        <q-card-section class="q-pt-md">
+          ¿Vols esborrar l'empresa {{nameCompanySelected}}?
+        </q-card-section>
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn color="primary" @click="deleteCompany" label="SI" v-close-popup />
+          <q-btn color="primary"  label="NO" v-close-popup />
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </q-page>
@@ -100,10 +112,14 @@ import {QTableColumn} from "quasar";
 import {EmpresaService} from "src/service/EmpresaService";
 
 const addCompany = ref(false);
-const company:Ref<Empresa> = ref({} as Empresa);
-const companyData:Ref<Empresa[]> = ref([] as Empresa[]);
+const confirmation = ref(false);
+const idCompanySelected = ref<number>(0)
+const nameCompanySelected = ref('');
+const company:Ref<Empresa> = ref({numeroConveni: '', numeroAnnex: '', nom: '', cif: '',
+  adreca: '', codiPostal: '', poblacio: '', provincia: '', telefon: ''} as Empresa);
+const companiesData:Ref<Empresa[]> = ref([] as Empresa[]);
 const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[]);
-const labels = ["Id","Número Conveni","Número Annnex","Nom","CIF","Adreça",
+const labels = ["Número Conveni","Número Annnex","Nom","CIF","Adreça",
   "Codi Postal","Població","Provicia","Telèfon"];
 const initialPagination = {
   sortBy: 'desc',
@@ -115,14 +131,31 @@ const initialPagination = {
 async function saveCompany(){
 
     await EmpresaService.saveCompany(company.value);
+    companiesData.value = await EmpresaService.allCompanies();
 }
 
-async function deleteCompany(id:number){
+function deleteConfirmation(id:number,nom:string){
 
-    await EmpresaService.deleteCompany(id);
+  confirmation.value = true;
+  nameCompanySelected.value = nom;
+  idCompanySelected.value = id;
+
+}
+
+async function deleteCompany(){
+
+  const index = companiesData.value.findIndex(c=> c.idEmpresa == idCompanySelected.value);
+
+  if(index !== -1){
+
+    companiesData.value.splice(index,1);
+    await EmpresaService.deleteCompany(idCompanySelected.value);
+  }
 }
 
 onMounted(async () =>{
+
+  companiesData.value = await EmpresaService.allCompanies();
 
   company.value;
 
@@ -151,5 +184,12 @@ onMounted(async () =>{
 </script>
 
 <style scoped>
-
+.text-wrap-center{
+  text-wrap: wrap;
+  text-align: center;
+}
+.text-wrap{
+  text-wrap: wrap;
+  text-align: left;
+}
 </style>

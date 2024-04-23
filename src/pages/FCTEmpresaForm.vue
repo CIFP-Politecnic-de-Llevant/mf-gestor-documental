@@ -29,10 +29,12 @@
 
 <script setup lang="ts">
 
-import {ref, Ref} from "vue";
+import {onMounted, ref, Ref} from "vue";
 import {Empresa} from "src/model/Empresa";
+import {useRoute} from "vue-router";
 
 const edited = ref(false);
+const idCompany = ref<string | null>(null);
 const companyData:Ref<Empresa[]> = ref([] as Empresa[]);
 const labels = ["Id","Número Conveni","Número Annnex","Nom","CIF","Adreça",
   "Codi Postal","Població","Provicia","Telèfon","Llocs Treball"];
@@ -41,6 +43,15 @@ const labels = ["Id","Número Conveni","Número Annnex","Nom","CIF","Adreça",
 function updateCompany(){
 
 }
+
+onMounted(async () =>{
+
+  const route = useRoute();
+  const id = route.params.idEmpresa
+
+  idCompany.value = Array.isArray(id) ? id[0] : id;
+
+})
 </script>
 
 <style scoped>
