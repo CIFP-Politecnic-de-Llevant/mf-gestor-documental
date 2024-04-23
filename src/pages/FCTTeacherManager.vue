@@ -18,7 +18,9 @@
     <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
       <p class="text-h5 q-mt-lg">Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
       <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
-      <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" />
+
+      <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" icon="post_add" />
+
 
       <q-table
         flat bordered
@@ -98,15 +100,64 @@
         </template>
       </q-table>
 
-      <q-table
+      <q-btn-group  class="q-mt-md q-mb-lg q-mr-lg">
+        <q-btn @click="showAlumnes = false" label="Documents" :color="(!showAlumnes)?'primary':'grey'" icon="description" />
+        <q-btn @click="showAlumnes = true" label="Alumnes" :color="(showAlumnes)?'primary':'grey'" icon="person" />
+      </q-btn-group>
+
+      <q-btn-group  class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+        <q-btn @click="documentsVisibles" color="primary" label="Documents visibles" icon="visibility" />
+        <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
+      </q-btn-group>
+
+
+      <div v-if="!isAuthorizedDeleteDocuments && showAlumnes">
+        <p class="text-negative">No tens autorització per eliminar documents d'alumnes</p>
+      </div>
+
+      <q-table v-if="showAlumnes"
         flat
         bordered
         title="Documents de l'usuari"
-        :rows="documentsUsuari"
+        :rows="alumnesGrup"
         :columns="columnsUsuari"
         row-key="name"
         binary-state-sort
         :pagination="initialPagination"
+        class="sticky-header-table"
+      >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th class="text-wrap-center">
+              {{ columnsUsuari[0].label }}
+            </q-th>
+            <q-th v-if="isAuthorizedDeleteDocuments" class="text-wrap-center">
+              Accions
+            </q-th>
+          </q-tr>
+        </template>
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="alumne" :props="props" class="text-wrap-center">
+              {{ props.row.nomComplet2 }}
+            </q-td>
+            <q-td class="text-wrap-center" v-if="isAuthorizedDeleteDocuments">
+              <q-btn :props="props" @click="confirmDelete(props.row.id)" label="" icon="delete" color="primary" />
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
+
+      <q-table v-else
+        flat
+        bordered
+        title="Documents de l'usuari"
+        :rows="documentsUsuariFiltrats"
+        :columns="columnsUsuari"
+        row-key="name"
+        binary-state-sort
+        :pagination="initialPagination"
+        class="sticky-header-table"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -173,6 +224,20 @@
                   class="q-ml-xs"
                   icon="picture_as_pdf"
                 />
+
+                <q-btn
+                  @click="canviarVisibilitat(props.row.id,props.row.visibilitat? false : true)"
+                  :color="'primary'"
+                  :text-color="'white'"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  :icon="props.row.visibilitat ? 'visibility_off' : 'visibility'"
+                >
+                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">
+                    <strong>Posar el document com a {{props.row.visibilitat?'no visible':'visible'}}</strong>
+                  </q-tooltip>
+                </q-btn>
               </div>
             </q-td>
           </q-tr>
@@ -244,7 +309,10 @@
               </template>
             </q-file>
 
-            <q-btn color="primary" class="q-mt-lg" @click="saveDocumentExtra(documentExtra,tipusDocumentExtra,optionsDocumentExtraSelected,documentExtra.usuari?.id)">Enviar document</q-btn>
+            <q-btn color="primary" class="q-mt-lg"
+                   @click="saveDocumentExtra(documentExtra,tipusDocumentExtra,optionsDocumentExtraSelected,documentExtra.usuari?.id)"
+                   :disable="uploadDocument"
+            >Enviar document</q-btn>
             <q-btn color="primary" class="q-ml-md q-mt-lg" @click="addDocument=false">Tancar</q-btn>
           </q-card-section>
         </q-card-section>
@@ -263,17 +331,19 @@ import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
-import {QTableColumn} from "quasar";
+import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
 const isAuthorized:Ref<boolean> = ref(false);
+const isAuthorizedDeleteDocuments:Ref<boolean> = ref(false);
 const grups:Ref<Grup[]> = ref([] as Grup[]);
 const grupSelected:Ref<Grup> = ref({} as Grup);
 const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
 const documentsGrup:Ref<Document[]> = ref([] as Document[]);
 const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
+const documentsUsuariFiltrats:Ref<Document[]> = ref([] as Document[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 const addDocument = ref(false);
 
@@ -286,6 +356,14 @@ const alumnes:Ref<Usuari[]> = ref([] as Usuari[]);
 const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
 const optionsDocumentExtraSelected:Ref<string> = ref('');
 const optionsDocumentExtra:Ref<string[]> = ref([]);
+
+const showAlumnes = ref(false);
+const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
+const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
+
+const uploadDocument = ref(false);
+
+const $q = useQuasar();
 
 const initialPagination = {
   sortBy: 'desc',
@@ -308,6 +386,9 @@ async function selectGrup(grup:Grup){
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
+  allDocumentsGrup.value = documentsAll;
+
+  alumnesGrup.value = await getAlumnesAmbDocsFCT();
 
   documentsUsuari.value = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -335,6 +416,11 @@ async function selectGrup(grup:Grup){
     return  a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
   });
 
+  //Que es mostrin es visibles per defecte
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return d.visibilitat;
+  });
+
   //URL documents
   console.log(documentsUsuari.value)
   console.log(documentsGrup.value)
@@ -350,6 +436,7 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
 }
 
 async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
+  uploadDocument.value = true;
   const documentSaved:Document= await DocumentService.saveDocumentExtra(document,grupSelected.value.curs.nom+grupSelected.value.nom,tipusDocument, idusuari);
 
   documentSaved.file = document.file;
@@ -368,6 +455,7 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
     documentsUsuari.value.push(documentSaved);
   }
   addDocument.value = false;
+  uploadDocument.value = false;
 }
 
 async function sendFile(document:Document){
@@ -430,6 +518,88 @@ function updateNomOriginal(v:string){
   documentExtra.value.nomOriginal = v;
 }
 
+function confirmDelete(id:number) {
+  $q.dialog( {
+    title: "Està segur que vol eliminar l'alumne?",
+    message: "Aquesta acció no es pot desfer",
+    cancel: true
+  }).onOk(() => {
+    deleteAllDocumentsAlumneId(id);
+  });
+}
+
+async function getAlumnesAmbDocsFCT() {
+  const alumnesIds: number[] = [];
+  const alumnesFCT: Usuari[] = [];
+
+  for (const doc of allDocumentsGrup.value) {
+    if (doc.usuari !== undefined) {
+      alumnesIds.push(doc.usuari.id);
+    }
+  }
+
+  const idsUnics = [...new Set(alumnesIds)];
+
+  for (const id of idsUnics) {
+    alumnesFCT.push(await UsuariService.getById(String (id)));
+  }
+
+  return alumnesFCT;
+}
+
+async function deleteAllDocumentsAlumneId(id:number) {
+  const token = localStorage.getItem("token");
+  const payload = token.split(".")[1];
+  const email = JSON.parse(atob(payload)).email;
+
+  const documentIds: string[] = [];
+
+  const docsAlumne: Document[] = allDocumentsGrup.value.filter(doc => doc.usuari !== undefined && doc.usuari.id === id);
+  const docParts: string[] = docsAlumne[0].nomOriginal.split("_");
+  const nomComplet: string = docParts[1] + " " + docParts[2];
+  const cicle: string = docParts[0];
+
+  for (const doc of docsAlumne) {
+    documentIds.push(doc.id_googleDrive);
+  }
+
+  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email);
+  alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
+}
+
+function canviarVisibilitat(id:number,visibilitat:boolean){
+
+  DocumentService.changeVisibilitatDocument(id,visibilitat);
+
+  documentsUsuari.value = documentsUsuari.value.map(d => {
+
+    if(d.id == id.toString()){
+      console.log("Entra dedins id")
+      return { ...d, visibilitat };
+    }
+    return d;
+  })
+  //Actualitza la pàgina sense tornar a fer la petició axios
+  if(visibilitat){
+    documentsNoVisibles();
+  }else {
+    documentsVisibles();
+  }
+}
+
+function documentsVisibles(){
+
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return d.visibilitat;
+  });
+}
+function documentsNoVisibles(){
+
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return !d.visibilitat;
+  });
+}
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
@@ -440,6 +610,8 @@ onMounted(async ()=>{
 
   alumnes.value = await UsuariService.getAlumnes();
   alumnesFiltered.value = await UsuariService.getAlumnes();
+
+  isAuthorizedDeleteDocuments.value = JSON.parse(localStorage.getItem("rol")).some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
 
 
   //Grup
@@ -506,5 +678,38 @@ onMounted(async ()=>{
 .text-wrap{
   text-wrap: wrap;
   text-align: left;
+}
+
+.sticky-header-table {
+  /* height or max-height is important */
+  height: calc(100vh - 130px);
+
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th {
+    /* bg color is important for th; just specify one */
+    background-color: #eec005;
+  }
+
+  thead tr th {
+    position: sticky;
+    z-index: 1;
+  }
+
+  thead tr:first-child th {
+    top: 0
+  }
+
+  /* this is when the loading indicator appears */
+  &.q-table--loading thead tr:last-child th {
+    /* height of all previous header rows */
+    top: 48px;
+  }
+
+  /* prevent scrolling behind sticky top row on focus */
+  tbody {
+    /* height of all previous header rows */
+    scroll-margin-top: 48px;
+  }
 }
 </style>

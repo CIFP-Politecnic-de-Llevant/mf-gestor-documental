@@ -10,6 +10,7 @@ export interface Document {
   id_googleDrive:string;
   documentEstat: string;
   tipusDocument?: TipusDocument;
+  visibilitat: boolean;
   usuari?: Usuari;
   documentSignatures: Array<DocumentSignatura>;
   file?: File;

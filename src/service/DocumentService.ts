@@ -46,6 +46,34 @@ export class DocumentService {
     return this.fromJSONDocument(data);
   }
 
+  static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string, email:string) {
+
+    const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
+    const APP_MAIL: string = process.env.APP_EMAIL_GESTORDOCUMENTAL!;
+
+    const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
+      folderName: FOLDER_BASE,
+      email: APP_MAIL,
+      parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
+    });
+    const carpetaRoot = carpetaRootFetch.data;
+
+    const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
+      folderName: cicle,
+      email: APP_MAIL,
+      parentFolderId: carpetaRoot.id
+    });
+    const carpetaCicle = carpetaCicleFetch.data;
+
+
+    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne', {
+      documentIds: ids,
+      email: APP_MAIL,
+      folderName: nomAlumne,
+      parentFolderId: carpetaCicle.id
+    });
+  }
+
   static async traspassarDocument(documents:Document[],email:string){
     const FOLDER_BASE:string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
 
@@ -179,6 +207,12 @@ export class DocumentService {
       estat: estat
     });
   }
+  static async changeVisibilitatDocument(id:number,visibilitat:boolean){
+    const response = await axios.post(process.env.API + '/api/gestordocumental/document/canviar-visibilitat-document',{
+      idDocument: id,
+      visibilitat: visibilitat
+    });
+  }
 
   static async signarDocument(document:Document,signatura: Signatura, signat:boolean){
     const response = await axios.post(process.env.API + '/api/gestordocumental/document/signar',{
@@ -219,7 +253,7 @@ export class DocumentService {
     }
   }
 
-  static async getURLFitxerDocument(document:Document):Promise<null | FitxerBucket>{
+  static async  getURLFitxerDocument(document:Document):Promise<null | FitxerBucket>{
     let fitxerResolucio:FitxerBucket|null = null;
     if(document.fitxer){
       const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer.id);
@@ -242,6 +276,7 @@ export class DocumentService {
         nomOriginal: json.nomOriginal,
         id_googleDrive: json.idGoogleDrive,
         documentEstat: json.estat,
+        visibilitat: json.visibilitat,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
         documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
           console.log(documentSignatura)
