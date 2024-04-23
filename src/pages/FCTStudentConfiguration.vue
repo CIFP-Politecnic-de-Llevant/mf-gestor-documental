@@ -66,7 +66,7 @@
               />
 
               <q-btn
-                  @click="deleteStudent(props.row.numeroExpedient)"
+                  @click="deleteConfirmation(props.row.numeroExpedient)"
                   :color="'primary'"
                   :text-color="'white'"
                   round
@@ -130,6 +130,20 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="confirmation" persistent>
+      <q-card style="width: 300px">
+          <q-card-section class="bg-primary">
+              <div class="text-h6">Esborrar Alumne</div>
+          </q-card-section>
+        <q-card-section class="q-pt-md">
+          ¿Segur que vols esborrar l'alumne?
+        </q-card-section>
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn color="primary" @click="deleteStudent" label="SI" v-close-popup />
+          <q-btn color="primary"  label="NO" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -145,6 +159,8 @@ import { outlinedDriveFileRenameOutline } from '@quasar/extras/material-icons-ou
 
 const seeStudentEdition = ref(false);
 const listStudents = ref(false);
+const confirmation = ref(false);
+const nExpAlumne = ref<number>(0);
 const studentData:Ref<Alumne[]> = ref([] as Alumne[]);
 const studentSelect:Ref<Alumne> = ref({} as Alumne);
 const selectListStudents:Ref<Alumne[]> = ref([] as Alumne[]);
@@ -194,13 +210,19 @@ function editStudent(id:number){
 
 }
 
-async function deleteStudent(exp:number){
+function deleteConfirmation(exp:number){
 
-  const index = studentData.value.findIndex(a => a.numeroExpedient == exp)
+  nExpAlumne.value = exp;
+  confirmation.value = true;
+}
+
+async function deleteStudent(){
+
+  const index = studentData.value.findIndex(a => a.numeroExpedient == nExpAlumne.value)
 
   if(index !== -1){
     studentData.value.splice(index,1);
-    await UsuariService.deleteStudent(exp);
+    await UsuariService.deleteStudent(nExpAlumne.value);
   }
 }
 onMounted(async () =>{
