@@ -14,6 +14,14 @@ export class EmpresaService {
 
     }
 
+    static async getCompanyById(id:number){
+
+        const response = await  axios.post(process.env.API + `/api/gestordocumental/empresa/company/${id}`)
+        const empresa = response.data;
+
+        return this.fromJsonEmpresa(empresa);
+    }
+
     static async deleteCompany(id:number){
 
         await axios.get(process.env.API + `/api/gestordocumental/empresa/delete-company/${id}`)

@@ -38,7 +38,7 @@
           </q-td>
           <q-td class="text-wrap-center">
             <div>
-                <router-link :to="{ path: '/empresaForm', params: {id: props.row.idEmpresa}}">
+                <router-link :to="{ name: 'empresaForm', params: {id: props.row.idEmpresa}}">
                   <q-btn
                     :color="'primary'"
                     :text-color="'white'"
