@@ -90,7 +90,13 @@ export class UsuariService {
          a.noExisteix = !alumnesbd.some(abd => abd.numeroExpedient === a.numeroExpedient);
      });
 
+     for (const alumne of alumnes) {
+       console.log("Per verificar")
+
+       console.log(alumne)
+     }
      return alumnes;
+
    }
 
   static async allStudents():Promise<Array<Alumne>>{
@@ -116,6 +122,10 @@ export class UsuariService {
 
   static async saveStudents(alumnes:Alumne[]){
 
+    for (const alumne of alumnes) {
+      console.log("Aquest es per guardarels alumnes")
+      console.log(alumne)
+    }
       await axios.post(process.env.API + `/api/gestordocumental/alumnes/save-student`,alumnes)
   }
 
@@ -138,11 +148,11 @@ export class UsuariService {
       localitatNaixement: json.localitatNaixement,
       dni: json.dni,
       targetaSanitaria: json.targetaSanitaria,
-      CIP: json.cip,
+      cip: json.cip,
       adrecaCompleta: json.adrecaCompleta,
       minucipi: json.minucipi,
       localitat: json.localitat,
-      CP: json.cp,
+      cp: json.cp,
       telefon: json.telefon,
       telefonFix: json.telefonFix,
       email: json.email,

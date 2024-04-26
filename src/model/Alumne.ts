@@ -17,11 +17,11 @@ export interface Alumne{
   localitatNaixement?:string;
   dni?:string;
   targetaSanitaria?:string;
-  CIP?:string;
+  cip?:string;
   adrecaCompleta?:string;
   minucipi?:string;
   localitat?:string;
-  CP?:string;
+  cp?:string;
   telefon?:string;
   telefonFix?:string;
   email?:string;
@@ -32,7 +32,6 @@ export interface Alumne{
   adrecaTutor?:string;
   nacionalitatTutor?:string;
   noExisteix?:boolean;
-
 }
 
 

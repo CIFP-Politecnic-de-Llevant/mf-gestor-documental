@@ -86,8 +86,10 @@
           <q-form @submit="updateStudent"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Editar Alumne</p>
             <div class="row flex justify-center q-gutter-y-md">
-              <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne'">
+              <p class="text-h6 q-mt-lg col-md-12 text-wrap-center">Dades Personals</p>
+              <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne' & dadesPersonals.includes(labels[index])">
                 <q-input
+                :class="{'bg-primary': key === 'numeroExpedient'}"
                 filled
                 type="text"
                 :label="labels[index]"
@@ -96,7 +98,37 @@
                 :model-value="studentSelect[key]"
                 />
               </div>
-                <div class="col-md-3 q-mx-sm">
+              <div class="col-md-3 q-mx-sm"></div>
+              <div class="col-md-3 q-mx-sm"></div>
+            </div>
+            <div class="row flex justify-center q-gutter-y-md">
+              <p class="text-h6 q-mt-lg col-md-12 text-wrap-center">Adreça</p>
+              <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne' && adreca.includes(labels[index])">
+                  <q-input
+                    :class="{'bg-primary': key === 'numeroExpedient'}"
+                    filled
+                    type="text"
+                    :label="labels[index]"
+                    :readonly=" key === 'numeroExpedient'"
+                    v-model="studentSelect[key]"
+                    :model-value="studentSelect[key]"
+                  />
+                </div>
+              <div class="col-md-3 q-mx-sm"></div>
+              <div class="col-md-3 q-mx-sm"></div>
+            </div>
+            <div class="row flex justify-center q-gutter-y-md">
+              <p class="text-h6 q-mt-lg col-md-12 text-wrap-center">Dades Tutor/a</p>
+              <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne' && dadesTutor.includes(labels[index])">
+                <q-input
+                  :class="{'bg-primary': key === 'numeroExpedient'}"
+                  filled
+                  type="text"
+                  :label="labels[index]"
+                  :readonly=" key === 'numeroExpedient'"
+                  v-model="studentSelect[key]"
+                  :model-value="studentSelect[key]"
+                />
                 </div>
             </div>
             <div class="flex justify-end q-gutter-sm">
@@ -178,6 +210,11 @@ const labels = ["Id","Nom","1er Llinatge","2on Llinatge","Ensenyament","Estudis"
   "Sexe","Data Naixement","Nacionalitat","País Naixement","Província Naixement","Localitat Naixement",
   "DNI","Targeta Sanitària","CIP","Adreça Completa","Municipi","Localitat","Codi Postal","Telèfon",
   "Telèfon Fix","E-mail","Tutor","Telèfon Tutor","E-mail Tutor","DNI Tutor","Adreça Tutor","Nacionalitat Tutor"];
+const dadesPersonals = ["Nom","1er Llinatge","2on Llinatge","Ensenyament","Estudis","Grup","Número d'Expedient",
+  "Sexe","Data Naixement","Nacionalitat","País Naixement","Província Naixement","Localitat Naixement",
+  "DNI","Targeta Sanitària","CIP","Telèfon","Telèfon Fix","E-mail"];
+const adreca = ["Adreça Completa","Municipi","Localitat","Codi Postal"];
+const dadesTutor = ["Tutor","Telèfon Tutor","E-mail Tutor","DNI Tutor","Adreça Tutor","Nacionalitat Tutor"]
 
 async function saveFile(){
     if(file !== null && file.value instanceof File){
