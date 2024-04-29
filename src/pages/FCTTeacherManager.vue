@@ -110,6 +110,39 @@
         <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
       </q-btn-group>
 
+      <div>
+        <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+          <q-btn-dropdown color="primary" label="seleccionar alumne" icon="person">
+            <q-list>
+              <q-item clickable v-close-popup @click="filterDocumentsByAlumne('TOTS')">
+                <q-item-label>TOTS</q-item-label>
+              </q-item>
+              <q-item v-for="alumne in alumnesGrup" clickable v-close-popup @click="filterDocumentsByAlumne(alumne.nomComplet2)">
+                <q-item-label>{{ alumne.nomComplet2 }}</q-item-label>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </q-btn-group>
+        <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+          <q-btn-dropdown color="primary" label="visibilitat document" icon="visibility">
+            <q-list>
+              <q-item clickable v-close-popup><q-item-label>TOTS</q-item-label></q-item>
+              <q-item clickable v-close-popup><q-item-label>VISIBLES</q-item-label></q-item>
+              <q-item clickable v-close-popup><q-item-label>NO VISIBLES</q-item-label></q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </q-btn-group>
+        <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+          <q-btn-dropdown color="primary" label="estat document" icon="description">
+            <q-list>
+              <q-item v-for="estat in documentEstats" clickable v-close-popup>
+                <q-item-label>{{ estat }}</q-item-label>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </q-btn-group>
+      </div>
+
 
       <div v-if="!isAuthorizedDeleteDocuments && showAlumnes">
         <p class="text-negative">No tens autorització per eliminar documents d'alumnes</p>
@@ -362,6 +395,7 @@ const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
 const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
 
 const uploadDocument = ref(false);
+const documentEstats = ['PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
 
 const $q = useQuasar();
 
@@ -540,6 +574,8 @@ async function getAlumnesAmbDocsFCT() {
 
   const idsUnics = [...new Set(alumnesIds)];
 
+  // TODO revisar si aquest await provoca lentitud
+
   for (const id of idsUnics) {
     alumnesFCT.push(await UsuariService.getById(String (id)));
   }
@@ -600,6 +636,23 @@ function documentsNoVisibles(){
   });
 }
 
+// filtrar TOTS els documents de grup per alumne
+
+function filterDocumentsByAlumne(nom: string) {
+  if (nom === 'TOTS') {
+    documentsUsuariFiltrats.value = documentsUsuari.value
+    return;
+  }
+
+  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+    return d.usuari?.nomComplet2 == nom;
+  });
+}
+
+// filtrar ELS DOCUMENTS JA FILTRATS per visibilitat
+
+//function filter
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
@@ -648,7 +701,7 @@ onMounted(async ()=>{
   columnsUsuari.value.push({
     name: 'tipusDocument',
     label: 'Document',
-    field: row => row.tipusDocument.nom,
+    field: row => row.tipusDocumenttipusDocument.nom,
     sortable: true
   });
 
