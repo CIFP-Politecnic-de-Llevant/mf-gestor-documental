@@ -110,8 +110,8 @@
         <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
       </q-btn-group>-->
 
-      <div>
-        <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+      <div v-if="!showAlumnes">
+        <q-btn-group class="q-mt-md q-mb-lg q-mr-md">
           <!--<q-btn-dropdown color="primary" label="seleccionar alumne" icon="person">
             <q-list>
               <q-item clickable v-close-popup @click="filterDocsByAlumne(null)">
@@ -127,12 +127,22 @@
             v-model="alumneSeleccionat2"
             :options="alumnesGrup"
             option-label="nomComplet2"
-            label="Alumnes"
+            label="SELECCIONAR ALUMNES"
+            filled
+            dense
+            use-chips
+            dark
+            bg-color="primary"
+            label-color="accent"
+            style="width: 250px"
             @update:model-value="filterDocsByAlumne"
-            style="width: 200px"
-          />
+          >
+            <template v-slot:prepend>
+              <q-icon name="group" color="accent" />
+            </template>
+          </q-select>
         </q-btn-group>
-        <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+        <q-btn-group class="q-mt-md q-mb-lg q-mr-md">
           <q-btn-dropdown color="primary" label="visibilitat document" icon="visibility">
             <q-list>
               <q-item clickable v-close-popup @click="filterDocsByVisibilitat(null)">
@@ -147,7 +157,7 @@
             </q-list>
           </q-btn-dropdown>
         </q-btn-group>
-        <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+        <q-btn-group class="q-mt-md q-mb-lg">
           <q-btn-dropdown color="primary" label="estat document" icon="description">
             <q-list>
               <q-item v-for="estat in documentEstats" clickable v-close-popup @click="filterDocsByEstat(estat)">
