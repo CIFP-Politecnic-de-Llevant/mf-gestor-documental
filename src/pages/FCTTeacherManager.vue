@@ -105,37 +105,22 @@
         <q-btn @click="showAlumnes = true" label="Alumnes" :color="(showAlumnes)?'primary':'grey'" icon="person" />
       </q-btn-group>
 
-      <!--<q-btn-group  class="q-mt-md q-mb-lg" v-if="!showAlumnes">
-        <q-btn @click="documentsVisibles" color="primary" label="Documents visibles" icon="visibility" />
-        <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
-      </q-btn-group>-->
-
       <div v-if="!showAlumnes">
         <q-btn-group class="q-mt-md q-mb-lg q-mr-md">
-          <!--<q-btn-dropdown color="primary" label="seleccionar alumne" icon="person">
-            <q-list>
-              <q-item clickable v-close-popup @click="filterDocsByAlumne(null)">
-                <q-item-label>TOTS</q-item-label>
-              </q-item>
-              <q-item v-for="alumne in alumnesGrup" clickable v-close-popup @click="filterDocsByAlumne(alumne)">
-                <q-item-label>{{ alumne.nomComplet2 }}</q-item-label>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>-->
           <q-select
             multiple
-            v-model="alumneSeleccionat2"
+            v-model="alumnesSeleccionats"
             :options="alumnesGrup"
             option-label="nomComplet2"
             label="SELECCIONAR ALUMNES"
             filled
             dense
             use-chips
-            dark
+            hide-dropdown-icon
             bg-color="primary"
             label-color="accent"
             style="width: 250px"
-            @update:model-value="filterDocsByAlumne"
+            @update:model-value="filterDocuments"
           >
             <template v-slot:prepend>
               <q-icon name="group" color="accent" />
@@ -420,8 +405,7 @@ const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
 const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
 
 // filters
-const alumneSeleccionat:Ref<Usuari | null> = ref(null);
-const alumneSeleccionat2:Ref<Usuari[]> = ref([] as Usuari[]);
+const alumnesSeleccionats:Ref<Usuari[]> = ref([] as Usuari[]);
 const visibilitatSeleccionada:Ref<boolean | null> = ref(null);
 const estatSeleccionat:Ref<string | null> = ref('TOTS');
 const documentEstats = ['TOTS', 'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
@@ -667,10 +651,6 @@ function documentsNoVisibles(){
   });
 }
 
-function filterDocsByAlumne(alumne: Usuari | null) {
-  filterDocuments();
-}
-
 function filterDocsByVisibilitat(visible: boolean | null) {
   visibilitatSeleccionada.value = visible;
   filterDocuments();
@@ -684,9 +664,9 @@ function filterDocsByEstat(estat: string) {
 function filterDocuments() {
   documentsUsuariFiltrats.value = documentsUsuari.value;
 
-  if (alumneSeleccionat2.value.length != 0)
+  if (alumnesSeleccionats.value.length != 0)
     documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
-      return alumneSeleccionat2.value.some(alumne => alumne.nomComplet2 === d.usuari?.nomComplet2);
+      return alumnesSeleccionats.value.some(alumne => alumne.nomComplet2 === d.usuari?.nomComplet2);
     });
 
   if (visibilitatSeleccionada.value != null)
