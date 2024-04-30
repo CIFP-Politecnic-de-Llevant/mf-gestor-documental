@@ -105,14 +105,14 @@
         <q-btn @click="showAlumnes = true" label="Alumnes" :color="(showAlumnes)?'primary':'grey'" icon="person" />
       </q-btn-group>
 
-      <q-btn-group  class="q-mt-md q-mb-lg" v-if="!showAlumnes">
+      <!--<q-btn-group  class="q-mt-md q-mb-lg" v-if="!showAlumnes">
         <q-btn @click="documentsVisibles" color="primary" label="Documents visibles" icon="visibility" />
         <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
-      </q-btn-group>
+      </q-btn-group>-->
 
       <div>
         <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
-          <q-btn-dropdown color="primary" label="seleccionar alumne" icon="person">
+          <!--<q-btn-dropdown color="primary" label="seleccionar alumne" icon="person">
             <q-list>
               <q-item clickable v-close-popup @click="filterDocsByAlumne(null)">
                 <q-item-label>TOTS</q-item-label>
@@ -121,7 +121,16 @@
                 <q-item-label>{{ alumne.nomComplet2 }}</q-item-label>
               </q-item>
             </q-list>
-          </q-btn-dropdown>
+          </q-btn-dropdown>-->
+          <q-select
+            multiple
+            v-model="alumneSeleccionat2"
+            :options="alumnesGrup"
+            option-label="nomComplet2"
+            label="Alumnes"
+            @update:model-value="filterDocsByAlumne"
+            style="width: 200px"
+          />
         </q-btn-group>
         <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
           <q-btn-dropdown color="primary" label="visibilitat document" icon="visibility">
@@ -402,6 +411,7 @@ const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
 
 // filters
 const alumneSeleccionat:Ref<Usuari | null> = ref(null);
+const alumneSeleccionat2:Ref<Usuari[]> = ref([] as Usuari[]);
 const visibilitatSeleccionada:Ref<boolean | null> = ref(null);
 const estatSeleccionat:Ref<string | null> = ref('TOTS');
 const documentEstats = ['TOTS', 'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
@@ -648,7 +658,6 @@ function documentsNoVisibles(){
 }
 
 function filterDocsByAlumne(alumne: Usuari | null) {
-  alumneSeleccionat.value = alumne;
   filterDocuments();
 }
 
@@ -665,62 +674,20 @@ function filterDocsByEstat(estat: string) {
 function filterDocuments() {
   documentsUsuariFiltrats.value = documentsUsuari.value;
 
-  if (alumneSeleccionat.value)
-    documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
-      return d.usuari?.nomComplet2 == alumneSeleccionat.value?.nomComplet2;
+  if (alumneSeleccionat2.value.length != 0)
+    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+      return alumneSeleccionat2.value.some(alumne => alumne.nomComplet2 === d.usuari?.nomComplet2);
     });
 
   if (visibilitatSeleccionada.value != null)
     documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
-      return d.visibilitat == visibilitatSeleccionada.value;
+      return d.visibilitat === visibilitatSeleccionada.value;
     });
 
   if (estatSeleccionat.value != 'TOTS')
     documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
-      return d.documentEstat == estatSeleccionat.value;
+      return d.documentEstat === estatSeleccionat.value;
     });
-
-
-  /*const partsFiltre: string[] = [];
-
-  if (alumneSeleccionat.value)
-    partsFiltre.push(`d.usuari?.nomComplet2 === '${alumneSeleccionat.value?.nomComplet2}'`);
-
-  if (visibilitatSeleccionada.value != null)
-    partsFiltre.push(`d.visibilitat === ${visibilitatSeleccionada.value}`);
-
-  if (estatSeleccionat.value != 'TOTS')
-    partsFiltre.push(`d.documentEstat === '${estatSeleccionat.value}'`);
-
-  const filtre = new Function ('d',`return ${partsFiltre.join(' && ')}`);
-
-  console.log(filtre);*/
-
-
-    /*return d.usuari?.nomComplet2 === alumneSeleccionat.value?.nomComplet2 &&
-      d.documentEstat === estatSeleccionat.value &&
-      d.visibilitat == visibilitatSeleccionada.value;*/
-  //});
-
-  /*if (filterVisibles.value != null)
-    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
-      return d.visibilitat == filterVisibles.value;
-    });*/
-
-  /*if (filterEstat.value != null)
-    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
-      return d.documentEstat == filterEstat.value;
-    });
-
-  if (alumneSeleccionat.value != null)
-    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
-      return d.usuari?.nomComplet2 == alumneSeleccionat.value?.nomComplet2;
-    });*/
-
-  /*if (alumneSeleccionat.value == null)
-    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
-      return d.visibilitat == filterVisibles.value && d.documentEstat == filterEstat.value;
-    });*/
 }
 
 onMounted(async ()=>{
