@@ -114,10 +114,10 @@
         <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
           <q-btn-dropdown color="primary" label="seleccionar alumne" icon="person">
             <q-list>
-              <q-item clickable v-close-popup @click="filterDocumentsByAlumne('TOTS')">
+              <q-item clickable v-close-popup @click="filterDocsByAlumne(null)">
                 <q-item-label>TOTS</q-item-label>
               </q-item>
-              <q-item v-for="alumne in alumnesGrup" clickable v-close-popup @click="filterDocumentsByAlumne(alumne.nomComplet2)">
+              <q-item v-for="alumne in alumnesGrup" clickable v-close-popup @click="filterDocsByAlumne(alumne)">
                 <q-item-label>{{ alumne.nomComplet2 }}</q-item-label>
               </q-item>
             </q-list>
@@ -126,16 +126,22 @@
         <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
           <q-btn-dropdown color="primary" label="visibilitat document" icon="visibility">
             <q-list>
-              <q-item clickable v-close-popup><q-item-label>TOTS</q-item-label></q-item>
-              <q-item clickable v-close-popup><q-item-label>VISIBLES</q-item-label></q-item>
-              <q-item clickable v-close-popup><q-item-label>NO VISIBLES</q-item-label></q-item>
+              <q-item clickable v-close-popup @click="filterDocsByVisibilitat(null)">
+                <q-item-label>TOTS</q-item-label>
+              </q-item>
+              <q-item clickable v-close-popup @click="filterDocsByVisibilitat(true)">
+                <q-item-label>VISIBLES</q-item-label>
+              </q-item>
+              <q-item clickable v-close-popup @click="filterDocsByVisibilitat(false)">
+                <q-item-label>NO VISIBLES</q-item-label>
+              </q-item>
             </q-list>
           </q-btn-dropdown>
         </q-btn-group>
         <q-btn-group class="q-mt-md q-mb-lg" v-if="!showAlumnes">
           <q-btn-dropdown color="primary" label="estat document" icon="description">
             <q-list>
-              <q-item v-for="estat in documentEstats" clickable v-close-popup>
+              <q-item v-for="estat in documentEstats" clickable v-close-popup @click="filterDocsByEstat(estat)">
                 <q-item-label>{{ estat }}</q-item-label>
               </q-item>
             </q-list>
@@ -394,8 +400,13 @@ const showAlumnes = ref(false);
 const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
 const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
 
+// filters
+const alumneSeleccionat:Ref<Usuari | null> = ref(null);
+const visibilitatSeleccionada:Ref<boolean | null> = ref(null);
+const estatSeleccionat:Ref<string | null> = ref('TOTS');
+const documentEstats = ['TOTS', 'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
+
 const uploadDocument = ref(false);
-const documentEstats = ['PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
 
 const $q = useQuasar();
 
@@ -636,22 +647,81 @@ function documentsNoVisibles(){
   });
 }
 
-// filtrar TOTS els documents de grup per alumne
-
-function filterDocumentsByAlumne(nom: string) {
-  if (nom === 'TOTS') {
-    documentsUsuariFiltrats.value = documentsUsuari.value
-    return;
-  }
-
-  documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
-    return d.usuari?.nomComplet2 == nom;
-  });
+function filterDocsByAlumne(alumne: Usuari | null) {
+  alumneSeleccionat.value = alumne;
+  filterDocuments();
 }
 
-// filtrar ELS DOCUMENTS JA FILTRATS per visibilitat
+function filterDocsByVisibilitat(visible: boolean | null) {
+  visibilitatSeleccionada.value = visible;
+  filterDocuments();
+}
 
-//function filter
+function filterDocsByEstat(estat: string) {
+  estatSeleccionat.value = estat;
+  filterDocuments();
+}
+
+function filterDocuments() {
+  documentsUsuariFiltrats.value = documentsUsuari.value;
+
+  if (alumneSeleccionat.value)
+    documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
+      return d.usuari?.nomComplet2 == alumneSeleccionat.value?.nomComplet2;
+    });
+
+  if (visibilitatSeleccionada.value != null)
+    documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
+      return d.visibilitat == visibilitatSeleccionada.value;
+    });
+
+  if (estatSeleccionat.value != 'TOTS')
+    documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
+      return d.documentEstat == estatSeleccionat.value;
+    });
+
+
+  /*const partsFiltre: string[] = [];
+
+  if (alumneSeleccionat.value)
+    partsFiltre.push(`d.usuari?.nomComplet2 === '${alumneSeleccionat.value?.nomComplet2}'`);
+
+  if (visibilitatSeleccionada.value != null)
+    partsFiltre.push(`d.visibilitat === ${visibilitatSeleccionada.value}`);
+
+  if (estatSeleccionat.value != 'TOTS')
+    partsFiltre.push(`d.documentEstat === '${estatSeleccionat.value}'`);
+
+  const filtre = new Function ('d',`return ${partsFiltre.join(' && ')}`);
+
+  console.log(filtre);*/
+
+
+    /*return d.usuari?.nomComplet2 === alumneSeleccionat.value?.nomComplet2 &&
+      d.documentEstat === estatSeleccionat.value &&
+      d.visibilitat == visibilitatSeleccionada.value;*/
+  //});
+
+  /*if (filterVisibles.value != null)
+    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+      return d.visibilitat == filterVisibles.value;
+    });*/
+
+  /*if (filterEstat.value != null)
+    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+      return d.documentEstat == filterEstat.value;
+    });
+
+  if (alumneSeleccionat.value != null)
+    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+      return d.usuari?.nomComplet2 == alumneSeleccionat.value?.nomComplet2;
+    });*/
+
+  /*if (alumneSeleccionat.value == null)
+    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+      return d.visibilitat == filterVisibles.value && d.documentEstat == filterEstat.value;
+    });*/
+}
 
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
