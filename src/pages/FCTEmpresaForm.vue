@@ -8,8 +8,8 @@
         <p class="text-h6 fw-normal q-py-sm q-pl-lg q-mb-none">{{companyData.nom}}</p>
         <q-btn
             @click="updateCompany"
-            :color="'primary'"
-            :text-color="'black'"
+            :color="'grey'"
+            :text-color="'white'"
             dense
             class="q-my-sm border q-mr-sm"
             icon="save"
@@ -39,16 +39,16 @@
         <div>
           <q-btn
               @click="updateWorkspace(workspace)"
-              :color="'primary'"
-              :text-color="'black'"
+              :color="'grey'"
+              :text-color="'white'"
               dense
               class="q-my-sm border q-mr-sm"
               icon="save"
           />
           <q-btn
               @click="deleteConfirmation(workspace.idLlocTreball, workspace.nom)"
-              :color="'primary'"
-              :text-color="'black'"
+              :color="'grey'"
+              :text-color="'white'"
               dense
               class="q-my-sm border q-mr-sm"
               icon="delete"
