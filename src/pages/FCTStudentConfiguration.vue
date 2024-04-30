@@ -87,8 +87,9 @@
             <p class="text-h5 q-mt-lg">Editar Alumne</p>
             <div class="row flex justify-center q-gutter-y-md">
               <p class="text-h6 q-mt-lg col-md-12 text-wrap-center">Dades Personals</p>
-              <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne' & dadesPersonals.includes(labels[index])">
+              <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne' && dadesPersonals.includes(labels[index])">
                 <q-input
+                v-if="key !== 'sexe'"
                 :class="{'bg-primary': key === 'numeroExpedient'}"
                 filled
                 type="text"
@@ -97,6 +98,15 @@
                 v-model="studentSelect[key]"
                 :model-value="studentSelect[key]"
                 />
+                <q-select
+                v-if="key === 'sexe'"
+                 filled
+                 v-model="studentSelect[key]"
+                :model-value ="studentSelect[key] === 'H'? 'Home': studentSelect[key] && studentSelect[key] === 'D'? 'Dona': studentSelect[key]"
+                 :options="['Home','Dona']"
+                 label="Sexe"
+                />
+
               </div>
               <div class="col-md-3 q-mx-sm"></div>
               <div class="col-md-3 q-mx-sm"></div>
@@ -224,18 +234,19 @@ async function saveFile(){
     }else {
     }
     file.value = null;
-    //studentData.value = await UsuariService.allStudents();
+
 }
 async function saveStudents(){
 
-    const studentsToSave = selectListStudents.value.filter(student => student.noExisteix);
-    await UsuariService.saveStudents(studentsToSave);
-    studentData.value = await UsuariService.allStudents();
+  const studentsToSave = selectListStudents.value.filter(student => student.noExisteix);
+  await UsuariService.saveStudents(studentsToSave);
+  studentData.value = await UsuariService.allStudents();
 }
 
 async function updateStudent(){
 
-  await UsuariService.updateStudent(studentSelect.value);
+    studentSelect.value.sexe = studentSelect.value.sexe?.substring(0,1);
+    await UsuariService.updateStudent(studentSelect.value);
 
 }
 function editStudent(id:number){
