@@ -13,8 +13,8 @@ export interface LlocTreball {
     dniRepresentantLegal:string;
     nomTutorEmpresa:string;
     dniTutorEmpresa:string;
-    municipi:string;
     carrecTutor:string;
+    municipi:string;
     email:string;
     empresa:Empresa;
 }
