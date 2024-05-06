@@ -49,6 +49,14 @@
             <q-item-label>FCT - Grup</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable to="/fct/empresaConfiguration" >
+          <q-item-section avatar>
+            <q-icon name="description" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>FCT - Configuració Empresa</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item clickable to="/logout">
           <q-item-section avatar>
             <q-icon name="logout" />

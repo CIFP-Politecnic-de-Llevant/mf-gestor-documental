@@ -9,6 +9,8 @@ const routes: RouteRecordRaw[] = [
       { path: 'fct/generateDocumentation', component: () => import('pages/FCTGenerateDocumentation.vue') },
       { path: 'fct/manageDocumentation', component: () => import('pages/FCTDocumentationManager.vue') },
       { path: 'fct/group', component: () => import('pages/FCTTeacherManager.vue') },
+      { path: 'fct/empresaConfiguration', component: () => import('pages/FCTEmpresaConfiguration.vue') },
+      { path: '/empresaForm/:id', name:'empresaForm', component: () => import('pages/FCTEmpresaForm.vue'), props: true },
       { path: 'login', component: () => import('components/common/Login.vue'), props: { urlRedirect: "/fct/group" } },
       { path: 'logout', component: () => import('components/common/Logout.vue') },
     ],
