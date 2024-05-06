@@ -105,10 +105,53 @@
         <q-btn @click="showAlumnes = true" label="Alumnes" :color="(showAlumnes)?'primary':'grey'" icon="person" />
       </q-btn-group>
 
-      <q-btn-group  class="q-mt-md q-mb-lg" v-if="!showAlumnes">
-        <q-btn @click="documentsVisibles" color="primary" label="Documents visibles" icon="visibility" />
-        <q-btn @click="documentsNoVisibles" color="primary" label="Documents no visibles" icon="visibility_off" />
-      </q-btn-group>
+      <div v-if="!showAlumnes">
+        <q-btn-group class="q-mt-md q-mb-lg q-mr-md">
+          <q-select
+            multiple
+            v-model="alumnesSeleccionats"
+            :options="alumnesGrup"
+            option-label="nomComplet2"
+            label="SELECCIONAR ALUMNES"
+            filled
+            dense
+            use-chips
+            hide-dropdown-icon
+            bg-color="primary"
+            label-color="accent"
+            style="width: 250px"
+            @update:model-value="filterDocuments"
+          >
+            <template v-slot:prepend>
+              <q-icon name="group" color="accent" />
+            </template>
+          </q-select>
+        </q-btn-group>
+        <q-btn-group class="q-mt-md q-mb-lg q-mr-md">
+          <q-btn-dropdown color="primary" label="visibilitat document" icon="visibility">
+            <q-list>
+              <q-item clickable v-close-popup @click="filterDocsByVisibilitat(null)">
+                <q-item-label>TOTS</q-item-label>
+              </q-item>
+              <q-item clickable v-close-popup @click="filterDocsByVisibilitat(true)">
+                <q-item-label>VISIBLES</q-item-label>
+              </q-item>
+              <q-item clickable v-close-popup @click="filterDocsByVisibilitat(false)">
+                <q-item-label>NO VISIBLES</q-item-label>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </q-btn-group>
+        <q-btn-group class="q-mt-md q-mb-lg">
+          <q-btn-dropdown color="primary" label="estat document" icon="description">
+            <q-list>
+              <q-item v-for="estat in documentEstats" clickable v-close-popup @click="filterDocsByEstat(estat)">
+                <q-item-label>{{ estat }}</q-item-label>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </q-btn-group>
+      </div>
 
 
       <div v-if="!isAuthorizedDeleteDocuments && showAlumnes">
@@ -361,6 +404,12 @@ const showAlumnes = ref(false);
 const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
 const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
 
+// filters
+const alumnesSeleccionats:Ref<Usuari[]> = ref([] as Usuari[]);
+const visibilitatSeleccionada:Ref<boolean | null> = ref(null);
+const estatSeleccionat:Ref<string | null> = ref('TOTS');
+const documentEstats = ['TOTS', 'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
+
 const uploadDocument = ref(false);
 
 const $q = useQuasar();
@@ -540,6 +589,8 @@ async function getAlumnesAmbDocsFCT() {
 
   const idsUnics = [...new Set(alumnesIds)];
 
+  // TODO revisar si aquest await provoca lentitud
+
   for (const id of idsUnics) {
     alumnesFCT.push(await UsuariService.getById(String (id)));
   }
@@ -600,6 +651,35 @@ function documentsNoVisibles(){
   });
 }
 
+function filterDocsByVisibilitat(visible: boolean | null) {
+  visibilitatSeleccionada.value = visible;
+  filterDocuments();
+}
+
+function filterDocsByEstat(estat: string) {
+  estatSeleccionat.value = estat;
+  filterDocuments();
+}
+
+function filterDocuments() {
+  documentsUsuariFiltrats.value = documentsUsuari.value;
+
+  if (alumnesSeleccionats.value.length != 0)
+    documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
+      return alumnesSeleccionats.value.some(alumne => alumne.nomComplet2 === d.usuari?.nomComplet2);
+    });
+
+  if (visibilitatSeleccionada.value != null)
+    documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
+      return d.visibilitat === visibilitatSeleccionada.value;
+    });
+
+  if (estatSeleccionat.value != 'TOTS')
+    documentsUsuariFiltrats.value = documentsUsuariFiltrats.value.filter(d => {
+      return d.documentEstat === estatSeleccionat.value;
+    });
+}
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
@@ -648,7 +728,7 @@ onMounted(async ()=>{
   columnsUsuari.value.push({
     name: 'tipusDocument',
     label: 'Document',
-    field: row => row.tipusDocument.nom,
+    field: row => row.tipusDocumenttipusDocument.nom,
     sortable: true
   });
 
