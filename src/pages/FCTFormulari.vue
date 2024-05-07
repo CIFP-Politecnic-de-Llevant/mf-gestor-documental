@@ -53,20 +53,20 @@
       </div>
       <div class="row flex justify-center q-gutter-y-md">
         <p class="text-h6 q-mt-lg col-md-12 text-wrap-center">Dades empresa</p>
-        <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in studentSelect" :key="key" v-show="key !== 'idAlumne' && dadesPersonals.includes(labels[index])">
+        <div class="col-md-3 q-mx-sm" v-for="(value,key,index) in companySelect" :key="key" v-show="key !== 'idAlumne' && dadesPersonals.includes(labels[index])">
           <q-input
               v-if="key !== 'sexe'"
               :class="{'bg-primary': key === 'numeroExpedient'}"
               filled
               type="text"
               :label="dadesEmpresa[index]"
-              v-model="studentSelect[key]"
-              :model-value="studentSelect[key]"
+              v-model="companySelect[key]"
+              :model-value="companySelect[key]"
           />
           <q-select
               v-if="key === 'sexe'"
               filled
-              v-model="studentSelect[key]"
+              v-model="companySelect[key]"
               :model-value ="studentSelect[key] === 'H'? 'Home': studentSelect[key] && studentSelect[key] === 'D'? 'Dona': studentSelect[key]"
               :options="['Home','Dona']"
               label="Sexe"
@@ -129,7 +129,8 @@
 
 import {Ref} from "vue";
 
-const studentSelect:Ref<
+const studentSelect = "";
+const companySelect = "";
 const dadesAlumne = ["Nom","Llinatges","Població","DNI","Nombre expedient","Número d'Expedient",
   "Es menor d'edat en el moment de començar la FCT? ","Edat de l'alumne (només número)","Estudis",
   "Cicle Formatiu","Grup","Durada del cicle", "Número d'hores totals proposades per FCT (només número)",
