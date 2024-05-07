@@ -9,6 +9,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'fct/generateDocumentation', component: () => import('pages/FCTGenerateDocumentation.vue') },
       { path: 'fct/manageDocumentation', component: () => import('pages/FCTDocumentationManager.vue') },
       { path: 'fct/group', component: () => import('pages/FCTTeacherManager.vue') },
+      { path: 'fct/programaFormatiu', component: () => import('pages/FCTProgramaFormatiu.vue') },
       { path: 'login', component: () => import('components/common/Login.vue'), props: { urlRedirect: "/fct/group" } },
       { path: 'logout', component: () => import('components/common/Logout.vue') },
     ],
