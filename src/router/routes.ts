@@ -11,6 +11,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'fct/group', component: () => import('pages/FCTTeacherManager.vue') },
       { path: 'fct/empresaConfiguration', component: () => import('pages/FCTEmpresaConfiguration.vue') },
       { path: '/empresaForm/:id', name:'empresaForm', component: () => import('pages/FCTEmpresaForm.vue'), props: true },
+      { path: 'fct/studentConfiguration', component: () => import('pages/FCTStudentConfiguration.vue') },
       { path: 'login', component: () => import('components/common/Login.vue'), props: { urlRedirect: "/fct/group" } },
       { path: 'logout', component: () => import('components/common/Logout.vue') },
     ],
