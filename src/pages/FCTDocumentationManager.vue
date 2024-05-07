@@ -129,7 +129,16 @@
                     class="q-ml-xs"
                     icon="picture_as_pdf"
                   />
-                  <q-btn @click="testpdf(props.row)" label="test" />
+                  <q-btn
+                    @click="viewPdf(props.row)"
+                    :color="!props.row.fitxer ? 'white' : 'primary'"
+                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                    :disable="!props.row.fitxer"
+                    round
+                    dense
+                    class="q-ml-xs"
+                    icon="plagiarism"
+                  />
                 </div>
               </q-td>
             </q-tr>
@@ -144,24 +153,10 @@
           <q-btn @click="showPdfDialog = false" color="white" flat icon="close"></q-btn>
         </q-bar>
         <div class="fit">
-          <q-pdfviewer type="html5" :src="fitxerpdf" />
+          <q-pdfviewer :src="pdf.url" />
         </div>
       </q-card>
     </q-dialog>
-
-    <q-dialog v-model="showPdfDialog2">
-      <q-card class="no-scroll" style="background: gray; min-width: 80vw; min-height: 80vh; width: 100%; height: 100%;">
-        <q-bar>
-          <q-btn @click="showPdfDialog2 = false" color="white" flat icon="close"></q-btn>
-        </q-bar>
-        <div class="fit">
-          <q-pdfviewer type="html5" src="pdf/facturaTest-5.pdf" />
-        </div>
-      </q-card>
-    </q-dialog>
-
-
-    <q-btn @click="test2" label="teffsrefs" />
 
   </q-page>
 </template>
@@ -192,21 +187,9 @@ const grupsFCT = ref([] as any[]);
 const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 
 const abortController = new AbortController();
+
 const showPdfDialog = ref(false);
-const showPdfDialog2 = ref(false);
-const pdf:Ref<FitxerBucket> = ref({} as FitxerBucket);
-const fitxerpdf:Ref<File> = ref({} as File);
-
-async function testpdf(document: Document) {
-  showPdfDialog.value = true;
-  pdf.value = await DocumentService.getURLFitxerDocument(document);
-
-  fitxerpdf.value = await pdf.value.url;
-}
-
-function test2() {
-  showPdfDialog2.value = true;
-}
+const pdf:Ref<FitxerBucket | null> = ref({} as FitxerBucket);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -294,6 +277,11 @@ async function getURL(document:Document){
   if(fitxer) {
     window.open(fitxer.url, '_blank');
   }
+}
+
+async function viewPdf(document: Document) {
+  showPdfDialog.value = true;
+  pdf.value = await DocumentService.getURLFitxerDocument(document);
 }
 
 
