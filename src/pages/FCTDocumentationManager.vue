@@ -129,6 +129,7 @@
                     class="q-ml-xs"
                     icon="picture_as_pdf"
                   />
+                  <q-btn @click="testpdf(props.row)" label="test" />
                 </div>
               </q-td>
             </q-tr>
@@ -136,6 +137,32 @@
         </q-table>
       </div>
     </div>
+
+    <q-dialog v-model="showPdfDialog">
+      <q-card class="no-scroll" style="background: gray; min-width: 80vw; min-height: 80vh; width: 100%; height: 100%;">
+        <q-bar>
+          <q-btn @click="showPdfDialog = false" color="white" flat icon="close"></q-btn>
+        </q-bar>
+        <div class="fit">
+          <q-pdfviewer type="html5" :src="fitxerpdf" />
+        </div>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="showPdfDialog2">
+      <q-card class="no-scroll" style="background: gray; min-width: 80vw; min-height: 80vh; width: 100%; height: 100%;">
+        <q-bar>
+          <q-btn @click="showPdfDialog2 = false" color="white" flat icon="close"></q-btn>
+        </q-bar>
+        <div class="fit">
+          <q-pdfviewer type="html5" src="pdf/facturaTest-5.pdf" />
+        </div>
+      </q-card>
+    </q-dialog>
+
+
+    <q-btn @click="test2" label="teffsrefs" />
+
   </q-page>
 </template>
 
@@ -151,6 +178,7 @@ import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
+import {FitxerBucket} from "src/model/google/FitxerBucket";
 
 const $q = useQuasar();
 
@@ -164,6 +192,21 @@ const grupsFCT = ref([] as any[]);
 const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 
 const abortController = new AbortController();
+const showPdfDialog = ref(false);
+const showPdfDialog2 = ref(false);
+const pdf:Ref<FitxerBucket> = ref({} as FitxerBucket);
+const fitxerpdf:Ref<File> = ref({} as File);
+
+async function testpdf(document: Document) {
+  showPdfDialog.value = true;
+  pdf.value = await DocumentService.getURLFitxerDocument(document);
+
+  fitxerpdf.value = await pdf.value.url;
+}
+
+function test2() {
+  showPdfDialog2.value = true;
+}
 
 const initialPagination = {
   sortBy: 'desc',
