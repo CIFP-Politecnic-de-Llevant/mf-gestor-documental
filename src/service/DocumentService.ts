@@ -253,13 +253,16 @@ export class DocumentService {
     }
   }
 
-  static async  getURLFitxerDocument(document:Document):Promise<null | FitxerBucket>{
+  static async  getURLFitxerDocument(document:Document, download?: boolean):Promise<null | FitxerBucket>{
     let fitxerResolucio:FitxerBucket|null = null;
     if(document.fitxer){
       const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer.id);
       const fitxerBucket: FitxerBucket = f.data;
       if (fitxerBucket){
-        const url: any = await axios.post(process.env.API + '/api/core/googlestorage/generate-signed-url', fitxerBucket);
+        const url: any = await axios.post(process.env.API + '/api/core/googlestorage/generate-signed-url', {
+          fitxerBucket: fitxerBucket,
+          download: download
+        });
         fitxerBucket.url = url.data;
 
         fitxerResolucio = fitxerBucket;

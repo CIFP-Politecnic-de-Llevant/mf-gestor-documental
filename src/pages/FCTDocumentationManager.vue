@@ -69,6 +69,16 @@
                     class="q-ml-xs"
                     icon="picture_as_pdf"
                   />
+                  <q-btn
+                    @click="viewPdf(props.row)"
+                    :color="!props.row.fitxer ? 'white' : 'primary'"
+                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                    :disable="!props.row.fitxer"
+                    round
+                    dense
+                    class="q-ml-xs"
+                    icon="plagiarism"
+                  />
                 </div>
               </q-td>
             </q-tr>
@@ -281,7 +291,7 @@ async function getURL(document:Document){
 
 async function viewPdf(document: Document) {
   showPdfDialog.value = true;
-  pdf.value = await DocumentService.getURLFitxerDocument(document);
+  pdf.value = await DocumentService.getURLFitxerDocument(document, false);
 }
 
 
