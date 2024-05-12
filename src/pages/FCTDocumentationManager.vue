@@ -8,7 +8,7 @@
       <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')" />
     </q-btn-group>
 
-    <div v-for="grupFCT in grupsFCT">
+    <div v-for="grupFCT in grupsFiltered">
       <div v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
         <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
         <p v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)">
@@ -194,6 +194,7 @@ const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
+const grupsFiltered = ref([] as any[]);
 const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 
 const abortController = new AbortController();
@@ -295,43 +296,36 @@ async function viewPdf(document: Document) {
 }
 
 
-async function filterDocuments(filter:string){
-  let tipusDocuments = 'tots els documents'
-  if(filter==='pending'){
-    tipusDocuments = 'els documents pendents de validar'
-  }else if(filter==='accepted'){
-    tipusDocuments = 'els documents acceptats'
-  } else if(filter==='rejected'){
-    tipusDocuments = 'els documents rebutjats'
-  }
+function filterDocuments(filter:string){
+  const filtered: any[] = [];
+  grupsFiltered.value = [];
 
-  const dialog = $q.dialog({
-    message: 'Carregant '+tipusDocuments+'...',
-    progress: true, // we enable default settings
-    persistent: true, // we want the user to not be able to close it
-    ok: false // we want the user to not be able to close it
-  })
-  await loadGrups()
   if(filter==='pending'){
-    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
-      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
-      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
-      return grupFCT;
-    });
-  }else if(filter==='accepted'){
-    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
-      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
-      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
-      return grupFCT;
-    });
+    filtered.push(...grupsFCT.value.map(grup => {
+      const grupClone = JSON.parse(JSON.stringify(grup));
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
+      return grupClone;
+    }));
+  } else if(filter==='accepted'){
+    filtered.push(...grupsFCT.value.map(grup => {
+      const grupClone = JSON.parse(JSON.stringify(grup));
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
+      return grupClone;
+    }));
   } else if(filter==='rejected'){
-    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
-      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
-      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
-      return grupFCT;
-    });
+    filtered.push(...grupsFCT.value.map(grup => {
+      const grupClone = JSON.parse(JSON.stringify(grup));
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
+      return grupClone;
+    }));
   }
-  dialog.hide();
+  else
+    filtered.push(...grupsFCT.value);
+
+  grupsFiltered.value = [...filtered];
 }
 
 async function loadGrups(){
@@ -355,6 +349,7 @@ onMounted(async ()=>{
   await loadGrups();
 
   signatures.value = await SignaturaService.findAll();
+  grupsFiltered.value = grupsFCT.value;
 
   //Grup
   columnsGrup.value.push({
