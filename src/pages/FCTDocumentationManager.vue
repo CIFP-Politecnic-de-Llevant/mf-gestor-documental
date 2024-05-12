@@ -12,7 +12,7 @@
       <div v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
         <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
         <p v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)">
-          Tutor FCT: {{tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t=>t.label).join(", ")}}
+          Tutor FCT: {{tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t=>t.label).join(", ")}}
         </p>
         <p v-else>
           Tutor FCT: Carregant tutors...
@@ -173,26 +173,6 @@ const initialPagination = {
 }
 
 async function setGrup(grup:Grup){
-  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
-  const token = localStorage.getItem("token");
-  const tutors: Usuari[] = [];
-  const codiGrup = grup.curs.nom + grup.nom;
-  if (!tutorsGrupsFCT.value.size) {
-    worker.onmessage = (e) => {
-      for (const tutor of e.data) {
-        tutors.push(tutor);
-      }
-
-      const documentIndex = grupsFCT.value.findIndex(d => d.grup === documentFCT.grup);
-      grupsFCT.value[documentIndex].tutorsFCT = tutors;
-
-      tutorsGrupsFCT.value.set(codiGrup, tutors);
-
-      worker.terminate();
-    }
-    worker.postMessage(codiGrup + "|" + token);
-  }
-
   //const tutorsFCT = await UsuariService.getTutorsFCTByCodiGrup(grup.curs.nom+grup.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
 
@@ -226,15 +206,30 @@ async function setGrup(grup:Grup){
   console.log(documentsUsuari)
   console.log(documentsGrup)
 
-  const documentFCT = {
+  const documentFCT = ref({
     grup: grup,
-    tutorsFCT: tutors,
+    tutorsFCT: [] as Usuari[],
     documentsUsuari: documentsUsuari,
     documentsGrup: documentsGrup,
-  }
+  });
 
-  grupsFCT.value.push(documentFCT);
+  grupsFCT.value.push(documentFCT.value);
   grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
+
+  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
+  const token = localStorage.getItem("token");
+  const codiGrup = grup.curs.nom + grup.nom;
+  const data = {
+    token: token,
+    grup: codiGrup
+  }
+  worker.postMessage(data);
+  worker.onmessage = (e) => {
+    console.log("data message",e.data);
+    tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
+    documentFCT.value.tutorsFCT.push(e.data as Usuari)
+    worker.terminate();
+  }
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
