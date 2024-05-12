@@ -1,6 +1,6 @@
-import {axios}  from 'boot/axios'
-import {Document} from "../model/Document";
+import {axios} from 'boot/axios'
 import {Usuari} from "src/model/Usuari";
+import {Alumne} from "src/model/Alumne";
 
 export class UsuariService {
 
@@ -71,4 +71,98 @@ export class UsuariService {
     }
   }
 
+  //ALUMNES
+   static async getStudentFromFile(file:File):Promise<Array<Alumne>>{
+
+    const formData = new FormData();
+    formData.append('file',file);
+
+    const response= await axios.post(process.env.API + '/api/gestordocumental/alumnes/get-students-from-file',formData);
+     const data = await response.data;
+     const alumnesbd = await this.allStudents()
+     const alumnes:Alumne[] = data.map((alumne:any):Alumne=>{
+
+       return this.fromJSONAlumne(alumne)
+     }).sort();
+
+     alumnes.forEach(a => {
+
+         a.noExisteix = !alumnesbd.some(abd => abd.numeroExpedient === a.numeroExpedient);
+     });
+
+     for (const alumne of alumnes) {
+       console.log("Per verificar")
+
+       console.log(alumne)
+     }
+     return alumnes;
+
+   }
+
+  static async allStudents():Promise<Array<Alumne>>{
+
+    const response = await axios.get(process.env.API + '/api/gestordocumental/alumnes/all-students');
+    const data = await response.data;
+    return data.map((alumne:any):Alumne=>{
+
+      return this.fromJSONAlumne(alumne)
+    }).sort();
+  }
+
+  static async updateStudent(alumne:Object){
+
+    await axios.post(process.env.API + `/api/gestordocumental/alumnes/update-student`,alumne)
+
+  }
+
+  static async deleteStudent(nExp:number){
+
+    await axios.get(process.env.API + `/api/gestordocumental/alumnes/delete-student/${nExp}`)
+  }
+
+  static async saveStudents(alumnes:Alumne[]){
+
+    for (const alumne of alumnes) {
+      console.log("Aquest es per guardarels alumnes")
+      console.log(alumne)
+    }
+      await axios.post(process.env.API + `/api/gestordocumental/alumnes/save-student`,alumnes)
+  }
+
+  static fromJSONAlumne(json:any):Alumne{
+
+    return {
+      idAlumne: json.idAlumne,
+      nom: json.nom,
+      cognom1: json.cognom1,
+      cognom2: json.cognom2,
+      ensenyament: json.ensenyament,
+      estudis: json.estudis,
+      grup: json.grup,
+      numeroExpedient: json.numeroExpedient,
+      sexe: json.sexe,
+      dataNaixement: json.dataNaixement,
+      nacionalitat: json.nacionalitat,
+      paisNaixement: json.paisNaixement,
+      provinciaNaixement: json.provinciaNaixement,
+      localitatNaixement: json.localitatNaixement,
+      dni: json.dni,
+      targetaSanitaria: json.targetaSanitaria,
+      cip: json.cip,
+      adrecaCompleta: json.adrecaCompleta,
+      minucipi: json.minucipi,
+      localitat: json.localitat,
+      cp: json.cp,
+      telefon: json.telefon,
+      telefonFix: json.telefonFix,
+      email: json.email,
+      tutor: json.tutor,
+      telefonTutor: json.telefonTutor,
+      emailTutor: json.emailTutor,
+      dniTutor: json.dniTutor,
+      adrecaTutor: json.adrecaTutor,
+      nacionalitatTutor: json.nacionalitatTutor
+
+    }
+  }
 }
