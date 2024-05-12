@@ -179,8 +179,9 @@ async function setGrup(grup:Grup){
   const codiGrup = grup.curs.nom + grup.nom;
   if (!tutorsGrupsFCT.value.size) {
     worker.onmessage = (e) => {
-      for (const tutor of e.data)
+      for (const tutor of e.data) {
         tutors.push(tutor);
+      }
 
       const documentIndex = grupsFCT.value.findIndex(d => d.grup === documentFCT.grup);
       grupsFCT.value[documentIndex].tutorsFCT = tutors;
