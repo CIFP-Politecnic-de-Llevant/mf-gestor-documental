@@ -1,8 +1,7 @@
 onmessage = async (event) => {
-
-  const tokenParts = event.data.split('|');
-  const codi = tokenParts[0];
-  const token = tokenParts[1];
+  const dataWorker = event.data;
+  const codi =dataWorker.grup;
+  const token = dataWorker.token;
   const response = await fetch(process.env.API + '/api/core/usuaris/tutorfct-by-codigrup/'+codi, {
     headers: {
       "Authorization": 'Bearer ' + token
@@ -25,6 +24,8 @@ onmessage = async (event) => {
       label: json.gsuiteFullName + ' <'+json.gsuiteEmail+'>'
     }
   }).sort((a,b)=>a.nomComplet2.localeCompare(b.nomComplet2));
+
+
 
   postMessage(tutorsFCT);
 }
