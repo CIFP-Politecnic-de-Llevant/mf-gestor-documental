@@ -224,7 +224,7 @@ async function setGrup(grup:Grup){
     grup: codiGrup
   }
   worker.postMessage(data);
-  worker.onmessage = (e) => {
+  worker.onmessage = async (e) => {
     console.log("data message",e.data);
     tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
     documentFCT.value.tutorsFCT.push(e.data as Usuari)
@@ -309,8 +309,6 @@ onMounted(async ()=>{
   })
   await loadGrups();
 
-  signatures.value = await SignaturaService.findAll();
-
   //Grup
   columnsGrup.value.push({
     name: 'validat',
@@ -380,6 +378,8 @@ onMounted(async ()=>{
   });
 
   dialog.hide();
+
+  signatures.value = await SignaturaService.findAll();
 })
 </script>
 
