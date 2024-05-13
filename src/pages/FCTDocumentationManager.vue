@@ -58,6 +58,11 @@
                 />
               </q-td>
               <q-td>
+                <div class="flex flex-center">
+                  Test profe
+                </div>
+              </q-td>
+              <q-td>
                 <div class="flex flex-center" style="width: 200px;">
                   <q-btn
                     @click="getURL(props.row)"
@@ -126,6 +131,11 @@
                   v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
                   @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
                 />
+              </q-td>
+              <q-td>
+                <div class="flex flex-center">
+                  Test profe
+                </div>
               </q-td>
               <q-td>
                 <div class="flex flex-center" style="width: 200px;">
@@ -370,6 +380,14 @@ onMounted(async ()=>{
       sortable: false
     });
   }
+
+  columnsGrup.value.push({
+    name: 'signants',
+    label: 'Signants',
+    field: row => row,
+    sortable: false
+  });
+
   columnsGrup.value.push({
     name: 'document',
     label: 'Document',
@@ -407,6 +425,13 @@ onMounted(async ()=>{
       sortable: false
     });
   }
+
+  columnsUsuari.value.push({
+    name: 'signants',
+    label: 'Signants',
+    field: row => row,
+    sortable: false
+  });
 
   columnsUsuari.value.push({
     name: 'document',
