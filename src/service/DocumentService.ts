@@ -272,7 +272,7 @@ export class DocumentService {
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
-    console.log(json)
+    //console.log(json)
     return new Promise((resolve,reject)=>{
       const document: Document = {
         id: json.idDocument,
@@ -282,7 +282,7 @@ export class DocumentService {
         visibilitat: json.visibilitat,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
         documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
-          console.log(documentSignatura)
+          //console.log(documentSignatura)
           return {
             document: documentSignatura.document,
             signatura: SignaturaService.fromJSON(documentSignatura.signatura),
@@ -292,7 +292,7 @@ export class DocumentService {
       }
 
       if(json.idFitxer){
-        console.log(json.idFitxer);
+        //console.log(json.idFitxer);
         const fitxerBucket:FitxerBucket = {
           id: json.idFitxer,
           nom: "",

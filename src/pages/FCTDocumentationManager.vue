@@ -250,8 +250,8 @@ async function setGrup(grup:Grup){
   });
 
   //URL documents
-  console.log(documentsUsuari)
-  console.log(documentsGrup)
+  //console.log(documentsUsuari)
+  //console.log(documentsGrup)
 
   const documentFCT = ref({
     grup: grup,
@@ -272,7 +272,7 @@ async function setGrup(grup:Grup){
   }
   worker.postMessage(data);
   worker.onmessage = async (e) => {
-    console.log("data message",e.data);
+    //console.log("data message",e.data);
     tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
     documentFCT.value.tutorsFCT.push(e.data as Usuari)
     worker.terminate();
@@ -280,7 +280,7 @@ async function setGrup(grup:Grup){
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
-  console.log("Entra sign student")
+  //console.log("Entra sign student")
   DocumentService.signarDocument(document,signatura,signat);
 }
 
