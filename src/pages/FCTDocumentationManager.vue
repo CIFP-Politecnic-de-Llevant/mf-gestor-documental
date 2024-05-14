@@ -220,7 +220,6 @@ const initialPagination = {
 }
 
 async function setGrup(grup:Grup){
-  //const tutorsFCT = await UsuariService.getTutorsFCTByCodiGrup(grup.curs.nom+grup.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
 
   // recuperar signatures dels pdf
@@ -271,32 +270,17 @@ async function setGrup(grup:Grup){
   });
 
   grupsFCT.value.push(documentFCT.value);
-  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
-
-  // TODO posar el web worker fora d'aquesta funció
-
-  /*const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
-  const token = localStorage.getItem("token");
-  const codiGrup = grup.curs.nom + grup.nom;
-  const data = {
-    token: token,
-    grup: codiGrup
-  }
-  worker.postMessage(data);
-  worker.onmessage = async (e) => {
-    //console.log("data message",e.data);
-    tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
-    documentFCT.value.tutorsFCT.push(e.data as Usuari)
-    worker.terminate();
-  }*/
 }
 
-function setTutors(grup: Grup) {
-  console.log("ok entra a worker");
-  console.log(grup);
+function setTutors(index: number) {
+  if (index >= grupsFCT.value.length)
+    return;
+
+  const grup = grupsFCT.value[index];
+
   const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
   const token = localStorage.getItem("token");
-  const codiGrup = grup.curs.nom + grup.nom;
+  const codiGrup = grup.grup.curs.nom + grup.grup.nom;
   const data = {
     token: token,
     grup: codiGrup
@@ -307,6 +291,7 @@ function setTutors(grup: Grup) {
     //console.log("data message",e.data);
     tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
     //documentFCT.value.tutorsFCT.push(e.data as Usuari)
+    setTutors(++index);
     worker.terminate();
   }
 }
@@ -369,16 +354,17 @@ function filterDocuments(filter:string){
 
 async function loadGrups(){
   const grups = await GrupService.findAllGrups();
-  //grups.value = await GrupService.findAllGrups();
   grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   const promises = [];
-  grupsFCT.value = [];
+
+  // TODO excluir des del servidor els grups que no tenguin alumnes amb docs FCT
+
   for(const grup of grups){
     promises.push(setGrup(grup));
   }
 
-  return grups;
+  await Promise.all(promises);
 }
 
 onMounted(async ()=>{
@@ -388,21 +374,11 @@ onMounted(async ()=>{
     persistent: true, // we want the user to not be able to close it
     ok: false // we want the user to not be able to close it
   })
-  grupsFCT.value = await loadGrups();
-
+  await loadGrups();
   await nextTick();
 
-  for (const grup of grupsFCT.value)
-    setTutors(grup);
-
-  /*for (const grup of grupsFCT.value)
-    setTutors(grup);*/
-
-  /*setTimeout( () => {
-    for (const grup of grupsFCT.value) {
-      setTutors(grup.grup);
-    }
-  }, 2500);*/
+  setTutors(0);
+  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
 
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
