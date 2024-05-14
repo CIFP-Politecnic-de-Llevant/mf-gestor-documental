@@ -14,13 +14,16 @@
             <p class="text-h5 q-mt-lg">Programa Formatiu: {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
             <q-btn icon="add" @click="addTask = true" label="Programa Formatiu" type="submit" color="primary"/>
         </div>
+      <q-banner rounded v-if="maxTasks" inline-actions class="text-white q-mt-sm bg-red">
+        Al programa formatiu de l'alumne només sortiran 10 ítems.
+      </q-banner>
       <q-table
         flat bordered
         title="Programa Formatiu"
         :rows="pFormatiuGrupSelected"
         row-key="descripcio"
         binary-state-sort
-        class="q-mb-lg q-mt-lg"
+        class="q-mb-lg q-mt-sm"
         :pagination="initialPagination"
       >
         <template v-slot:header="props">
@@ -127,6 +130,7 @@ import {GrupService} from "src/service/GrupService";
 import {ProgramaFormatiu} from "src/model/ProgramaFormatiu";
 import {ProgramaFormatiuService} from "src/service/ProgramaFormatiuService";
 
+const maxTasks:Ref<boolean> = ref(false);
 const addTask:Ref<boolean> = ref(false);
 const isSearching:Ref<boolean> = ref(false);
 const confirmation:Ref<boolean> = ref(false);
@@ -153,12 +157,14 @@ async function deleteTask(){
         pFormatiuGrupSelected.value.splice(index, 1);
         await ProgramaFormatiuService.deleteTask(idTask.value);
     }
+  maximumTasks();
 }
 
 function deleteConfirmation(id:number){
 
     idTask.value = id;
     confirmation.value = true;
+
 }
 
 async function editTask(id:number){
@@ -169,7 +175,6 @@ async function editTask(id:number){
     updateTask.value = taskUpdated;
   }
   taskEdit.value = true;
-
 }
 
 async function saveTask(){
@@ -179,10 +184,19 @@ async function saveTask(){
         await ProgramaFormatiuService.saveTask(task.value);
         allPFormatiu.value = await ProgramaFormatiuService.findAllPFormatiu();
         pFormatiuGrupSelected.value = allPFormatiu.value.filter((pf) => pf.idGrup === grupSelected.value.id);
+        task.value.descripcio = "";
     }else{
         await ProgramaFormatiuService.saveTask(updateTask.value);
     }
 
+    maximumTasks();
+}
+
+function maximumTasks(){
+
+  pFormatiuGrupSelected.value.length > 10 ? maxTasks.value = true : maxTasks.value = false;
+  console.log(pFormatiuGrupSelected.value.length)
+  console.log(maxTasks.value);
 }
 async function selectGrup(grup:Grup){
 
@@ -190,6 +204,7 @@ async function selectGrup(grup:Grup){
     grupSelected.value = grup;
     allPFormatiu.value = await ProgramaFormatiuService.findAllPFormatiu();
     pFormatiuGrupSelected.value = allPFormatiu.value.filter((pf) => pf.idGrup === grup.id);
+    maximumTasks();
 }
 
 onMounted(async()=>{
