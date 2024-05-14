@@ -182,7 +182,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref} from "vue";
+import {nextTick, onMounted, Ref, ref} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
@@ -368,14 +368,17 @@ function filterDocuments(filter:string){
 }
 
 async function loadGrups(){
-  grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+  const grups = await GrupService.findAllGrups();
+  //grups.value = await GrupService.findAllGrups();
+  grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   const promises = [];
   grupsFCT.value = [];
-  for(const grup of grups.value){
+  for(const grup of grups){
     promises.push(setGrup(grup));
   }
+
+  return grups;
 }
 
 onMounted(async ()=>{
@@ -385,13 +388,21 @@ onMounted(async ()=>{
     persistent: true, // we want the user to not be able to close it
     ok: false // we want the user to not be able to close it
   })
-  await loadGrups();
+  grupsFCT.value = await loadGrups();
 
-  setTimeout( () => {
+  await nextTick();
+
+  for (const grup of grupsFCT.value)
+    setTutors(grup);
+
+  /*for (const grup of grupsFCT.value)
+    setTutors(grup);*/
+
+  /*setTimeout( () => {
     for (const grup of grupsFCT.value) {
       setTutors(grup.grup);
     }
-  }, 2500);
+  }, 2500);*/
 
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
