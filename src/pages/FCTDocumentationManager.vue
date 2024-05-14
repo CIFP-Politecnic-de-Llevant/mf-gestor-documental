@@ -223,6 +223,16 @@ async function setGrup(grup:Grup){
   //const tutorsFCT = await UsuariService.getTutorsFCTByCodiGrup(grup.curs.nom+grup.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
 
+  // recuperar signatures dels pdf
+  const documentsSignats = documentsAll.filter(d => d.fitxer);
+  const signants = [];
+
+  // TODO posar ho a variable reactiva
+  /*for (const doc of documentsSignats)
+    signants.push(DocumentService.getSignantsFitxerBucket(doc));
+
+  Promise.all(signants);*/
+
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
       return a.usuari.nomComplet2.localeCompare(b.usuari.nomComplet2);
@@ -299,6 +309,7 @@ async function getURL(document:Document){
 async function viewPdf(document: Document) {
   showPdfDialog.value = true;
   pdf.value = await DocumentService.getURLFitxerDocument(document, false);
+  console.log(pdf.value);
 }
 
 

@@ -271,6 +271,11 @@ export class DocumentService {
     return fitxerResolucio;
   }
 
+  static async getSignantsFitxerBucket(document: Document) {
+    const signants = await axios.get(process.env.API + 'api/core/fitxerbucket/signatures/' + document.fitxer!.id);
+    document.fitxer!.signants = signants.data;
+  }
+
   static fromJSONDocument(json:any):Promise<Document>{
     //console.log(json)
     return new Promise((resolve,reject)=>{
@@ -297,7 +302,8 @@ export class DocumentService {
           id: json.idFitxer,
           nom: "",
           path: "",
-          bucket: ""
+          bucket: "",
+          signants: []
         }
         document.fitxer = fitxerBucket;
       }
