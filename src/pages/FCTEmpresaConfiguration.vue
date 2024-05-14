@@ -132,6 +132,16 @@ async function saveCompany(){
 
     await EmpresaService.saveCompany(company.value);
     companiesData.value = await EmpresaService.allCompanies();
+    company.value.numeroConveni = "";
+    company.value.numeroAnnex = "";
+    company.value.nom = "";
+    company.value.cif = "";
+    company.value.adreca = "";
+    company.value.codiPostal = "";
+    company.value.poblacio = "";
+    company.value.provincia = "";
+    company.value.telefon = "";
+
 }
 
 function deleteConfirmation(id:number,nom:string){

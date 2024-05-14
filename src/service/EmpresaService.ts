@@ -1,6 +1,7 @@
 import axios from "axios";
 import {Empresa} from "src/model/Empresa";
 import {LlocTreball} from "src/model/LlocTreball";
+import {DadesFormulari} from "src/model/DadesFormulari";
 
 export class EmpresaService {
 
@@ -47,6 +48,10 @@ export class EmpresaService {
     static async updateWorkspace(llocTreball:LlocTreball){
 
       await axios.post(process.env.API + `/api/gestordocumental/empresa/lloc-treball/update-workspace`,llocTreball)
+    }
+
+    static async saveForm(form:DadesFormulari){
+        await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari`,form)
     }
 
     static fromJsonEmpresa(json:any):Empresa{
