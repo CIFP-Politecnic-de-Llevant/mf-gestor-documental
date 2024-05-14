@@ -227,7 +227,7 @@ async function setGrup(grup:Grup){
   const documentsSignats = documentsAll.filter(d => d.fitxer);
   const signants = [];
 
-  // TODO posar ho a variable reactiva
+  // TODO posar-ho a variable reactiva (?)
   /*for (const doc of documentsSignats)
     signants.push(DocumentService.getSignantsFitxerBucket(doc));
 
@@ -273,7 +273,9 @@ async function setGrup(grup:Grup){
   grupsFCT.value.push(documentFCT.value);
   grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
 
-  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
+  // TODO posar el web worker fora d'aquesta funció
+
+  /*const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
   const token = localStorage.getItem("token");
   const codiGrup = grup.curs.nom + grup.nom;
   const data = {
@@ -285,6 +287,26 @@ async function setGrup(grup:Grup){
     //console.log("data message",e.data);
     tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
     documentFCT.value.tutorsFCT.push(e.data as Usuari)
+    worker.terminate();
+  }*/
+}
+
+function setTutors(grup: Grup) {
+  console.log("ok entra a worker");
+  console.log(grup);
+  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
+  const token = localStorage.getItem("token");
+  const codiGrup = grup.curs.nom + grup.nom;
+  const data = {
+    token: token,
+    grup: codiGrup
+  }
+  console.log("grup actual---", codiGrup);
+  worker.postMessage(data);
+  worker.onmessage = async (e) => {
+    //console.log("data message",e.data);
+    tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
+    //documentFCT.value.tutorsFCT.push(e.data as Usuari)
     worker.terminate();
   }
 }
@@ -364,6 +386,12 @@ onMounted(async ()=>{
     ok: false // we want the user to not be able to close it
   })
   await loadGrups();
+
+  setTimeout( () => {
+    for (const grup of grupsFCT.value) {
+      setTutors(grup.grup);
+    }
+  }, 2500);
 
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
