@@ -4,5 +4,5 @@ export interface FitxerBucket {
   path: string;
   bucket: string;
   url?: string;
-  signants: string[];
+  //signants: string[];
 }

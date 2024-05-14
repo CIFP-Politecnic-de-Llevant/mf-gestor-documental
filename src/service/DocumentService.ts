@@ -273,7 +273,7 @@ export class DocumentService {
 
   static async getSignantsFitxerBucket(document: Document) {
     const signants = await axios.get(process.env.API + 'api/core/fitxerbucket/signatures/' + document.fitxer!.id);
-    document.fitxer!.signants = signants.data;
+    //document.fitxer!.signants = signants.data;
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
@@ -303,7 +303,7 @@ export class DocumentService {
           nom: "",
           path: "",
           bucket: "",
-          signants: []
+          //signants: []
         }
         document.fitxer = fitxerBucket;
       }
