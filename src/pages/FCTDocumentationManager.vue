@@ -172,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref} from "vue";
+import {nextTick, onMounted, Ref, ref} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
@@ -209,8 +209,17 @@ const initialPagination = {
 }
 
 async function setGrup(grup:Grup){
-  //const tutorsFCT = await UsuariService.getTutorsFCTByCodiGrup(grup.curs.nom+grup.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
+
+  // recuperar signatures dels pdf
+  const documentsSignats = documentsAll.filter(d => d.fitxer);
+  const signants = [];
+
+  // TODO posar-ho a variable reactiva (?)
+  /*for (const doc of documentsSignats)
+    signants.push(DocumentService.getSignantsFitxerBucket(doc));
+
+  Promise.all(signants);*/
 
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -250,20 +259,28 @@ async function setGrup(grup:Grup){
   });
 
   grupsFCT.value.push(documentFCT.value);
-  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
+}
+
+function setTutors(index: number) {
+  if (index >= grupsFCT.value.length)
+    return;
+
+  const grup = grupsFCT.value[index];
 
   const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
   const token = localStorage.getItem("token");
-  const codiGrup = grup.curs.nom + grup.nom;
+  const codiGrup = grup.grup.curs.nom + grup.grup.nom;
   const data = {
     token: token,
     grup: codiGrup
   }
+  console.log("grup actual---", codiGrup);
   worker.postMessage(data);
   worker.onmessage = async (e) => {
     //console.log("data message",e.data);
     tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
-    documentFCT.value.tutorsFCT.push(e.data as Usuari)
+    //documentFCT.value.tutorsFCT.push(e.data as Usuari)
+    setTutors(++index);
     worker.terminate();
   }
 }
@@ -288,6 +305,7 @@ async function getURL(document:Document){
 async function viewPdf(document: Document) {
   showPdfDialog.value = true;
   pdf.value = await DocumentService.getURLFitxerDocument(document, false);
+  console.log(pdf.value);
 }
 
 
@@ -324,14 +342,18 @@ function filterDocuments(filter:string){
 }
 
 async function loadGrups(){
-  grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+  const grups = await GrupService.findAllGrups();
+  grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   const promises = [];
-  grupsFCT.value = [];
-  for(const grup of grups.value){
+
+  // TODO excluir des del servidor els grups que no tenguin alumnes amb docs FCT
+
+  for(const grup of grups){
     promises.push(setGrup(grup));
   }
+
+  await Promise.all(promises);
 }
 
 onMounted(async ()=>{
@@ -342,6 +364,10 @@ onMounted(async ()=>{
     ok: false // we want the user to not be able to close it
   })
   await loadGrups();
+  await nextTick();
+
+  setTutors(0);
+  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
 
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
@@ -369,6 +395,14 @@ onMounted(async ()=>{
       sortable: false
     });
   }
+
+  /*columnsGrup.value.push({
+    name: 'signants',
+    label: 'Signants',
+    field: row => row,
+    sortable: false
+  });*/
+
   columnsGrup.value.push({
     name: 'document',
     label: 'Document',
@@ -406,6 +440,13 @@ onMounted(async ()=>{
       sortable: false
     });
   }
+
+  /*columnsUsuari.value.push({
+    name: 'signants',
+    label: 'Signants',
+    field: row => row,
+    sortable: false
+  });*/
 
   columnsUsuari.value.push({
     name: 'document',
