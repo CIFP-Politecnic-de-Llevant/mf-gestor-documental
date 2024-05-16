@@ -178,7 +178,6 @@ import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
 import {DocumentEstat} from "src/model/DocumentEstat";
 import {Signatura} from "src/model/Signatura";
-import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
