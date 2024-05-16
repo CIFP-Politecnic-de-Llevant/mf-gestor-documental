@@ -187,7 +187,6 @@ import {FitxerBucket} from "src/model/google/FitxerBucket";
 
 const $q = useQuasar();
 
-const grups:Ref<Grup[]> = ref([] as Grup[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 
 const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
@@ -275,7 +274,6 @@ function setTutors(index: number) {
     token: token,
     grup: codiGrup
   }
-  console.log("grup actual---", codiGrup);
   worker.postMessage(data);
   worker.onmessage = async (e) => {
     //console.log("data message",e.data);
@@ -343,13 +341,10 @@ function filterDocuments(filter:string){
 }
 
 async function loadGrups(){
-  const grups = await GrupService.findAllGrups();
+  const grups = await GrupService.findGrupsAmbDocumentsFct();
   grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   const promises = [];
-
-  // TODO excluir des del servidor els grups que no tenguin alumnes amb docs FCT
-
   for(const grup of grups){
     promises.push(setGrup(grup));
   }
@@ -366,9 +361,9 @@ onMounted(async ()=>{
   })
   await loadGrups();
   await nextTick();
+  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
 
   setTutors(0);
-  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
 
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
