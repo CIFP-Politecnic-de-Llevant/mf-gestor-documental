@@ -265,11 +265,11 @@ function setTutors(index: number) {
   if (index >= grupsFCT.value.length)
     return;
 
-  const grup = grupsFCT.value[index];
+  const doc = grupsFCT.value[index];
 
   const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
   const token = localStorage.getItem("token");
-  const codiGrup = grup.grup.curs.nom + grup.grup.nom;
+  const codiGrup = doc.grup.curs.nom + doc.grup.nom;
   const data = {
     token: token,
     grup: codiGrup
@@ -304,7 +304,6 @@ async function getURL(document:Document){
 async function viewPdf(document: Document) {
   showPdfDialog.value = true;
   pdf.value = await DocumentService.getURLFitxerDocument(document, false);
-  console.log(pdf.value);
 }
 
 
