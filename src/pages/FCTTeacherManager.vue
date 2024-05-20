@@ -105,6 +105,17 @@
                   class="q-ml-xs"
                   icon="picture_as_pdf"
                 />
+
+                <q-btn
+                  @click="deleteDocument(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!props.row.fitxer || !checkDeletePermission(props.row)"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="delete"
+                />
               </div>
             </q-td>
           </q-tr>
@@ -290,6 +301,17 @@
                   icon="plagiarism"
                 />
 
+                <q-btn
+                  @click="deleteDocument(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!props.row.fitxer || !checkDeletePermission(props.row)"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="delete"
+                />
+
                <!-- <q-btn
                   @click="canviarVisibilitat(props.row.id,props.row.visibilitat? false : true)"
                   :color="'primary'"
@@ -470,6 +492,7 @@ async function selectGrup(grup:Grup){
   });
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
+  console.log(tutorsFCT.value);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
   allDocumentsGrup.value = documentsAll;
 
@@ -573,6 +596,17 @@ async function getURL(document:Document){
 async function viewPdf(document: Document) {
   showPdfDialog.value = true;
   pdf.value = await DocumentService.getURLFitxerDocument(document, false);
+}
+
+function checkDeletePermission(document: Document) {
+  if (isAuthorizedDeleteDocuments.value)
+    return true;
+
+  else return document.documentEstat !== 'ACCEPTAT' && document.id_googleDrive === '';
+}
+
+function deleteDocument(document: Document) {
+  console.log("ok entra a delete doucment");
 }
 
 
@@ -724,6 +758,9 @@ function filterDocuments() {
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+
+  console.log("grups tots: ", grups.value);
+  console.log(isAuthorizedDeleteDocuments.value)
 
   signatures.value = await SignaturaService.findAll();
 
