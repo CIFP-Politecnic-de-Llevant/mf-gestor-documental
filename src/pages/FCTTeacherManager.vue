@@ -110,7 +110,7 @@
                   @click="deleteDocument(props.row)"
                   :color="!props.row.fitxer ? 'white' : 'primary'"
                   :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                  :disable="!props.row.fitxer || !checkDeletePermission(props.row)"
+                  :disable="!checkDeletePermission(props.row)"
                   round
                   dense
                   class="q-ml-xs"
@@ -305,7 +305,7 @@
                   @click="deleteDocument(props.row)"
                   :color="!props.row.fitxer ? 'white' : 'primary'"
                   :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                  :disable="!props.row.fitxer || !checkDeletePermission(props.row)"
+                  :disable="!checkDeletePermission(props.row)"
                   round
                   dense
                   class="q-ml-xs"
@@ -606,7 +606,13 @@ function checkDeletePermission(document: Document) {
 }
 
 function deleteDocument(document: Document) {
-  console.log("ok entra a delete doucment");
+  $q.dialog( {
+    title: "Està segur que vol eliminar el document?",
+    message: "Aquesta acció no es pot desfer",
+    cancel: true
+  }).onOk(() => {
+    console.log("ok entra a delete document");
+  });
 }
 
 
@@ -760,7 +766,6 @@ onMounted(async ()=>{
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   console.log("grups tots: ", grups.value);
-  console.log(isAuthorizedDeleteDocuments.value)
 
   signatures.value = await SignaturaService.findAll();
 
@@ -770,6 +775,7 @@ onMounted(async ()=>{
   alumnesFiltered.value = await UsuariService.getAlumnes();
 
   isAuthorizedDeleteDocuments.value = JSON.parse(localStorage.getItem("rol")).some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
+  console.log(isAuthorizedDeleteDocuments.value);
 
 
   //Grup
