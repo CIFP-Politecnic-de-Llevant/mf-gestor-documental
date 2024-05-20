@@ -305,7 +305,6 @@ async function getURL(document:Document){
 async function viewPdf(document: Document) {
   showPdfDialog.value = true;
   pdf.value = await DocumentService.getURLFitxerDocument(document, false);
-  console.log(pdf.value);
 }
 
 
