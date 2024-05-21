@@ -1,8 +1,14 @@
 
 <template>
   <q-page padding>
-    <div>
-      <p class="text-h5 q-mt-lg">Formulari - Dades FCT</p>
+    <div class="row flex">
+      <div class="col-md-3">
+        <p class="text-h5 q-mt-lg">Formulari - Dades FCT</p>
+      </div>
+      <div class="row col-md-8 q-mt-xs">
+        <p class="q-pt-lg q-mr-sm text-apartat">Curs Escolar: </p>
+        <q-input placeholder="23/24" dense class="q-pt-sm q-mt-xs" color="primary" v-model="formData.anyCurs" label="      " />
+      </div>
     </div>
    <div class="border">
     <q-form>
@@ -207,6 +213,8 @@ import {GrupService} from "src/service/GrupService";
 import {date} from "quasar";
 import formatDate = date.formatDate;
 import {LlocTreball} from "src/model/LlocTreball";
+import {Usuari} from "src/model/Usuari";
+import {DocumentService} from "src/service/DocumentService";
 
 const companySelected:Ref<boolean> = ref(false);
 const studentSelect:Ref<Alumne> = ref({} as Alumne);
@@ -215,8 +223,11 @@ const allStudents:Ref<Alumne[]> = ref([] as Alumne[]);
 const allCompanies:Ref<Empresa[]> = ref([] as Empresa[]);
 const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
 const allGrups:Ref<Grup[]> = ref([] as Grup[]);
+const tutorFCT:Ref<Usuari> = ref({} as Usuari);
 const readOnlyConditionCompany = computed(() => {
-    return (key:string) => key === 'cif' || key === 'adrecaEmpresa' || key === 'nomEmpresa' || key === 'nomRepresentantLegal'
+
+  return (key:string) => key === 'cif' || key === 'adrecaEmpresa' || key === 'nomEmpresa' || key === 'nomRepresentantLegal'
+
 })
 const allNomGrups = ['TMV11B', 'COM11B', 'COM21B', 'TMV21B', 'TMV22B', 'TMV22D', 'ADG21B', 'ELE21B', 'IFC21B',
   'IFC21D', 'ADG32B', 'IFC31B', 'ADG31B', 'TMV31B', 'IFC33B', 'COM33B', 'COM31B'];
@@ -342,15 +353,26 @@ function ageCalculate(date:Date){
     }
 }
 
+async function save(){
+
+  await DocumentService.saveProva(prova.value);
+}
+
 async function saveForm(){
 
-    await EmpresaService.saveForm(formData.value);
+    await DocumentService.saveForm(formData.value);
 }
 
 onMounted(async () =>{
 
   allStudents.value = await UsuariService.allStudents();
   allCompanies.value = await EmpresaService.allCompanies();
+  tutorFCT.value = await UsuariService.getProfile();
+
+  formData.value.nomTutor = tutorFCT.value.nom;
+  formData.value.llinatgesTutor = tutorFCT.value.cognom1 + " " + tutorFCT.value.cognom2;
+
+
 
   /*
   allGrups.value = await GrupService.findAllGrups();

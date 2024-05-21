@@ -58,6 +58,9 @@ export class UsuariService {
     return {
       id: json.idusuari,
       email: json.gsuiteEmail,
+      nom: json.gestibNom,
+      cognom1: json.gestibCognom1,
+      cognom2: json.gestibCognom2,
       nomComplet: json.gsuiteFullName,
       nomComplet2: json.gestibCognom1 + " " + json.gestibCognom2 + ", " + json.gestibNom,
       esAlumne: json.gestibAlumne,
