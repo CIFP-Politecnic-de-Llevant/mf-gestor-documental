@@ -353,11 +353,6 @@ function ageCalculate(date:Date){
     }
 }
 
-async function save(){
-
-  await DocumentService.saveProva(prova.value);
-}
-
 async function saveForm(){
 
     await DocumentService.saveForm(formData.value);
