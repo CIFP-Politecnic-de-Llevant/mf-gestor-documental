@@ -610,8 +610,20 @@ function deleteDocument(document: Document) {
     title: "Està segur que vol eliminar el document?",
     message: "Aquesta acció no es pot desfer",
     cancel: true
-  }).onOk(() => {
+  }).onOk(async () => {
     console.log("ok entra a delete document");
+    await DocumentService.deleteDocument(document);
+    /*let index: number;
+    if (document.nomOriginal.split("_").length === 5) {
+      index = documentsUsuariFiltrats.value.findIndex(d => d.id === document.id);
+      console.log(index)
+      documentsUsuariFiltrats.value.splice(index, 1);
+    }
+    else {
+      index = documentsGrup.value.findIndex(d => d.id === document.id);
+      console.log(index)
+      documentsGrup.value.splice(index, 1);
+    }*/
   });
 }
 
@@ -763,9 +775,7 @@ function filterDocuments() {
 
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
-
-  console.log("grups tots: ", grups.value);
+  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom));
 
   signatures.value = await SignaturaService.findAll();
 
@@ -775,7 +785,6 @@ onMounted(async ()=>{
   alumnesFiltered.value = await UsuariService.getAlumnes();
 
   isAuthorizedDeleteDocuments.value = JSON.parse(localStorage.getItem("rol")).some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
-  console.log(isAuthorizedDeleteDocuments.value);
 
 
   //Grup
