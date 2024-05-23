@@ -258,7 +258,6 @@ export class DocumentService {
     if(document.fitxer){
       const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer.id);
       const fitxerBucket: FitxerBucket = f.data;
-      console.log(fitxerBucket);
       if (fitxerBucket){
         const url: any = await axios.post(process.env.API + '/api/core/googlestorage/generate-signed-url', {
           fitxerBucket: fitxerBucket,
@@ -281,7 +280,6 @@ export class DocumentService {
       path: bucket.path
     });
     document.fitxer!.signants = names.data;
-    console.log(document.fitxer!.signants);
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
