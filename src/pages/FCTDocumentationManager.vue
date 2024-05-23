@@ -58,6 +58,13 @@
                 />
               </q-td>
               <q-td>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
+                </div>
+              </q-td>
+              <q-td>
                 <div class="flex flex-center" style="width: 200px;">
                   <q-btn
                     @click="getURL(props.row)"
@@ -128,6 +135,13 @@
                 />
               </q-td>
               <q-td>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
+                </div>
+              </q-td>
+              <q-td>
                 <div class="flex flex-center" style="width: 200px;">
                   <q-btn
                     @click="getURL(props.row)"
@@ -172,7 +186,7 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, onMounted, Ref, ref} from "vue";
+import {nextTick, onMounted, Ref, ref, toRaw} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
@@ -186,7 +200,6 @@ import {FitxerBucket} from "src/model/google/FitxerBucket";
 
 const $q = useQuasar();
 
-const grups:Ref<Grup[]> = ref([] as Grup[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 
 const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
@@ -210,16 +223,6 @@ const initialPagination = {
 
 async function setGrup(grup:Grup){
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
-
-  // recuperar signatures dels pdf
-  const documentsSignats = documentsAll.filter(d => d.fitxer);
-  const signants = [];
-
-  // TODO posar-ho a variable reactiva (?)
-  /*for (const doc of documentsSignats)
-    signants.push(DocumentService.getSignantsFitxerBucket(doc));
-
-  Promise.all(signants);*/
 
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -265,16 +268,15 @@ function setTutors(index: number) {
   if (index >= grupsFCT.value.length)
     return;
 
-  const grup = grupsFCT.value[index];
+  const doc = grupsFCT.value[index];
 
-  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
+  const worker = new Worker(new URL("../worker/TutorsWorker.js", import.meta.url), {type: "classic"});
   const token = localStorage.getItem("token");
-  const codiGrup = grup.grup.curs.nom + grup.grup.nom;
+  const codiGrup = doc.grup.curs.nom + doc.grup.nom;
   const data = {
     token: token,
     grup: codiGrup
   }
-  console.log("grup actual---", codiGrup);
   worker.postMessage(data);
   worker.onmessage = async (e) => {
     //console.log("data message",e.data);
@@ -341,13 +343,10 @@ function filterDocuments(filter:string){
 }
 
 async function loadGrups(){
-  const grups = await GrupService.findAllGrups();
+  const grups = await GrupService.findGrupsAmbDocumentsFct();
   grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   const promises = [];
-
-  // TODO excluir des del servidor els grups que no tenguin alumnes amb docs FCT
-
   for(const grup of grups){
     promises.push(setGrup(grup));
   }
@@ -364,9 +363,29 @@ onMounted(async ()=>{
   })
   await loadGrups();
   await nextTick();
+  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
 
   setTutors(0);
-  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
+
+  const documentsSignats: Document[] = [];
+  for (const g of grupsFCT.value) {
+    documentsSignats.push(...g.documentsUsuari.filter((d: any) => d.fitxer != undefined && d.fitxer.id != null));
+    documentsSignats.push(...g.documentsGrup.filter((d: any) => d.fitxer != undefined && d.fitxer.id != null));
+  }
+
+  const worker = new Worker(new URL("../worker/SignaturesWorker.js", import.meta.url), {type: "classic"});
+  const token = localStorage.getItem("token");
+  const data = {
+    token: token,
+    docs: documentsSignats.map(d => toRaw(d)),
+  }
+  worker.postMessage(data);
+  worker.onmessage = async (e) => {
+    for (const doc of e.data) {
+      const document = documentsSignats.find(d => d.id === doc.id)!;
+      document.fitxer!.signants = doc.fitxer.signants;
+    }
+  }
 
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
@@ -395,12 +414,12 @@ onMounted(async ()=>{
     });
   }
 
-  /*columnsGrup.value.push({
+  columnsGrup.value.push({
     name: 'signants',
     label: 'Signants',
     field: row => row,
     sortable: false
-  });*/
+  });
 
   columnsGrup.value.push({
     name: 'document',
@@ -440,12 +459,12 @@ onMounted(async ()=>{
     });
   }
 
-  /*columnsUsuari.value.push({
+  columnsUsuari.value.push({
     name: 'signants',
     label: 'Signants',
     field: row => row,
     sortable: false
-  });*/
+  });
 
   columnsUsuari.value.push({
     name: 'document',

@@ -280,8 +280,14 @@ export class DocumentService {
   }
 
   static async getSignantsFitxerBucket(document: Document) {
-    const signants = await axios.get(process.env.API + 'api/core/fitxerbucket/signatures/' + document.fitxer!.id);
-    //document.fitxer!.signants = signants.data;
+    const fetchBucket = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer!.id);
+    const bucket: FitxerBucket = fetchBucket.data;
+    const names = await axios.post(process.env.API + '/api/core/googlestorage/signatures', {
+      bucket: bucket.bucket,
+      nom: bucket.nom,
+      path: bucket.path
+    });
+    document.fitxer!.signants = names.data;
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
@@ -311,7 +317,7 @@ export class DocumentService {
           nom: "",
           path: "",
           bucket: "",
-          //signants: []
+          signants: []
         }
         document.fitxer = fitxerBucket;
       }
