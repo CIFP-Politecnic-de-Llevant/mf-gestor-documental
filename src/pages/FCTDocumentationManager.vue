@@ -58,8 +58,10 @@
                 />
               </q-td>
               <q-td>
-                <div class="flex flex-center">
-                  <q-btn @click="testest(props.row)" label="test"/>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
                 </div>
               </q-td>
               <q-td>
@@ -133,8 +135,10 @@
                 />
               </q-td>
               <q-td>
-                <div class="flex flex-center">
-                  <q-btn @click="testest(props.row)" label="test"/>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
                 </div>
               </q-td>
               <q-td>
@@ -218,23 +222,22 @@ const initialPagination = {
   rowsPerPage: 0
 }
 
-async function testest(doc: Document) {
-  const names = await DocumentService.getSignantsFitxerBucket(doc);
-  console.log(names);
+async function getSignatures(doc: Document) {
+  return await DocumentService.getSignantsFitxerBucket(doc);
 }
 
 async function setGrup(grup:Grup){
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
 
-  // recuperar signatures dels pdf
-  const documentsSignats = documentsAll.filter(d => d.fitxer);
+  const documentsSignats = documentsAll.filter(d => d.fitxer != undefined && d.fitxer.id != null);
   const signants = [];
 
   // TODO posar-ho a variable reactiva (?)
-  /*for (const doc of documentsSignats)
-    signants.push(DocumentService.getSignantsFitxerBucket(doc));
+  for (const doc of documentsSignats) {
+      await DocumentService.getSignantsFitxerBucket(doc);
+  }
 
-  Promise.all(signants);*/
+  //Promise.all(signants);
 
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
