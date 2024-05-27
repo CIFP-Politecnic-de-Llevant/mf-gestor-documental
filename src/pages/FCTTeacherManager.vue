@@ -85,6 +85,17 @@
                 />
 
                 <q-btn
+                  @click="viewPdf(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!props.row.fitxer"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="plagiarism"
+                />
+
+                <q-btn
                   @click="getURL(props.row)"
                   :color="!props.row.fitxer ? 'white' : 'primary'"
                   :text-color="!props.row.fitxer ? 'primary' : 'white'"
@@ -93,6 +104,17 @@
                   dense
                   class="q-ml-xs"
                   icon="picture_as_pdf"
+                />
+
+                <q-btn
+                  @click="deleteDocument(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!checkDeletePermission(props.row)"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="delete"
                 />
               </div>
             </q-td>
@@ -134,10 +156,10 @@
                 <q-item-label>TOTS</q-item-label>
               </q-item>
               <q-item clickable v-close-popup @click="filterDocsByVisibilitat(true)">
-                <q-item-label>VISIBLES</q-item-label>
+                <q-item-label>OBLIGATORIS</q-item-label>
               </q-item>
               <q-item clickable v-close-popup @click="filterDocsByVisibilitat(false)">
-                <q-item-label>NO VISIBLES</q-item-label>
+                <q-item-label>OPCIONALS</q-item-label>
               </q-item>
             </q-list>
           </q-btn-dropdown>
@@ -269,6 +291,28 @@
                 />
 
                 <q-btn
+                  @click="viewPdf(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!props.row.fitxer"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="plagiarism"
+                />
+
+                <q-btn
+                  @click="deleteDocument(props.row)"
+                  :color="!props.row.fitxer ? 'white' : 'primary'"
+                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :disable="!checkDeletePermission(props.row)"
+                  round
+                  dense
+                  class="q-ml-xs"
+                  icon="delete"
+                />
+
+               <!-- <q-btn
                   @click="canviarVisibilitat(props.row.id,props.row.visibilitat? false : true)"
                   :color="'primary'"
                   :text-color="'white'"
@@ -280,7 +324,7 @@
                   <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">
                     <strong>Posar el document com a {{props.row.visibilitat?'no visible':'visible'}}</strong>
                   </q-tooltip>
-                </q-btn>
+                </q-btn>-->
               </div>
             </q-td>
           </q-tr>
@@ -361,6 +405,16 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="showPdfDialog">
+      <q-card class="no-scroll" style="background: gray; min-width: 80vw; min-height: 80vh; width: 100%; height: 100%;">
+        <q-bar>
+          <q-btn @click="showPdfDialog = false" color="white" flat icon="close"></q-btn>
+        </q-bar>
+        <div class="fit">
+          <q-pdfviewer :src="pdf.url" />
+        </div>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -376,6 +430,7 @@ import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
+import {FitxerBucket} from "src/model/google/FitxerBucket";
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
@@ -410,7 +465,10 @@ const visibilitatSeleccionada:Ref<boolean | null> = ref(null);
 const estatSeleccionat:Ref<string | null> = ref('TOTS');
 const documentEstats = ['TOTS', 'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
 
+// document
 const uploadDocument = ref(false);
+const showPdfDialog = ref(false);
+const pdf:Ref<FitxerBucket | null> = ref({} as FitxerBucket);
 
 const $q = useQuasar();
 
@@ -434,6 +492,7 @@ async function selectGrup(grup:Grup){
   });
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
+  console.log(tutorsFCT.value);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
   allDocumentsGrup.value = documentsAll;
 
@@ -532,6 +591,40 @@ async function getURL(document:Document){
   if(fitxer) {
     window.open(fitxer.url, '_blank');
   }
+}
+
+async function viewPdf(document: Document) {
+  showPdfDialog.value = true;
+  pdf.value = await DocumentService.getURLFitxerDocument(document, false);
+}
+
+function checkDeletePermission(document: Document) {
+  if (isAuthorizedDeleteDocuments.value)
+    return true;
+
+  else return document.documentEstat !== 'ACCEPTAT' && document.id_googleDrive === '';
+}
+
+function deleteDocument(document: Document) {
+  $q.dialog( {
+    title: "Està segur que vol eliminar el document?",
+    message: "Aquesta acció no es pot desfer",
+    cancel: true
+  }).onOk(async () => {
+    console.log("ok entra a delete document");
+    await DocumentService.deleteDocument(document);
+    /*let index: number;
+    if (document.nomOriginal.split("_").length === 5) {
+      index = documentsUsuariFiltrats.value.findIndex(d => d.id === document.id);
+      console.log(index)
+      documentsUsuariFiltrats.value.splice(index, 1);
+    }
+    else {
+      index = documentsGrup.value.findIndex(d => d.id === document.id);
+      console.log(index)
+      documentsGrup.value.splice(index, 1);
+    }*/
+  });
 }
 
 
@@ -682,7 +775,7 @@ function filterDocuments() {
 
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom));
 
   signatures.value = await SignaturaService.findAll();
 

@@ -49,18 +49,18 @@ export class DocumentService {
   static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string, email:string) {
 
     const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
-    const APP_MAIL: string = process.env.APP_EMAIL_GESTORDOCUMENTAL!;
+    const APP_EMAIL: string = process.env.APP_EMAIL_GESTORDOCUMENTAL!;
 
     const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: FOLDER_BASE,
-      email: APP_MAIL,
+      email: APP_EMAIL,
       parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
     });
     const carpetaRoot = carpetaRootFetch.data;
 
     const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: cicle,
-      email: APP_MAIL,
+      email: APP_EMAIL,
       parentFolderId: carpetaRoot.id
     });
     const carpetaCicle = carpetaCicleFetch.data;
@@ -68,9 +68,17 @@ export class DocumentService {
 
     return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne', {
       documentIds: ids,
-      email: APP_MAIL,
+      email: APP_EMAIL,
       folderName: nomAlumne,
       parentFolderId: carpetaCicle.id
+    });
+  }
+
+  static async deleteDocument(document: Document) {
+    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-document', {
+      documentId: document.id,
+      email: process.env.APP_EMAIL_GESTORDOCUMENTAL!,
+      fitxerId: document.fitxer?.id
     });
   }
 
@@ -272,8 +280,14 @@ export class DocumentService {
   }
 
   static async getSignantsFitxerBucket(document: Document) {
-    const signants = await axios.get(process.env.API + 'api/core/fitxerbucket/signatures/' + document.fitxer!.id);
-    //document.fitxer!.signants = signants.data;
+    const fetchBucket = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer!.id);
+    const bucket: FitxerBucket = fetchBucket.data;
+    const names = await axios.post(process.env.API + '/api/core/googlestorage/signatures', {
+      bucket: bucket.bucket,
+      nom: bucket.nom,
+      path: bucket.path
+    });
+    document.fitxer!.signants = names.data;
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
@@ -303,7 +317,7 @@ export class DocumentService {
           nom: "",
           path: "",
           bucket: "",
-          //signants: []
+          signants: []
         }
         document.fitxer = fitxerBucket;
       }

@@ -58,6 +58,13 @@
                 />
               </q-td>
               <q-td>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
+                </div>
+              </q-td>
+              <q-td>
                 <div class="flex flex-center" style="width: 200px;">
                   <q-btn
                     @click="getURL(props.row)"
@@ -128,6 +135,13 @@
                 />
               </q-td>
               <q-td>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
+                </div>
+              </q-td>
+              <q-td>
                 <div class="flex flex-center" style="width: 200px;">
                   <q-btn
                     @click="getURL(props.row)"
@@ -172,7 +186,7 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, onMounted, Ref, ref} from "vue";
+import {nextTick, onMounted, Ref, ref, toRaw} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
@@ -209,16 +223,6 @@ const initialPagination = {
 
 async function setGrup(grup:Grup){
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
-
-  // recuperar signatures dels pdf
-  const documentsSignats = documentsAll.filter(d => d.fitxer);
-  const signants = [];
-
-  // TODO posar-ho a variable reactiva (?)
-  /*for (const doc of documentsSignats)
-    signants.push(DocumentService.getSignantsFitxerBucket(doc));
-
-  Promise.all(signants);*/
 
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -266,7 +270,7 @@ function setTutors(index: number) {
 
   const doc = grupsFCT.value[index];
 
-  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
+  const worker = new Worker(new URL("../worker/TutorsWorker.js", import.meta.url), {type: "classic"});
   const token = localStorage.getItem("token");
   const codiGrup = doc.grup.curs.nom + doc.grup.nom;
   const data = {
@@ -363,6 +367,26 @@ onMounted(async ()=>{
 
   setTutors(0);
 
+  const documentsSignats: Document[] = [];
+  for (const g of grupsFCT.value) {
+    documentsSignats.push(...g.documentsUsuari.filter((d: any) => d.fitxer != undefined && d.fitxer.id != null));
+    documentsSignats.push(...g.documentsGrup.filter((d: any) => d.fitxer != undefined && d.fitxer.id != null));
+  }
+
+  const worker = new Worker(new URL("../worker/SignaturesWorker.js", import.meta.url), {type: "classic"});
+  const token = localStorage.getItem("token");
+  const data = {
+    token: token,
+    docs: documentsSignats.map(d => toRaw(d)),
+  }
+  worker.postMessage(data);
+  worker.onmessage = async (e) => {
+    for (const doc of e.data) {
+      const document = documentsSignats.find(d => d.id === doc.id)!;
+      document.fitxer!.signants = doc.fitxer.signants;
+    }
+  }
+
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
 
@@ -390,12 +414,12 @@ onMounted(async ()=>{
     });
   }
 
-  /*columnsGrup.value.push({
+  columnsGrup.value.push({
     name: 'signants',
     label: 'Signants',
     field: row => row,
     sortable: false
-  });*/
+  });
 
   columnsGrup.value.push({
     name: 'document',
@@ -435,12 +459,12 @@ onMounted(async ()=>{
     });
   }
 
-  /*columnsUsuari.value.push({
+  columnsUsuari.value.push({
     name: 'signants',
     label: 'Signants',
     field: row => row,
     sortable: false
-  });*/
+  });
 
   columnsUsuari.value.push({
     name: 'document',
