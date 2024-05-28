@@ -611,19 +611,14 @@ function deleteDocument(document: Document) {
     message: "Aquesta acció no es pot desfer",
     cancel: true
   }).onOk(async () => {
-    console.log("ok entra a delete document");
     await DocumentService.deleteDocument(document);
-    /*let index: number;
-    if (document.nomOriginal.split("_").length === 5) {
-      index = documentsUsuariFiltrats.value.findIndex(d => d.id === document.id);
-      console.log(index)
-      documentsUsuariFiltrats.value.splice(index, 1);
-    }
-    else {
-      index = documentsGrup.value.findIndex(d => d.id === document.id);
-      console.log(index)
-      documentsGrup.value.splice(index, 1);
-    }*/
+    if (documentsUsuari.value.indexOf(document) > -1)
+      documentsUsuari.value.splice(documentsUsuari.value.indexOf(document), 1);
+
+    if (documentsGrup.value.indexOf(document) > -1)
+      documentsGrup.value.splice(documentsGrup.value.indexOf(document), 1);
+
+    filterDocuments();
   });
 }
 
