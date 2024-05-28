@@ -562,6 +562,7 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
   } else {
     documentsUsuari.value.push(documentSaved);
   }
+  filterDocuments();
   addDocument.value = false;
   uploadDocument.value = false;
 }
