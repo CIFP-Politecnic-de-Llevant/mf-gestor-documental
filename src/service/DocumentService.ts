@@ -7,6 +7,7 @@ import {SignaturaService} from "src/service/SignaturaService";
 import {Signatura} from "src/model/Signatura";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {DocumentEstat} from "src/model/DocumentEstat";
+import {DadesFormulari} from "src/model/DadesFormulari";
 
 export class DocumentService {
 
@@ -288,6 +289,11 @@ export class DocumentService {
       path: bucket.path
     });
     document.fitxer!.signants = names.data;
+  }
+
+  //FORMULARI FCT
+  static async saveForm(form:DadesFormulari){
+    await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari`,form)
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
