@@ -49,7 +49,7 @@ export interface DadesFormulari {
     nacionalitatTutorEmpresa?:string;
     municipiTutorEmpresa?:string;
     carrecTutorEmpresa?:string;
-    emailEmrpesa?:string;
+    emailEmpresa?:string;
     diaSeguimentCentreEducatiu?:string;
     horaSeguimentCentreEducatiu?:string;
     diaSeguimentResponsableFct?:string;

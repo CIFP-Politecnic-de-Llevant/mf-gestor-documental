@@ -289,11 +289,12 @@ function selectStudent(student:Alumne){
     studentSelect.value = student;
     formData.value.nomAlumne = student.nom;
     formData.value.llinatgesAlumne = student.cognom1 + " " + student.cognom2;
-    formData.value.poblacio = student.minucipi;
+    formData.value.poblacio = student.municipi;
     formData.value.dni = student.dni;
 
     if (student && typeof student.numeroExpedient !== 'undefined') {
         formData.value.nExpedient = student.numeroExpedient.toString();
+      console.log(formData.value.nExpedient)
     }
     formData.value.grup = student.estudis;
 }
@@ -331,7 +332,7 @@ function selectWorkspace(workspace:LlocTreball){
     formData.value.nifTutorEmpresa = workspace.dniTutorEmpresa;
     formData.value.municipiTutorEmpresa = workspace.municipi;
     formData.value.carrecTutorEmpresa = workspace.carrecTutor;
-    formData.value.emailEmrpesa = workspace.email;
+    formData.value.emailEmpresa = workspace.email;
 }
 function ageCalculate(date:Date){
 
@@ -353,14 +354,64 @@ function ageCalculate(date:Date){
     }
 }
 
-async function save(){
-
-  await DocumentService.saveProva(prova.value);
-}
-
 async function saveForm(){
 
-    await DocumentService.saveForm(formData.value);
+    await DocumentService.saveForm(formData.value,tutorFCT.value.email);
+    companySelected.value = false;
+
+    formData.value.anyCurs = '';
+    formData.value.nomAlumne = '';
+    formData.value.llinatgesAlumne = '';
+    formData.value.poblacio = '';
+    formData.value.dni = '';
+    formData.value.nExpedient = '';
+    formData.value.menorEdat = undefined;
+    formData.value.edat = '';
+    formData.value.estudis = '';
+    formData.value.cicleFormatiu = '';
+    formData.value.grup = '';
+    formData.value.duradaCicle = '';
+    formData.value.totalHoresProposadesFct = '';
+    formData.value.horesDiaries = '';
+    formData.value.km = '';
+    formData.value.periode = '';
+    formData.value.dataInici = '';
+    formData.value.dataFi = '';
+    formData.value.dataAcabament = '';
+    formData.value.tipusJornada = '';
+    formData.value.horari = '';
+    formData.value.telefonTutor = '';
+    formData.value.empresaNova = undefined;
+    formData.value.empresaAdministracioPublica = undefined;
+    formData.value.numeroConveni = '';
+    formData.value.numeroAnnex = '';
+    formData.value.nomEmpresa = '';
+    formData.value.cif = '';
+    formData.value.adrecaEmpresa = '';
+    formData.value.cpempresa = '';
+    formData.value.poblacioEmpresa = '';
+    formData.value.telefonEmpresa = '';
+    formData.value.nomLlocTreball = '';
+    formData.value.adrecaLlocTreball = '';
+    formData.value.cpLlocTreball = '';
+    formData.value.poblacioLlocTreball = '';
+    formData.value.telefonLlocTreball = '';
+    formData.value.activitatLlocTreball = '';
+    formData.value.nomRepresentantLegal = '';
+    formData.value.llinatgesRepresentantLegal = '';
+    formData.value.nifRepresentantLegal = '';
+    formData.value.nomTutorEmpresa = '';
+    formData.value.llinatgesTutorEmpresa = '';
+    formData.value.nifTutorEmpresa = '';
+    formData.value.nacionalitatTutorEmpresa = '';
+    formData.value.municipiTutorEmpresa = '';
+    formData.value.carrecTutorEmpresa = '';
+    formData.value.emailEmpresa = '';
+    formData.value.diaSeguimentCentreEducatiu = '';
+    formData.value.horaSeguimentCentreEducatiu = '';
+    formData.value.diaSeguimentResponsableFct = '';
+    formData.value.horaSeguimentResponsableFct = '';
+    formData.value.flexibilitzacioModulFct = undefined;
 }
 
 onMounted(async () =>{

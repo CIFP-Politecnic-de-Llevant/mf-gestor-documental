@@ -270,8 +270,8 @@ export class DocumentService {
   }
 
   //FORMULARI FCT
-  static async saveForm(form:DadesFormulari){
-    await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari`,form)
+  static async saveForm(form:DadesFormulari,email:string){
+    await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari?email=${email}`,form)
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
