@@ -50,9 +50,7 @@ export class EmpresaService {
       await axios.post(process.env.API + `/api/gestordocumental/empresa/lloc-treball/update-workspace`,llocTreball)
     }
 
-    static async saveForm(form:DadesFormulari){
-        await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari`,form)
-    }
+
 
     static fromJsonEmpresa(json:any):Empresa{
 
