@@ -8,11 +8,11 @@
       <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')" />
     </q-btn-group>
 
-    <div v-for="grupFCT in grupsFCT">
+    <div v-for="grupFCT in grupsFiltered">
       <div v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
         <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
         <p v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)">
-          Tutor FCT: {{tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t=>t.label).join(", ")}}
+          Tutor FCT: {{tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t=>t.label).join(", ")}}
         </p>
         <p v-else>
           Tutor FCT: Carregant tutors...
@@ -58,6 +58,13 @@
                 />
               </q-td>
               <q-td>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
+                </div>
+              </q-td>
+              <q-td>
                 <div class="flex flex-center" style="width: 200px;">
                   <q-btn
                     @click="getURL(props.row)"
@@ -68,6 +75,16 @@
                     dense
                     class="q-ml-xs"
                     icon="picture_as_pdf"
+                  />
+                  <q-btn
+                    @click="viewPdf(props.row)"
+                    :color="!props.row.fitxer ? 'white' : 'primary'"
+                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                    :disable="!props.row.fitxer"
+                    round
+                    dense
+                    class="q-ml-xs"
+                    icon="plagiarism"
                   />
                 </div>
               </q-td>
@@ -118,6 +135,13 @@
                 />
               </q-td>
               <q-td>
+                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                  <p v-for="nom in props.row.fitxer.signants">
+                    {{ nom }}
+                  </p>
+                </div>
+              </q-td>
+              <q-td>
                 <div class="flex flex-center" style="width: 200px;">
                   <q-btn
                     @click="getURL(props.row)"
@@ -129,6 +153,16 @@
                     class="q-ml-xs"
                     icon="picture_as_pdf"
                   />
+                  <q-btn
+                    @click="viewPdf(props.row)"
+                    :color="!props.row.fitxer ? 'white' : 'primary'"
+                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                    :disable="!props.row.fitxer"
+                    round
+                    dense
+                    class="q-ml-xs"
+                    icon="plagiarism"
+                  />
                 </div>
               </q-td>
             </q-tr>
@@ -136,34 +170,49 @@
         </q-table>
       </div>
     </div>
+
+    <q-dialog v-model="showPdfDialog">
+      <q-card class="no-scroll" style="background: gray; min-width: 80vw; min-height: 80vh; width: 100%; height: 100%;">
+        <q-bar>
+          <q-btn @click="showPdfDialog = false" color="white" flat icon="close"></q-btn>
+        </q-bar>
+        <div class="fit">
+          <q-pdfviewer :src="pdf.url" />
+        </div>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref} from "vue";
+import {nextTick, onMounted, Ref, ref, toRaw} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
 import {DocumentEstat} from "src/model/DocumentEstat";
 import {Signatura} from "src/model/Signatura";
-import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
+import {FitxerBucket} from "src/model/google/FitxerBucket";
 
 const $q = useQuasar();
 
-const grups:Ref<Grup[]> = ref([] as Grup[]);
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 
 const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
+const grupsFiltered = ref([] as any[]);
 const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 
 const abortController = new AbortController();
+
+const showPdfDialog = ref(false);
+const pdf:Ref<FitxerBucket | null> = ref({} as FitxerBucket);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -173,26 +222,6 @@ const initialPagination = {
 }
 
 async function setGrup(grup:Grup){
-  const worker = new Worker(new URL("../worker/FCTDocumentationManagerWorker.js", import.meta.url), {type: "classic"});
-  const token = localStorage.getItem("token");
-  const tutors: Usuari[] = [];
-  const codiGrup = grup.curs.nom + grup.nom;
-  if (!tutorsGrupsFCT.value.size) {
-    worker.onmessage = (e) => {
-      for (const tutor of e.data)
-        tutors.push(tutor);
-
-      const documentIndex = grupsFCT.value.findIndex(d => d.grup === documentFCT.grup);
-      grupsFCT.value[documentIndex].tutorsFCT = tutors;
-
-      tutorsGrupsFCT.value.set(codiGrup, tutors);
-
-      worker.terminate();
-    }
-    worker.postMessage(codiGrup + "|" + token);
-  }
-
-  //const tutorsFCT = await UsuariService.getTutorsFCTByCodiGrup(grup.curs.nom+grup.nom);
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
 
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
@@ -222,22 +251,44 @@ async function setGrup(grup:Grup){
   });
 
   //URL documents
-  console.log(documentsUsuari)
-  console.log(documentsGrup)
+  //console.log(documentsUsuari)
+  //console.log(documentsGrup)
 
-  const documentFCT = {
+  const documentFCT = ref({
     grup: grup,
-    tutorsFCT: tutors,
+    tutorsFCT: [] as Usuari[],
     documentsUsuari: documentsUsuari,
     documentsGrup: documentsGrup,
-  }
+  });
 
-  grupsFCT.value.push(documentFCT);
-  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
+  grupsFCT.value.push(documentFCT.value);
+}
+
+function setTutors(index: number) {
+  if (index >= grupsFCT.value.length)
+    return;
+
+  const doc = grupsFCT.value[index];
+
+  const worker = new Worker(new URL("../worker/TutorsWorker.js", import.meta.url), {type: "classic"});
+  const token = localStorage.getItem("token");
+  const codiGrup = doc.grup.curs.nom + doc.grup.nom;
+  const data = {
+    token: token,
+    grup: codiGrup
+  }
+  worker.postMessage(data);
+  worker.onmessage = async (e) => {
+    //console.log("data message",e.data);
+    tutorsGrupsFCT.value.set(codiGrup, e.data as Usuari[]);
+    //documentFCT.value.tutorsFCT.push(e.data as Usuari)
+    setTutors(++index);
+    worker.terminate();
+  }
 }
 
 function signDoc(document:Document, signatura:Signatura, signat:boolean){
-  console.log("Entra sign student")
+  //console.log("Entra sign student")
   DocumentService.signarDocument(document,signatura,signat);
 }
 
@@ -253,55 +304,54 @@ async function getURL(document:Document){
   }
 }
 
+async function viewPdf(document: Document) {
+  showPdfDialog.value = true;
+  pdf.value = await DocumentService.getURLFitxerDocument(document, false);
+}
 
-async function filterDocuments(filter:string){
-  let tipusDocuments = 'tots els documents'
-  if(filter==='pending'){
-    tipusDocuments = 'els documents pendents de validar'
-  }else if(filter==='accepted'){
-    tipusDocuments = 'els documents acceptats'
-  } else if(filter==='rejected'){
-    tipusDocuments = 'els documents rebutjats'
-  }
 
-  const dialog = $q.dialog({
-    message: 'Carregant '+tipusDocuments+'...',
-    progress: true, // we enable default settings
-    persistent: true, // we want the user to not be able to close it
-    ok: false // we want the user to not be able to close it
-  })
-  await loadGrups()
+function filterDocuments(filter:string){
+  const filtered: any[] = [];
+  grupsFiltered.value = [];
+
   if(filter==='pending'){
-    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
-      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
-      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
-      return grupFCT;
-    });
-  }else if(filter==='accepted'){
-    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
-      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
-      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
-      return grupFCT;
-    });
+    filtered.push(...grupsFCT.value.map(grup => {
+      const grupClone = JSON.parse(JSON.stringify(grup));
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
+      return grupClone;
+    }));
+  } else if(filter==='accepted'){
+    filtered.push(...grupsFCT.value.map(grup => {
+      const grupClone = JSON.parse(JSON.stringify(grup));
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
+      return grupClone;
+    }));
   } else if(filter==='rejected'){
-    grupsFCT.value = grupsFCT.value.map(grupFCT=>{
-      grupFCT.documentsGrup = grupFCT.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
-      grupFCT.documentsUsuari = grupFCT.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
-      return grupFCT;
-    });
+    filtered.push(...grupsFCT.value.map(grup => {
+      const grupClone = JSON.parse(JSON.stringify(grup));
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
+      return grupClone;
+    }));
   }
-  dialog.hide();
+  else
+    filtered.push(...grupsFCT.value);
+
+  grupsFiltered.value = [...filtered];
 }
 
 async function loadGrups(){
-  grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+  const grups = await GrupService.findGrupsAmbDocumentsFct();
+  grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   const promises = [];
-  grupsFCT.value = [];
-  for(const grup of grups.value){
+  for(const grup of grups){
     promises.push(setGrup(grup));
   }
+
+  await Promise.all(promises);
 }
 
 onMounted(async ()=>{
@@ -312,8 +362,33 @@ onMounted(async ()=>{
     ok: false // we want the user to not be able to close it
   })
   await loadGrups();
+  await nextTick();
+  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
+
+  setTutors(0);
+
+  const documentsSignats: Document[] = [];
+  for (const g of grupsFCT.value) {
+    documentsSignats.push(...g.documentsUsuari.filter((d: any) => d.fitxer != undefined && d.fitxer.id != null));
+    documentsSignats.push(...g.documentsGrup.filter((d: any) => d.fitxer != undefined && d.fitxer.id != null));
+  }
+
+  const worker = new Worker(new URL("../worker/SignaturesWorker.js", import.meta.url), {type: "classic"});
+  const token = localStorage.getItem("token");
+  const data = {
+    token: token,
+    docs: documentsSignats.map(d => toRaw(d)),
+  }
+  worker.postMessage(data);
+  worker.onmessage = async (e) => {
+    for (const doc of e.data) {
+      const document = documentsSignats.find(d => d.id === doc.id)!;
+      document.fitxer!.signants = doc.fitxer.signants;
+    }
+  }
 
   signatures.value = await SignaturaService.findAll();
+  grupsFiltered.value = grupsFCT.value;
 
   //Grup
   columnsGrup.value.push({
@@ -338,6 +413,14 @@ onMounted(async ()=>{
       sortable: false
     });
   }
+
+  columnsGrup.value.push({
+    name: 'signants',
+    label: 'Signants',
+    field: row => row,
+    sortable: false
+  });
+
   columnsGrup.value.push({
     name: 'document',
     label: 'Document',
@@ -377,6 +460,13 @@ onMounted(async ()=>{
   }
 
   columnsUsuari.value.push({
+    name: 'signants',
+    label: 'Signants',
+    field: row => row,
+    sortable: false
+  });
+
+  columnsUsuari.value.push({
     name: 'document',
     label: 'Document',
     field: row => row,
@@ -384,6 +474,8 @@ onMounted(async ()=>{
   });
 
   dialog.hide();
+
+  signatures.value = await SignaturaService.findAll();
 })
 </script>
 
