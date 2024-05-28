@@ -50,18 +50,18 @@ export class DocumentService {
   static async deleteDocumentByGoogleDriveId(ids:string[], nomAlumne:string, cicle:string, email:string) {
 
     const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
-    const APP_MAIL: string = process.env.APP_EMAIL_GESTORDOCUMENTAL!;
+    const APP_EMAIL: string = process.env.APP_EMAIL_GESTORDOCUMENTAL!;
 
     const carpetaRootFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: FOLDER_BASE,
-      email: APP_MAIL,
+      email: APP_EMAIL,
       parentFolderId: process.env.APP_SHAREDDRIVE_GESTORDOCUMENTAL
     });
     const carpetaRoot = carpetaRootFetch.data;
 
     const carpetaCicleFetch = await axios.post(process.env.API + '/api/gestordocumental/get-carpeta',{
       folderName: cicle,
-      email: APP_MAIL,
+      email: APP_EMAIL,
       parentFolderId: carpetaRoot.id
     });
     const carpetaCicle = carpetaCicleFetch.data;
@@ -69,9 +69,17 @@ export class DocumentService {
 
     return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne', {
       documentIds: ids,
-      email: APP_MAIL,
+      email: APP_EMAIL,
       folderName: nomAlumne,
       parentFolderId: carpetaCicle.id
+    });
+  }
+
+  static async deleteDocument(document: Document) {
+    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-document', {
+      documentId: document.id,
+      email: process.env.APP_EMAIL_GESTORDOCUMENTAL!,
+      fitxerId: document.fitxer?.id
     });
   }
 
@@ -254,13 +262,16 @@ export class DocumentService {
     }
   }
 
-  static async  getURLFitxerDocument(document:Document):Promise<null | FitxerBucket>{
+  static async  getURLFitxerDocument(document:Document, download?: boolean):Promise<null | FitxerBucket>{
     let fitxerResolucio:FitxerBucket|null = null;
     if(document.fitxer){
       const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer.id);
       const fitxerBucket: FitxerBucket = f.data;
       if (fitxerBucket){
-        const url: any = await axios.post(process.env.API + '/api/core/googlestorage/generate-signed-url', fitxerBucket);
+        const url: any = await axios.post(process.env.API + '/api/core/googlestorage/generate-signed-url', {
+          fitxerBucket: fitxerBucket,
+          download: download
+        });
         fitxerBucket.url = url.data;
 
         fitxerResolucio = fitxerBucket;
@@ -269,13 +280,24 @@ export class DocumentService {
     return fitxerResolucio;
   }
 
+  static async getSignantsFitxerBucket(document: Document) {
+    const fetchBucket = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer!.id);
+    const bucket: FitxerBucket = fetchBucket.data;
+    const names = await axios.post(process.env.API + '/api/core/googlestorage/signatures', {
+      bucket: bucket.bucket,
+      nom: bucket.nom,
+      path: bucket.path
+    });
+    document.fitxer!.signants = names.data;
+  }
+
   //FORMULARI FCT
   static async saveForm(form:DadesFormulari){
     await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari`,form)
   }
 
   static fromJSONDocument(json:any):Promise<Document>{
-    console.log(json)
+    //console.log(json)
     return new Promise((resolve,reject)=>{
       const document: Document = {
         id: json.idDocument,
@@ -285,7 +307,7 @@ export class DocumentService {
         visibilitat: json.visibilitat,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
         documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
-          console.log(documentSignatura)
+          //console.log(documentSignatura)
           return {
             document: documentSignatura.document,
             signatura: SignaturaService.fromJSON(documentSignatura.signatura),
@@ -295,12 +317,13 @@ export class DocumentService {
       }
 
       if(json.idFitxer){
-        console.log(json.idFitxer);
+        //console.log(json.idFitxer);
         const fitxerBucket:FitxerBucket = {
           id: json.idFitxer,
           nom: "",
           path: "",
-          bucket: ""
+          bucket: "",
+          signants: []
         }
         document.fitxer = fitxerBucket;
       }
