@@ -41,10 +41,8 @@ export interface DadesFormulari {
     telefonLlocTreball?:string;
     activitatLlocTreball?:string;
     nomRepresentantLegal?:string;
-    llinatgesRepresentantLegal?:string;
     nifRepresentantLegal?:string;
     nomTutorEmpresa?:string;
-    llinatgesTutorEmpresa?:string;
     nifTutorEmpresa?:string;
     nacionalitatTutorEmpresa?:string;
     municipiTutorEmpresa?:string;

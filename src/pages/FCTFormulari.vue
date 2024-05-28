@@ -15,6 +15,7 @@
       <div class="bg-primary border-bottom">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades de l'alumne</p>
       </div>
+
         <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Alumne" menu-self="top middle">
             <q-list>
                 <q-item v-for="student in allStudents" clickable v-close-popup @click="selectStudent(student)">
@@ -224,6 +225,7 @@ const allCompanies:Ref<Empresa[]> = ref([] as Empresa[]);
 const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
 const allGrups:Ref<Grup[]> = ref([] as Grup[]);
 const tutorFCT:Ref<Usuari> = ref({} as Usuari);
+const unselectStudent:Ref<Alumne[]> = ref(allStudents);
 const readOnlyConditionCompany = computed(() => {
 
   return (key:string) => key === 'cif' || key === 'adrecaEmpresa' || key === 'nomEmpresa' || key === 'nomRepresentantLegal'
@@ -238,8 +240,8 @@ const formData: Ref<DadesFormulari> = ref({ anyCurs: '', nomAlumne: '', llinatge
   tipusJornada: '', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: undefined,
   empresaAdministracioPublica: undefined, numeroConveni: '', numeroAnnex: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
   cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
-  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomRepresentantLegal: '', llinatgesRepresentantLegal: '',
-  nifRepresentantLegal: '', nomTutorEmpresa: '', llinatgesTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
+  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomRepresentantLegal: '',
+  nifRepresentantLegal: '', nomTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
   municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmrpesa: '', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
   diaSeguimentResponsableFct: '', horaSeguimentResponsableFct: '', flexibilitzacioModulFct: undefined,
 });
@@ -258,9 +260,8 @@ const labels = ["Curs Escolar","Nom alumne","Llinatges alumne","Població","DNI"
   "Telèfon mòbil","És una empresa nova?","És una empresa de l'Administració Pública?","Número de conveni",
   "Número d'annex","Nom de l'empresa","CIF","Adreça","Còdig postal","Població","Telèfon","Nom Centre de treball",
   "Adreça Centre de treball","Còdig postal Centre de treball","Població Centre de treball","Telèfon Centre de treball",
-  "Activitat Centre de treball","Nom representant legal","Llinatges representant legal","NIF representant legal",
-  "Nom tutor empresa","Llinatges tutor empresa","NIF tutor empresa","Nacionalitat tutor empresa",
-  "Municipi tutor empresa", "Càrrec del tutor dins l'empresa","Correu electrònic de l'empresa",
+  "Activitat Centre de treball","Nom representant legal","NIF representant legal", "Nom tutor empresa",
+  "NIF tutor empresa","Nacionalitat tutor empresa", "Municipi tutor empresa", "Càrrec del tutor dins l'empresa","Correu electrònic de l'empresa",
   "Dia seguiment centre educatiu","Hora seguiment centre educatiu", "Dia seguiment amb responsable FCT","Hora seguiment amb responsable FCT"];
 
 const dadesAlumne = ["Nom alumne","Llinatges alumne","Població alumne","DNI","Nombre expedient",
@@ -276,9 +277,8 @@ const dadesEmpresa = ["És una empresa nova?","És una empresa de l'Administraci
 
 const dadesLlocTreball = ["Nom Centre de treball", "Adreça Centre de treball","Còdig postal Centre de treball",
     "Població Centre de treball","Telèfon Centre de treball", "Activitat Centre de treball","Nom representant legal",
-    "Llinatges representant legal","NIF representant legal", "Nom tutor empresa","Llinatges tutor empresa",
-    "NIF tutor empresa","Nacionalitat tutor empresa","Municipi tutor empresa", "Càrrec del tutor dins l'empresa",
-    "Correu electrònic de l'empresa"];
+    "NIF representant legal", "Nom tutor empresa", "NIF tutor empresa","Nacionalitat tutor empresa","Municipi tutor empresa",
+    "Càrrec del tutor dins l'empresa", "Correu electrònic de l'empresa"];
 
 const dadesAltresInformacions = ["Dia seguiment centre educatiu","Hora seguiment centre educatiu",
   "Dia seguiment amb responsable FCT","Hora seguiment amb responsable FCT"];
@@ -298,7 +298,14 @@ function selectStudent(student:Alumne){
     }
     formData.value.grup = student.estudis;
 }
-
+function filterstudent(val:string) {
+  if (val === '') {
+    unselectStudent.value = allStudents.value;
+  }else {
+    unselectStudent.value = unselectStudent.value.filter(student => student.nom?.toLowerCase().includes(val.toLowerCase()) ||
+      student.cognom1?.toLowerCase().includes(val.toLowerCase()) || student.cognom2?.toLowerCase().includes(val.toLowerCase()))
+  }
+}
 function selectCompany(company:Empresa){
 
 
@@ -398,10 +405,8 @@ async function saveForm(){
     formData.value.telefonLlocTreball = '';
     formData.value.activitatLlocTreball = '';
     formData.value.nomRepresentantLegal = '';
-    formData.value.llinatgesRepresentantLegal = '';
     formData.value.nifRepresentantLegal = '';
     formData.value.nomTutorEmpresa = '';
-    formData.value.llinatgesTutorEmpresa = '';
     formData.value.nifTutorEmpresa = '';
     formData.value.nacionalitatTutorEmpresa = '';
     formData.value.municipiTutorEmpresa = '';
