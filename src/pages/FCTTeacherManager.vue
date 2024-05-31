@@ -497,6 +497,7 @@ async function selectGrup(grup:Grup){
   allDocumentsGrup.value = documentsAll;
 
   alumnesGrup.value = await getAlumnesAmbDocsFCT();
+  alumnesGrup.value.sort((a: Usuari, b: Usuari) => {return a.cognom1!.localeCompare(b.cognom1!)});
 
   documentsUsuari.value = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
