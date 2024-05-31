@@ -497,6 +497,7 @@ async function selectGrup(grup:Grup){
   allDocumentsGrup.value = documentsAll;
 
   alumnesGrup.value = await getAlumnesAmbDocsFCT();
+  alumnesGrup.value.sort((a: Usuari, b: Usuari) => {return a.cognom1!.localeCompare(b.cognom1!)});
 
   documentsUsuari.value = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -562,6 +563,7 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
   } else {
     documentsUsuari.value.push(documentSaved);
   }
+  filterDocuments();
   addDocument.value = false;
   uploadDocument.value = false;
 }
@@ -611,19 +613,14 @@ function deleteDocument(document: Document) {
     message: "Aquesta acció no es pot desfer",
     cancel: true
   }).onOk(async () => {
-    console.log("ok entra a delete document");
     await DocumentService.deleteDocument(document);
-    /*let index: number;
-    if (document.nomOriginal.split("_").length === 5) {
-      index = documentsUsuariFiltrats.value.findIndex(d => d.id === document.id);
-      console.log(index)
-      documentsUsuariFiltrats.value.splice(index, 1);
-    }
-    else {
-      index = documentsGrup.value.findIndex(d => d.id === document.id);
-      console.log(index)
-      documentsGrup.value.splice(index, 1);
-    }*/
+    if (documentsUsuari.value.indexOf(document) > -1)
+      documentsUsuari.value.splice(documentsUsuari.value.indexOf(document), 1);
+
+    if (documentsGrup.value.indexOf(document) > -1)
+      documentsGrup.value.splice(documentsGrup.value.indexOf(document), 1);
+
+    filterDocuments();
   });
 }
 
