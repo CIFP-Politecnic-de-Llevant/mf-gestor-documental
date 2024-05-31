@@ -19,7 +19,7 @@ export interface Alumne{
   targetaSanitaria?:string;
   cip?:string;
   adrecaCompleta?:string;
-  minucipi?:string;
+  municipi?:string;
   localitat?:string;
   cp?:string;
   telefon?:string;

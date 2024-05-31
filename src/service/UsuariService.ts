@@ -153,7 +153,7 @@ export class UsuariService {
       targetaSanitaria: json.targetaSanitaria,
       cip: json.cip,
       adrecaCompleta: json.adrecaCompleta,
-      minucipi: json.minucipi,
+      municipi: json.municipi,
       localitat: json.localitat,
       cp: json.cp,
       telefon: json.telefon,

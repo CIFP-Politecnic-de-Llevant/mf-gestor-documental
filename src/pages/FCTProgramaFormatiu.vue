@@ -67,7 +67,7 @@
         </template>
       </q-table>
         <q-dialog v-model="addTask" persistent>
-            <q-card style="max-width: 1000px;">
+            <q-card style="width: 1000px;">
                 <q-card-section>
                     <q-form @submit="saveTask"  class="q-gutter-md ">
                         <p class="text-h5 q-mt-lg">Crear Tasca</p>
@@ -86,7 +86,7 @@
             </q-card>
         </q-dialog>
         <q-dialog v-model="taskEdit" persistent>
-            <q-card style="max-width: 1000px;">
+            <q-card style="width: 1000px;">
                 <q-card-section>
                     <q-form @submit="saveTask"  class="q-gutter-md ">
                         <p class="text-h5 q-mt-lg">Modificar Tasca</p>
@@ -105,7 +105,7 @@
             </q-card>
         </q-dialog>
         <q-dialog v-model="confirmation" persistent>
-            <q-card style="width: 300px">
+            <q-card style="width: 400px">
                 <q-card-section class="bg-primary">
                     <div class="text-h6">Esborrar Tasca</div>
                 </q-card-section>
