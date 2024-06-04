@@ -22,6 +22,15 @@ export class ProgramaFormatiuService {
             return this.fromJSONPFormatiu(pFormatiu)
         }).sort();
     }
+    static async findAllPFormatiuById(id:number):Promise<Array<ProgramaFormatiu>>{
+
+        const response = await axios.get(process.env.API + `/api/gestordocumental/programa-formacio/all-PFormatiusById/${id}`)
+        const data = await response.data;
+
+        return data.map((pFormatiu:any):ProgramaFormatiu=>{
+            return this.fromJSONPFormatiu(pFormatiu)
+        }).sort();
+    }
 
     static  fromJSONPFormatiu(json:any):ProgramaFormatiu{
 

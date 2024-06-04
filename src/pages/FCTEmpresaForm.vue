@@ -137,13 +137,13 @@ const readOnlyConditionWorkspace = computed(() => {
   return (key:string) => key === 'nomRepresentantLegal'
 })
 const workplace:Ref<LlocTreball> = ref({nom:'', adreca:'', codiPostal: '', telefon: '',
-  poblacio: '', activitat: '', nomRepresentantLegal: '', dniRepresentantLegal: '',
-  nomTutorEmpresa: '', dniTutorEmpresa: '', municipi: '', carrecTutor: '', email: ''} as LlocTreball)
+  poblacio: '', activitat: '', nomCompletRepresentantLegal: '', dniRepresentantLegal: '',
+  nomCompletTutorEmpresa: '', dniTutorEmpresa: '', municipi: '', carrecTutor: '', email: ''} as LlocTreball)
 const labelsCompany = ["Id","Número Conveni","Número Annnex","Nom","CIF","Adreça",
     "Codi Postal","Població","Provicia","Telèfon"];
 
-const labelsWorkspace = ["Id","Nom","Adreça", "Codi Postal","Telèfon","Població","Activitat","Nom Representant Legal",
-    "DNI Representant Legal","Nom Tutor/a Empresa","DNI Tutor/a Empresa","Municipi","Carrec Tutor/a","E-mail"];
+const labelsWorkspace = ["Id","Nom","Adreça", "Codi Postal","Telèfon","Població","Activitat","Nom Complet Representant Legal",
+    "DNI Representant Legal","Nom Complet Tutor/a Empresa","DNI Tutor/a Empresa","Municipi","Carrec Tutor/a","E-mail"];
 
 
 async function saveWorkplace(){
