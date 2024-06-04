@@ -15,66 +15,82 @@
       <div class="bg-primary border-bottom">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades de l'alumne</p>
       </div>
-
-        <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Alumne" menu-self="top middle">
-            <q-list>
-                <q-item v-for="student in allStudents" clickable v-close-popup @click="selectStudent(student)">
-                    <q-item-section>
-                        <q-item-label>{{student.nom}} {{student.cognom1}} {{student.cognom2}}</q-item-label>
-                    </q-item-section>
-                </q-item>
-            </q-list>
-        </q-btn-dropdown>
+      <q-select
+        filled
+        :model-value="fullNameStudentSelected"
+        use-input
+        hide-selected
+        fill-input
+        input-debounce="0"
+        :options="options"
+        @filter="filterstudent"
+        @update:model-value="selectStudent"
+        label="Alumnes"
+        style="width: 250px"
+        class="q-mt-md q-mr-md q-ml-sm "
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              Sense resultats
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show="dadesAlumne.includes(labels[index])">
-          <q-input
-              v-if="key !== 'menorEdat' && key !== 'estudis' && key !== 'cicleFormatiu'
-              && key !== 'grup' && key !== 'duradaCicle' && key !== 'periode' && key !== 'tipusJornada'"
-              class="q-pa-sm"
-              outlined
-              :type="key === 'dataInici'? 'date':'text' && key === 'dataFi'? 'date':'text' && key === 'dataAcabament'? 'date':'text'"
-              :label="labels[index]"
-              v-model="formData[key]"
-              :model-value="formData[key]"
-              @change="key === 'dataInici'? ageCalculate(formData[key]) : ''"
-          />
-          <q-select
-              v-if="key === 'cicleFormatiu' || key === 'grup'"
-              outlined
-              class="q-pa-sm"
-              v-model="formData[key]"
-              :options= "key === 'cicleFormatiu'? ciclesFormatius : allNomGrups"
-              :label="labels[index]"
-          />
-          <div
-              class=" q-pl-sm"
-              v-if="key === 'menorEdat' || key === 'estudis'
-               || key === 'duradaCicle' || key === 'periode'
-               || key === 'estudis'">
-              <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">{{labels[index]}}</p>
-              <div class="q-gutter-sm " v-if="key === 'menorEdat'">
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'estudis'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="FP Bàsica" label="FP Bàsica" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Mitjà" label="CF Grau Mitjà" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Superior" label="CF Grau Superior" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'duradaCicle'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="1 any" label="1 any" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="2 anys" label="2 anys" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'periode'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Ordinari" label="Ordinari" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="No ordinari" label="No ordinari" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'periode'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Continuada" label="Continuada" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Partida" label="Partida" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Continuada i Partida" label="Continuada i Partida" />
-              </div>
+        <div class="col-md-4 row" v-for="(value,key,index) in formData" :key="key" v-show="dadesAlumne.includes(labels[index])">
+          <div class="col-md-11">
+            <q-input
+                v-if="key !== 'menorEdat' && key !== 'estudis' && key !== 'cicleFormatiu'
+                && key !== 'grup' && key !== 'duradaCicle' && key !== 'periode' && key !== 'tipusJornada'"
+                class="q-pa-sm"
+                outlined
+                :type="key === 'dataInici'? 'date':'text' && key === 'dataFi'? 'date':'text' && key === 'dataAcabament'? 'date':'text'"
+                :label="labels[index]"
+                v-model="formData[key]"
+                :model-value="formData[key]"
+                @change="key === 'dataInici'? ageCalculate(formData[key]) : ''"
+            />
+            <q-select
+                v-if="key === 'cicleFormatiu' || key === 'grup'"
+                outlined
+                class="q-pa-sm"
+                v-model="formData[key]"
+                :options= "key === 'cicleFormatiu'? ciclesFormatius : allNomGrups"
+                :label="labels[index]"
+            />
+
+            <div
+                class=" q-pl-sm"
+                v-if="key === 'menorEdat' || key === 'estudis'
+                 || key === 'duradaCicle' || key === 'periode'
+                 || key === 'tipusJornada'">
+                <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">{{labels[index]}}</p>
+                <div class="q-gutter-sm " v-if="key === 'menorEdat'">
+                    <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+                    <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
+                </div>
+                <div class="q-gutter-sm" v-else-if="key === 'estudis'">
+                  <q-radio size="xs" v-model="formData[key]" class="text-small" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="FP Bàsica" label="FP Bàsica" />
+                  <q-radio size="xs" v-model="formData[key]" class="text-small" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Mitjà" label="CF Grau Mitjà" />
+                  <q-radio size="xs" v-model="formData[key]" class="text-small" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Superior" label="CF Grau Superior" />
+                </div>
+                <div class="q-gutter-sm" v-else-if="key === 'duradaCicle'">
+                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="1 any" label="1 any" />
+                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="2 anys" label="2 anys" />
+                </div>
+                <div class="q-gutter-sm" v-else-if="key === 'periode'">
+                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Ordinari" label="Ordinari" />
+                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="No ordinari" label="No ordinari" />
+                </div>
+                <div class="q-gutter-sm" v-else-if="key === 'tipusJornada'">
+                  <q-radio size="xs" v-model="formData[key]" class="text-small" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Continuada" label="Continuada" />
+                  <q-radio size="xs" v-model="formData[key]" class="text-small" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Partida" label="Partida" />
+                  <q-radio size="xs" v-model="formData[key]" class="text-small" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Continuada i Partida" label="Continuada i Partida" />
+                </div>
+            </div>
           </div>
+            <p class="text-red col-md-1" v-if="key !== 'edat' && key !== 'horari' ">*</p>
         </div>
         <div class="col-md-4"></div>
         <div class="col-md-4"></div>
@@ -83,15 +99,18 @@
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades del professor-tutor</p>
       </div>
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show="dadesTutor.includes(labels[index])">
-          <q-input
-              class="q-pa-sm"
-              outlined
-              type="text"
-              :label="labels[index]"
-              v-model="formData[key]"
-              :model-value="formData[key]"
-          />
+        <div class="col-md-4 row" v-for="(value,key,index) in formData" :key="key" v-show="dadesTutor.includes(labels[index])">
+            <div class="col-md-11">
+                <q-input
+                        class="q-pa-sm"
+                        outlined
+                        type="text"
+                        :label="labels[index]"
+                        v-model="formData[key]"
+                        :model-value="formData[key]"
+                />
+            </div>
+            <p class="text-red col-md-1" v-if="key !== 'telefonTutor' ">*</p>
         </div>
         <div class="col-md-4"></div>
       </div>
@@ -117,8 +136,9 @@
         </q-list>
       </q-btn-dropdown>
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show=" dadesEmpresa.includes(labels[index])">
-          <q-input
+        <div class="col-md-4 row" v-for="(value,key,index) in formData" :key="key" v-show=" dadesEmpresa.includes(labels[index])">
+          <div class="col-md-11">
+            <q-input
               v-if="key !== 'empresaNova' && key !== 'empresaAdministracioPublica'"
               class="q-pa-sm"
               outlined
@@ -128,28 +148,34 @@
               :label="labels[index]"
               v-model="formData[key]"
               :model-value="formData[key]"
-          />
-          <div class="col-md-4 q-pl-sm" v-if="key === 'empresaNova' || key === 'empresaAdministracioPublica'">
-              <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">{{labels[index]}}</p>
-              <div class="q-gutter-sm ">
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
-              </div>
+            />
+            <div class="col-md-4 q-pl-sm" v-if="key === 'empresaNova' || key === 'empresaAdministracioPublica'">
+                <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">{{labels[index]}}</p>
+                <div class="q-gutter-sm ">
+                    <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+                    <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
+                </div>
+            </div>
           </div>
+          <p class="text-red col-md-1" v-if="key !== 'empresaAdministracioPublica' && key !== 'numeroConveni' &&
+           key !== 'numeroAnnex' ">*</p>
         </div>
         <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Lloc de treball</p>
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show=" dadesLlocTreball.includes(labels[index])">
-        <q-input
-            class="q-pa-sm"
-            outlined
-            :readonly="readOnlyConditionCompany(key)"
-            :bg-color="readOnlyConditionCompany(key) ? 'primary' : ''"
-            type="text"
-            :label="labels[index]"
-            v-model="formData[key]"
-            :model-value="formData[key]"
-        />
-      </div>
+        <div class="col-md-4 row" v-for="(value,key,index) in formData" :key="key" v-show=" dadesLlocTreball.includes(labels[index])">
+          <div class="col-md-11">
+            <q-input
+              class="q-pa-sm"
+              outlined
+              :readonly="readOnlyConditionCompany(key)"
+              :bg-color="readOnlyConditionCompany(key) ? 'primary' : ''"
+              type="text"
+              :label="labels[index]"
+              v-model="formData[key]"
+              :model-value="formData[key]"
+            />
+          </div>
+            <p class="text-red col-md-1" v-if="key !== 'carrecTutorEmpresa'">*</p>
+        </div>
         <div class="col-md-4"></div>
         <div class="col-md-4"></div>
       </div>
@@ -158,23 +184,26 @@
       </div>
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
         <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show="dadesAltresInformacions.includes(labels[index])">
-          <q-input
-              v-if="key !== 'diaSeguimentCentreEducatiu' && key !== 'diaSeguimentResponsableFct'"
-              class="q-pa-sm"
-              outlined
-              type="text"
-              :label="labels[index]"
-              v-model="formData[key]"
-              :model-value="formData[key]"
-          />
-          <q-select
-              v-if="key === 'diaSeguimentCentreEducatiu' || key === 'diaSeguimentResponsableFct'"
-              outlined
-              class="q-pa-sm"
-              v-model="formData[key]"
-              :options= "['Dilluns','Dimarts','Dimecres','Dijous','Divendres']"
-              :label="labels[index]"
-          />
+          <div class="col-md-11">
+            <q-input
+                v-if="key !== 'diaSeguimentCentreEducatiu' && key !== 'diaSeguimentResponsableFct'"
+                class="q-pa-sm"
+                outlined
+                type="text"
+                :label="labels[index]"
+                v-model="formData[key]"
+                :model-value="formData[key]"
+            />
+            <q-select
+                v-if="key === 'diaSeguimentCentreEducatiu' || key === 'diaSeguimentResponsableFct'"
+                outlined
+                class="q-pa-sm"
+                v-model="formData[key]"
+                :options= "['Dilluns','Dimarts','Dimecres','Dijous','Divendres']"
+                :label="labels[index]"
+            />
+          </div>
+          <p class="text-red col-md-1" v-if="key !== 'horaSeguimentResponsableFct'">*</p>
         </div>
         <div class="col-md-4"></div>
         <div class="col-md-4"></div>
@@ -184,13 +213,31 @@
       </div>
       <div class="row flex justify-center q-my-sm q-gutter-y-md">
           <div class="col-md-4  q-pl-sm">
-              <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Hi ha algun tipus de flexibilització en el mòdul de FCT?</p>
+              <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Hi ha algun tipus de flexibilització en el mòdul de FCT?<span class="text-red">*</span></p>
               <div class="q-gutter-sm ">
                   <q-radio v-model="formData.flexibilitzacioModulFct" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="true" label="Si" />
                   <q-radio v-model="formData.flexibilitzacioModulFct" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="false" label="No" />
               </div>
           </div>
         <div class="col-md-4"></div>
+        <div class="col-md-4"></div>
+      </div>
+        <!-- TODO: Nomes surt el programa formatiu si l'alumne nomes està a un grup -->
+        <!-- TODO: El programa formatiu que s'escolleix encar no es guardaquan es pitja per guardar el formulari -->
+      <div class="bg-primary border-bot-top q-mt-md">
+          <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Programa formatiu</p>
+      </div>
+      <div class="row flex justify-center q-my-sm q-gutter-y-md">
+          <p class=" col-md-12 q-pt-sm q-pr-sm q-pl-md q-mb-none ">Selecciona 10 tasques:<span class="text-red">*</span></p>
+          <div class="col-md-4" v-for="pf in pFormatiuByGroup">
+              <q-checkbox
+                class="q-pa-sm"
+                v-model="pFormatiusSelected"
+                :val="pf"
+                @update:model-value="maximumSelection"
+                :label="pf.descripcio"
+              />
+          </div>
         <div class="col-md-4"></div>
       </div>
     </q-form>
@@ -216,16 +263,23 @@ import formatDate = date.formatDate;
 import {LlocTreball} from "src/model/LlocTreball";
 import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
+import {ProgramaFormatiu} from "src/model/ProgramaFormatiu";
+import {CursService} from "src/service/CursService";
+import {ProgramaFormatiuService} from "src/service/ProgramaFormatiuService";
 
 const companySelected:Ref<boolean> = ref(false);
 const studentSelect:Ref<Alumne> = ref({} as Alumne);
-const companySelect:Ref<Empresa> = ref({} as Empresa);
 const allStudents:Ref<Alumne[]> = ref([] as Alumne[]);
+const fullNameStudentSelected:Ref<{label: string | null, value: number | null}> = ref({label:null,  value: null});
 const allCompanies:Ref<Empresa[]> = ref([] as Empresa[]);
 const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
-const allGrups:Ref<Grup[]> = ref([] as Grup[]);
 const tutorFCT:Ref<Usuari> = ref({} as Usuari);
-const unselectStudent:Ref<Alumne[]> = ref(allStudents);
+const options:Ref<{label: string | null, value: number | null}[]> = ref([]);
+const pFormatiuByGroup:Ref<ProgramaFormatiu[]> = ref([] as ProgramaFormatiu[]);
+const unselectStudent:Ref<Alumne[]> = ref([] as Alumne[]);
+const grup:Ref<Grup|null> = ref(null);
+const pFormatiusSelected:Ref<ProgramaFormatiu[]> = ref([] as ProgramaFormatiu[]);
+
 const readOnlyConditionCompany = computed(() => {
 
   return (key:string) => key === 'cif' || key === 'adrecaEmpresa' || key === 'nomEmpresa' || key === 'nomRepresentantLegal'
@@ -240,8 +294,8 @@ const formData: Ref<DadesFormulari> = ref({ anyCurs: '', nomAlumne: '', llinatge
   tipusJornada: '', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: undefined,
   empresaAdministracioPublica: undefined, numeroConveni: '', numeroAnnex: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
   cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
-  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomRepresentantLegal: '',
-  nifRepresentantLegal: '', nomTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
+  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomCompletRepresentantLegal: '',
+  nifRepresentantLegal: '', nomCompletTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
   municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmrpesa: '', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
   diaSeguimentResponsableFct: '', horaSeguimentResponsableFct: '', flexibilitzacioModulFct: undefined,
 });
@@ -284,30 +338,58 @@ const dadesAltresInformacions = ["Dia seguiment centre educatiu","Hora seguiment
   "Dia seguiment amb responsable FCT","Hora seguiment amb responsable FCT"];
 
 
-function selectStudent(student:Alumne){
 
-    studentSelect.value = student;
-    formData.value.nomAlumne = student.nom;
-    formData.value.llinatgesAlumne = student.cognom1 + " " + student.cognom2;
-    formData.value.poblacio = student.municipi;
-    formData.value.dni = student.dni;
+async function selectStudent(student:any){
 
-    if (student && typeof student.numeroExpedient !== 'undefined') {
-        formData.value.nExpedient = student.numeroExpedient.toString();
-      console.log(formData.value.nExpedient)
-    }
-    formData.value.grup = student.estudis;
+      fullNameStudentSelected.value = student;
+
+      studentSelect.value = allStudents!.value!.find(st => st!.idAlumne! === student.value)!;
+      formData.value.nomAlumne = studentSelect.value?.nom;
+      formData.value.llinatgesAlumne = studentSelect.value?.cognom1 + " " + studentSelect.value?.cognom2;
+      formData.value.poblacio = studentSelect.value?.municipi;
+      formData.value.dni = studentSelect.value?.dni;
+
+      if (studentSelect && typeof studentSelect.value?.numeroExpedient !== 'undefined') {
+          formData.value.nExpedient = studentSelect.value?.numeroExpedient.toString();
+
+      }
+      const curs = studentSelect!.value!.estudis! + studentSelect!.value!.grup!;
+
+      formData.value.grup = (curs);
+      grup.value = await CursService.getCursByCodi(curs);
+      pFormatiuByGroup.value = await ProgramaFormatiuService.findAllPFormatiuById(grup.value?.id);
+
 }
-function filterstudent(val:string) {
+function filterstudent(val:string,update:Function) {
   if (val === '') {
-    unselectStudent.value = allStudents.value;
-  }else {
-    unselectStudent.value = unselectStudent.value.filter(student => student.nom?.toLowerCase().includes(val.toLowerCase()) ||
-      student.cognom1?.toLowerCase().includes(val.toLowerCase()) || student.cognom2?.toLowerCase().includes(val.toLowerCase()))
+    update(() => {
+
+      options.value = unselectStudent.value.map( (st:any) =>{
+        return{
+          label: st.nom + " " + st.cognom1 + " " +st.cognom2,
+          value: st.idAlumne
+        }
+      })
+    })
+      return
   }
+  update(()=>{
+      options.value = unselectStudent.value.filter(student => student.nom?.toLowerCase().includes(val.toLowerCase()) ||
+          student.cognom1?.toLowerCase().includes(val.toLowerCase()) || student.cognom2?.toLowerCase().includes(val.toLowerCase()))
+          .map(st => {
+          return{
+              label: st.nom + " " + st.cognom1 + " " +st.cognom2,
+              value: st.idAlumne
+          }
+      })
+  })
+}
+function maximumSelection(){
+    if(pFormatiusSelected.value.length > 10){
+        pFormatiusSelected.value.pop()
+    }
 }
 function selectCompany(company:Empresa){
-
 
   formData.value.empresaNova = false;
   formData.value.numeroConveni = company.numeroConveni;
@@ -318,10 +400,13 @@ function selectCompany(company:Empresa){
   formData.value.cpempresa = company.codiPostal;
   formData.value.telefonEmpresa = company.telefon;
 
-    console.log(company.llocsTreball);
   if(company.llocsTreball !== undefined){
       companySelected.value = true;
       allCompanyWorkspace.value = company.llocsTreball;
+  }
+  for (const companyElement of allCompanyWorkspace.value) {
+
+    console.log(companyElement)
   }
 }
 
@@ -333,9 +418,9 @@ function selectWorkspace(workspace:LlocTreball){
     formData.value.poblacioLlocTreball = workspace.poblacio;
     formData.value.telefonLlocTreball = workspace.telefon;
     formData.value.activitatLlocTreball = workspace.activitat;
-    formData.value.nomRepresentantLegal = workspace.nomRepresentantLegal;
+    formData.value.nomCompletRepresentantLegal = workspace.nomCompletRepresentantLegal;
     formData.value.nifRepresentantLegal = workspace.dniRepresentantLegal;
-    formData.value.nomTutorEmpresa = workspace.nomTutorEmpresa;
+    formData.value.nomCompletTutorEmpresa = workspace.nomCompletTutorEmpresa;
     formData.value.nifTutorEmpresa = workspace.dniTutorEmpresa;
     formData.value.municipiTutorEmpresa = workspace.municipi;
     formData.value.carrecTutorEmpresa = workspace.carrecTutor;
@@ -343,22 +428,26 @@ function selectWorkspace(workspace:LlocTreball){
 }
 function ageCalculate(date:Date){
 
-    if(studentSelect.value.dataNaixement !== undefined){
-       const fechaNaixement = studentSelect.value.dataNaixement.toString().split("-");
-       const fechaInici = date.toString().split("-");
-       let age = parseInt(fechaInici[0]) - parseInt(fechaNaixement[0]);
+    if(studentSelect.value){
 
-       if(parseInt(fechaNaixement[1]) > parseInt(fechaInici[1])){
-           age = age - 1;
-       }else if(parseInt(fechaNaixement[1]) === parseInt(fechaInici[1])){
+        if(studentSelect.value.dataNaixement !== undefined){
+            const fechaNaixement = studentSelect.value.dataNaixement.toString().split("-");
+            const fechaInici = date.toString().split("-");
+            let age = parseInt(fechaInici[0]) - parseInt(fechaNaixement[0]);
 
-           if (parseInt(fechaNaixement[2]) > parseInt(fechaInici[2])){
-               age = age - 1;
-           }
-       }
-        formData.value.edat = age.toString();
-        age >= 18 ? formData.value.menorEdat = false : formData.value.menorEdat = true;
+            if(parseInt(fechaNaixement[1]) > parseInt(fechaInici[1])){
+                age = age - 1;
+            }else if(parseInt(fechaNaixement[1]) === parseInt(fechaInici[1])){
+
+                if (parseInt(fechaNaixement[2]) > parseInt(fechaInici[2])){
+                    age = age - 1;
+                }
+            }
+            formData.value.edat = age.toString();
+            age >= 18 ? formData.value.menorEdat = false : formData.value.menorEdat = true;
+        }
     }
+
 }
 
 async function saveForm(){
@@ -404,9 +493,9 @@ async function saveForm(){
     formData.value.poblacioLlocTreball = '';
     formData.value.telefonLlocTreball = '';
     formData.value.activitatLlocTreball = '';
-    formData.value.nomRepresentantLegal = '';
+    formData.value.nomCompletRepresentantLegal = '';
     formData.value.nifRepresentantLegal = '';
-    formData.value.nomTutorEmpresa = '';
+    formData.value.nomCompletTutorEmpresa = '';
     formData.value.nifTutorEmpresa = '';
     formData.value.nacionalitatTutorEmpresa = '';
     formData.value.municipiTutorEmpresa = '';
@@ -422,6 +511,7 @@ async function saveForm(){
 onMounted(async () =>{
 
   allStudents.value = await UsuariService.allStudents();
+  unselectStudent.value = [...allStudents.value];
   allCompanies.value = await EmpresaService.allCompanies();
   tutorFCT.value = await UsuariService.getProfile();
 
@@ -429,6 +519,7 @@ onMounted(async () =>{
   formData.value.llinatgesTutor = tutorFCT.value.cognom1 + " " + tutorFCT.value.cognom2;
 
 
+  //TODO: El grups estan inserits a ma
 
   /*
   allGrups.value = await GrupService.findAllGrups();
@@ -446,6 +537,9 @@ onMounted(async () =>{
 
 .text-apartat{
   font-size: 18px;
+}
+.text-small{
+  font-size: 13px;
 }
 .border{
     border: 1px solid black;

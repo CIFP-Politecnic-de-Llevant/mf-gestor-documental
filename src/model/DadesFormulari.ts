@@ -40,9 +40,9 @@ export interface DadesFormulari {
     poblacioLlocTreball?:string;
     telefonLlocTreball?:string;
     activitatLlocTreball?:string;
-    nomRepresentantLegal?:string;
+    nomCompletRepresentantLegal?:string;
     nifRepresentantLegal?:string;
-    nomTutorEmpresa?:string;
+    nomCompletTutorEmpresa?:string;
     nifTutorEmpresa?:string;
     nacionalitatTutorEmpresa?:string;
     municipiTutorEmpresa?:string;
