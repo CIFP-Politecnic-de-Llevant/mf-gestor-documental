@@ -101,7 +101,7 @@
 
 <script lang="ts">
 
-import {defineComponent, onMounted, reactive, Ref, ref} from 'vue'
+import {defineComponent, ref} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {Rol} from '../model/Rol'
 import Menuapp from '../components/common/AppsMenu.vue';
