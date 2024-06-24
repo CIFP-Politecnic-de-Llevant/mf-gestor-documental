@@ -41,14 +41,14 @@
             <q-item-label>FCT - Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/formulari" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <!--q-item clickable to="/fct/formulari" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="description" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Formulari</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item-->
         <q-item clickable to="/fct/group">
           <q-item-section avatar>
             <q-icon name="group" />
@@ -57,7 +57,7 @@
             <q-item-label>FCT - Grup</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/empresaConfiguration" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <!--q-item clickable to="/fct/empresaConfiguration" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="store" />
           </q-item-section>
@@ -80,7 +80,7 @@
           <q-item-section>
             <q-item-label>FCT - Programa Formatiu</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item-->
         <q-item clickable to="/logout">
           <q-item-section avatar>
             <q-icon name="logout" />
