@@ -596,8 +596,12 @@ async function getURL(document:Document){
 }
 
 async function viewPdf(document: Document) {
-  showPdfDialog.value = true;
-  pdf.value = await DocumentService.getURLFitxerDocument(document, false);
+  const documentSaved:Document = await DocumentService.getDocumentById(document.id);
+  const fitxer = await DocumentService.getURLFitxerDocument(documentSaved, false);
+  if(fitxer) {
+    showPdfDialog.value = true;
+    pdf.value = fitxer;
+  }
 }
 
 function checkDeletePermission(document: Document) {
@@ -669,7 +673,7 @@ function confirmDelete(id:number) {
 
 async function getAlumnesAmbDocsFCT() {
   const alumnesIds: number[] = [];
-  const alumnesFCT: Usuari[] = [];
+  //const alumnesFCT:Usuari[] = [];
 
   for (const doc of allDocumentsGrup.value) {
     if (doc.usuari !== undefined) {
@@ -679,17 +683,18 @@ async function getAlumnesAmbDocsFCT() {
 
   const idsUnics = [...new Set(alumnesIds)];
 
-  // TODO revisar si aquest await provoca lentitud
-
+  const alumnesPromise = [];
   for (const id of idsUnics) {
-    alumnesFCT.push(await UsuariService.getById(String (id)));
+    alumnesPromise.push(UsuariService.getById(String(id)));
   }
+
+  const alumnesFCT:Usuari[] = await Promise.all(alumnesPromise)
 
   return alumnesFCT;
 }
 
 async function deleteAllDocumentsAlumneId(id:number) {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token")||"";
   const payload = token.split(".")[1];
   const email = JSON.parse(atob(payload)).email;
 

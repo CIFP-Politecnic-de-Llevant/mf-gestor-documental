@@ -15,7 +15,7 @@
           GestSuite - Gestor Documental
         </q-toolbar-title>
 
-        <Menuapp v-if="enableApps && (rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR || rol===rols.CAP_ESTUDIS || rol===rols.ADMINISTRATIU || rol===rols.WEB))"></Menuapp>
+        <Menuapp v-if="enableApps && (rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR || rol===rols.CAP_ESTUDIS || rol===rols.ADMINISTRATIU || rol===rols.WEB))"></Menuapp>
       </q-toolbar>
     </q-header>
 
@@ -25,7 +25,7 @@
       bordered
     >
       <q-list>
-        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find((rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="add" />
           </q-item-section>
