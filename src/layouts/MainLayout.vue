@@ -15,7 +15,7 @@
           GestSuite - Gestor Documental
         </q-toolbar-title>
 
-        <Menuapp v-if="enableApps && (rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR || rol===rols.CAP_ESTUDIS || rol===rols.ADMINISTRATIU || rol===rols.WEB))"></Menuapp>
+        <Menuapp v-if="enableApps && (rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR || rol===rols.CAP_ESTUDIS || rol===rols.ADMINISTRATIU || rol===rols.WEB))"></Menuapp>
       </q-toolbar>
     </q-header>
 
@@ -25,30 +25,30 @@
       bordered
     >
       <q-list>
-        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
-            <q-icon name="description" />
+            <q-icon name="add" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Generar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/manageDocumentation" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/manageDocumentation" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
-            <q-icon name="description" />
+            <q-icon name="folder" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <!--q-item clickable to="/fct/formulari" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/formulari" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="description" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Formulari</q-item-label>
           </q-item-section>
-        </q-item-->
+        </q-item>
         <q-item clickable to="/fct/group">
           <q-item-section avatar>
             <q-icon name="group" />
@@ -57,30 +57,30 @@
             <q-item-label>FCT - Grup</q-item-label>
           </q-item-section>
         </q-item>
-        <!--q-item clickable to="/fct/empresaConfiguration" >
+        <q-item clickable to="/fct/empresaConfiguration" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
-            <q-icon name="description" />
+            <q-icon name="store" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Configuració Empresa</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/studentConfiguration">
+        <q-item clickable to="/fct/studentConfiguration" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
-            <q-icon name="description" />
+            <q-icon name="diversity_3" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Configuració Alumnes</q-item-label>
           </q-item-section>
-        </q-item-->
-        <!--q-item clickable to="/fct/programaFormatiu">
+        </q-item>
+        <q-item clickable to="/fct/programaFormatiu" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
-            <q-icon name="group" />
+            <q-icon name="book" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Programa Formatiu</q-item-label>
           </q-item-section>
-        </q-item-->
+        </q-item>
         <q-item clickable to="/logout">
           <q-item-section avatar>
             <q-icon name="logout" />
@@ -103,7 +103,7 @@
 
 import {defineComponent, onMounted, reactive, Ref, ref} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import {Rol} from '../model/Rol.ts'
+import {Rol} from '../model/Rol'
 import Menuapp from '../components/common/AppsMenu.vue';
 
 
@@ -114,7 +114,7 @@ export default defineComponent({
   },
   setup () {
     const leftDrawerOpen = ref(false)
-    const rolsUser = JSON.parse(localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
+    const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
     const router = useRouter()
     const route = useRoute()
     const rols = Rol;
