@@ -39,7 +39,8 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="descripcio" :props="props" class="text-wrap-center">
-              {{ props.row.descripcio }}
+              <!--{{ props.row.descripcio }}-->
+              <div v-html="props.row.descripcio"></div>
             </q-td>
             <q-td class="text-wrap-center">
               <div>
@@ -70,14 +71,16 @@
             <q-card style="width: 1000px;">
                 <q-card-section>
                     <q-form @submit="saveTask"  class="q-gutter-md ">
-                        <p class="text-h5 q-mt-lg">Crear Tasca</p>
-                        <q-input
+                        <p class="text-h5 q-mt-lg">Crear Ítem</p>
+                        <!--q-input
                           filled
                           type="textarea"
                           label="Descripció"
                           v-model="task.descripcio"
-                        />
-                        <div class="flex justify-end q-gutter-sm">
+                        /-->
+                      <q-editor v-model="task.descripcio" min-height="5rem" />
+
+                      <div class="flex justify-end q-gutter-sm">
                             <q-btn label="Guardar Tasca" type="submit" color="primary" v-close-popup/>
                             <q-btn label="Tancar" color="primary"  v-close-popup/>
                         </div>
@@ -85,17 +88,19 @@
                 </q-card-section>
             </q-card>
         </q-dialog>
+        <!-- TODO: Esborrar taskEdit i emprar el mateix per a crear i editar -->
         <q-dialog v-model="taskEdit" persistent>
             <q-card style="width: 1000px;">
                 <q-card-section>
                     <q-form @submit="saveTask"  class="q-gutter-md ">
                         <p class="text-h5 q-mt-lg">Modificar Tasca</p>
-                        <q-input
+                        <!--q-input
                                 filled
                                 type="textarea"
                                 label="Descripció"
                                 v-model="updateTask.descripcio"
-                        />
+                        /-->
+                      <q-editor v-model="updateTask.descripcio" min-height="5rem" />
                         <div class="flex justify-end q-gutter-sm">
                             <q-btn label="Actualitzar Tasca" type="submit" color="primary" v-close-popup/>
                             <q-btn label="Tancar" color="primary"  v-close-popup/>
@@ -134,12 +139,13 @@ const maxTasks:Ref<boolean> = ref(false);
 const addTask:Ref<boolean> = ref(false);
 const isSearching:Ref<boolean> = ref(false);
 const confirmation:Ref<boolean> = ref(false);
+//TODO: Esborrar taskEdit i emprar el mateix per a crear i editar
 const taskEdit:Ref<boolean> = ref(false);
 const idTask = ref<number>(0);
 const grups:Ref<Grup[]> = ref([] as Grup[]);
 const allPFormatiu:Ref<ProgramaFormatiu[]> = ref([] as ProgramaFormatiu[]);
 const pFormatiuGrupSelected:Ref<ProgramaFormatiu[]> = ref([] as ProgramaFormatiu[]);
-const task:Ref<ProgramaFormatiu> = ref({} as ProgramaFormatiu);
+const task:Ref<ProgramaFormatiu> = ref({descripcio:''} as ProgramaFormatiu);
 const updateTask:Ref<ProgramaFormatiu> = ref({} as ProgramaFormatiu);
 const grupSelected:Ref<Grup> = ref({} as Grup);
 const initialPagination = {
