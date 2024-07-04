@@ -346,12 +346,18 @@ async function loadGrups(){
   const grups = await GrupService.findGrupsAmbDocumentsFct();
   grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
-  const promises = [];
+  /*const promises = [];
   for(const grup of grups){
     promises.push(setGrup(grup));
   }
 
-  await Promise.all(promises);
+  await Promise.all(promises);*/
+
+  //TODO: si feim promises.push dóna error de net::ERR_INSUFFICIENT_RESOURCES
+  grupsFCT.value = [];
+  for(const grup of grups){
+    await setGrup(grup);
+  }
 }
 
 onMounted(async ()=>{
