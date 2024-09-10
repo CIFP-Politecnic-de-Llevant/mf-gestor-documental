@@ -1,12 +1,26 @@
 <template>
   <q-page padding>
 
-    <q-btn-group push>
-      <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')" />
-      <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')" />
-      <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')" />
-      <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')" />
-    </q-btn-group>
+    <div class="q-mb-lg">
+      <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
+        <q-list>
+          <q-item v-for="convocatoria in convocatories" clickable v-close-popup @click="selectConvocatoria(convocatoria)">
+            <q-item-section>
+              <q-item-label>{{convocatoria.nom}}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
+
+    <div>
+      <q-btn-group push>
+        <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')" />
+        <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')" />
+        <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')" />
+        <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')" />
+      </q-btn-group>
+    </div>
 
     <div v-for="grupFCT in grupsFiltered">
       <div v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
@@ -197,8 +211,12 @@ import {DocumentService} from "src/service/DocumentService";
 import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
+import {ConvocatoriaService} from "src/service/ConvocatoriaService";
+import {useRoute, useRouter} from "vue-router";
 
 const $q = useQuasar();
+const router = useRouter()
+const route = useRoute()
 
 const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 
@@ -221,8 +239,14 @@ const initialPagination = {
   rowsPerPage: 0
 }
 
+//Get query params
+const idConvocatoria = route.query?.convocatoria;
+console.log("Parameter: idConvocatoria",idConvocatoria, route.query?.convocatoria);
+
+const convocatories:Ref<Convocatoria> = ref();
+
 async function setGrup(grup:Grup){
-  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom);
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom, idConvocatoria);
 
   const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
     if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
@@ -343,7 +367,7 @@ function filterDocuments(filter:string){
 }
 
 async function loadGrups(){
-  const grups = await GrupService.findGrupsAmbDocumentsFct();
+  const grups = await GrupService.findGrupsAmbDocumentsFct(idConvocatoria);
   grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
 
   /*const promises = [];
@@ -358,6 +382,12 @@ async function loadGrups(){
   for(const grup of grups){
     await setGrup(grup);
   }
+}
+
+async function selectConvocatoria(convocatoria: Convocatoria) {
+  //Refresh with new convocatoria
+  await router.push({name: route.name as string, query: {convocatoria: convocatoria.id}});
+  window.location.reload();
 }
 
 onMounted(async ()=>{
@@ -482,6 +512,7 @@ onMounted(async ()=>{
   dialog.hide();
 
   signatures.value = await SignaturaService.findAll();
+  convocatories.value = await ConvocatoriaService.getConvocatories();
 })
 </script>
 

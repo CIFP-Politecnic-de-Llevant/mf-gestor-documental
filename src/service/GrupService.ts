@@ -17,8 +17,12 @@ export class GrupService {
     }));
   }
 
-  static async findGrupsAmbDocumentsFct(): Promise<Array<Grup>> {
-    const response = await axios.get(process.env.API + '/api/gestordocumental/grups-amb-documentsfct');
+  static async findGrupsAmbDocumentsFct(idConvocatoria:String): Promise<Array<Grup>> {
+    let url = process.env.API + '/api/gestordocumental/grups-amb-documentsfct';
+    if(idConvocatoria){
+      url += '?idConvocatoria=' + idConvocatoria;
+    }
+    const response = await axios.get(url);
     const grups = await response.data;
 
     return Promise.all(grups.map((grup:any)=>{

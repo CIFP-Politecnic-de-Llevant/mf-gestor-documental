@@ -1,14 +1,30 @@
 <template>
   <q-page padding>
-    <q-btn-dropdown color="primary" label="Grups">
-      <q-list>
-        <q-item v-for="grup in grups" clickable v-close-popup @click="selectGrup(grup)">
-          <q-item-section>
-            <q-item-label>{{grup.curs.nom}}{{grup.nom}}</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
-    </q-btn-dropdown>
+
+    <div class="q-mb-lg">
+      <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
+        <q-list>
+          <q-item v-for="convocatoria in convocatories" clickable v-close-popup @click="selectConvocatoria(convocatoria)">
+            <q-item-section>
+              <q-item-label>{{convocatoria.nom}}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
+
+    <div>
+      <q-btn-dropdown color="primary" label="Grups">
+        <q-list>
+          <q-item v-for="grup in grups" clickable v-close-popup @click="selectGrup(grup)">
+            <q-item-section>
+              <q-item-label>{{grup.curs.nom}}{{grup.nom}}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
+
     <div v-if="isSearching">
       <h2>Cercant...</h2>
     </div>
@@ -431,6 +447,8 @@ import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
+import {useRoute, useRouter} from "vue-router";
+import {ConvocatoriaService} from "src/service/ConvocatoriaService";
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
@@ -471,6 +489,14 @@ const showPdfDialog = ref(false);
 const pdf:Ref<FitxerBucket | null> = ref({} as FitxerBucket);
 
 const $q = useQuasar();
+const router = useRouter()
+const route = useRoute()
+
+//Get query params
+const idConvocatoria = route.query?.convocatoria;
+console.log("Parameter: idConvocatoria",idConvocatoria, route.query?.convocatoria);
+
+const convocatories:Ref<Convocatoria> = ref();
 
 const initialPagination = {
   sortBy: 'desc',
@@ -493,7 +519,7 @@ async function selectGrup(grup:Grup){
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   console.log(tutorsFCT.value);
-  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom);
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom, idConvocatoria);
   allDocumentsGrup.value = documentsAll;
 
   alumnesGrup.value = await getAlumnesAmbDocsFCT();
@@ -775,6 +801,12 @@ function filterDocuments() {
     });
 }
 
+async function selectConvocatoria(convocatoria: Convocatoria) {
+  //Refresh with new convocatoria
+  await router.push({name: route.name as string, query: {convocatoria: convocatoria.id}});
+  window.location.reload();
+}
+
 onMounted(async ()=>{
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom));
@@ -842,6 +874,8 @@ onMounted(async ()=>{
     field: row => row,
     sortable: false
   });
+
+  convocatories.value = await ConvocatoriaService.getConvocatories();
 })
 </script>
 

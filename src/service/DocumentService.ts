@@ -33,8 +33,12 @@ export class DocumentService {
     }).sort());
   }
 
-  static async getDocumentsByGrupCodi(grupCodi:string):Promise<Array<Document>>{
-    const response = await axios.get(process.env.API + '/api/gestordocumental/documents-grup/'+grupCodi);
+  static async getDocumentsByGrupCodi(grupCodi:string, idConvocatoria:string):Promise<Array<Document>>{
+    let url = process.env.API + '/api/gestordocumental/documents-grup/'+grupCodi;
+    if(idConvocatoria){
+      url += '?idConvocatoria=' + idConvocatoria;
+    }
+    const response = await axios.get(url);
     const data = await response.data;
     return Promise.all(data.map((document:any):Promise<Document>=>{
       return this.fromJSONDocument(document)
