@@ -16,6 +16,32 @@
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades de l'alumne</p>
       </div>
 
+      <div class="q-pa-md">
+        <div class="q-gutter-md row">
+          <q-select
+            filled
+            use-input
+            hide-selected
+            fill-input
+            input-debounce="0"
+            :options="filteredOptions"
+            @filter="filterFn"
+            hint="Selecciona Alumne"
+            style="width: 250px; padding-bottom: 32px"
+            label="Alumne"
+            color="primary"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  Sense resultats
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
+      </div>
+
         <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Alumne" menu-self="top middle">
             <q-list>
                 <q-item v-for="student in allStudents" clickable v-close-popup @click="selectStudent(student)">
@@ -216,6 +242,9 @@ import formatDate = date.formatDate;
 import {LlocTreball} from "src/model/LlocTreball";
 import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
+import IStudentListItem from "src/Interfaces/IStudentListItem";
+
+const selectedStudent:Ref<Alumne> = ref<Alumne>({});
 
 const companySelected:Ref<boolean> = ref(false);
 const studentSelect:Ref<Alumne> = ref({} as Alumne);
@@ -226,6 +255,11 @@ const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
 const allGrups:Ref<Grup[]> = ref([] as Grup[]);
 const tutorFCT:Ref<Usuari> = ref({} as Usuari);
 const unselectStudent:Ref<Alumne[]> = ref(allStudents);
+
+let studentSelectList:IStudentListItem[] = [];
+
+const filteredOptions:IStudentListItem[] = ref(studentSelectList)
+
 const readOnlyConditionCompany = computed(() => {
 
   return (key:string) => key === 'cif' || key === 'adrecaEmpresa' || key === 'nomEmpresa' || key === 'nomRepresentantLegal'
@@ -306,6 +340,15 @@ function filterstudent(val:string) {
       student.cognom1?.toLowerCase().includes(val.toLowerCase()) || student.cognom2?.toLowerCase().includes(val.toLowerCase()))
   }
 }
+
+const filterFn = (val, update, abort) => {
+  update(() => {
+    const needle = val.toLowerCase()
+    filteredOptions.value = studentSelectList.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+  })
+}
+
+
 function selectCompany(company:Empresa){
 
 
@@ -429,6 +472,10 @@ onMounted(async () =>{
   formData.value.llinatgesTutor = tutorFCT.value.cognom1 + " " + tutorFCT.value.cognom2;
 
 
+  studentSelectList = allStudents.value.map(student => ({
+    label: student.cognom1 + " " + student.cognom2 + ", " + student.nom,
+    value: student
+  }));
 
   /*
   allGrups.value = await GrupService.findAllGrups();
