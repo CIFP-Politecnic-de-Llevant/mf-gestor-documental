@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div>
-      <p class="text-h5 q-mt-lg">Alumnes</p>
+      <p class="text-h5 q-mt-lg">Alumnesss</p>
     </div>
     <q-form @submit="saveFile" class="q-gutter-md q-mt-md" style="display: flex">
       <q-file
@@ -24,38 +24,21 @@
         :rows="studentData"
         :columns="columns"
         row-key="numeroExpedient"
-        binary-state-sort
         class="q-mb-lg q-mt-lg"
-        :pagination="initialPagination"
+        :filter="filter"
     >
-      <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th
-              v-for="col in props.cols"
-              :key="col.name"
-              :props="props"
-              class="text-wrap-center"
-          >
-            {{ col.label }}
-          </q-th>
-        </q-tr>
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Cerca">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </template>
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td key="numeroExpedient" :props="props" class="text-wrap-center">
-            {{ props.row.numeroExpedient }}
-          </q-td>
-          <q-td key="nom" :props="props" class="text-wrap-center">
-            {{ props.row.nom }}
-          </q-td>
-          <q-td key="cognom1" :props="props" class="text-wrap-center">
-            {{ props.row.cognom1 }}
-          </q-td>
-          <q-td key="cognom2" :props="props" class="text-wrap-center">
-            {{ props.row.cognom2 }}
-          </q-td>
-          <q-td class="text-wrap-center">
-            <div>
+
+
+      <template v-slot:body-cell-accions="props">
+        <q-td :props="props">
+            <div class="flex-inline">
               <q-btn
                   @click="editStudent(props.row.idAlumne)"
                   :color="'primary'"
@@ -77,7 +60,6 @@
               />
             </div>
           </q-td>
-        </q-tr>
       </template>
     </q-table>
     <q-dialog v-model="seeStudentEdition" persistent>
@@ -197,8 +179,6 @@ import {UsuariService} from "src/service/UsuariService";
 import {Ref} from "vue/dist/vue";
 import {QTableColumn} from "quasar";
 import {Alumne} from "src/model/Alumne";
-import { outlinedDriveFileRenameOutline } from '@quasar/extras/material-icons-outlined'
-
 
 const seeStudentEdition = ref(false);
 const listStudents = ref(false);
@@ -210,12 +190,8 @@ const studentSelect:Ref<Alumne> = ref({} as Alumne);
 const selectListStudents:Ref<Alumne[]> = ref([] as Alumne[]);
 const file = ref<File | null>(null);
 const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[]);
-const initialPagination = {
-  sortBy: 'desc',
-  descending: false,
-  page: 1,
-  rowsPerPage: 0
-};
+const filter:Ref<string> = ref<string>('')
+
 const labels = ["Id","Nom","1er Llinatge","2on Llinatge","Ensenyament","Estudis","Grup","Número d'Expedient",
   "Sexe","Data Naixement","Nacionalitat","País Naixement","Província Naixement","Localitat Naixement",
   "DNI","Targeta Sanitària","CIP","Adreça Completa","Municipi","Localitat","Codi Postal","Telèfon",
@@ -276,6 +252,7 @@ async function deleteStudent(){
     await UsuariService.deleteStudent(nExpAlumneSelected.value);
   }
 }
+
 onMounted(async () =>{
 
   studentData.value = await UsuariService.allStudents();
@@ -283,35 +260,39 @@ onMounted(async () =>{
 columns.value.push({
     name:'numeroExpedient',
     label:'NºExpedient',
+    required: true,
     field: row => row.numeroExpedient,
-    sortable: true
-
+    sortable: true,
+    align: 'left'
 });
 columns.value.push({
     name:'nom',
     label:'Nom',
+    required: true,
     field: row => row.nom,
-    sortable: true
-
+    sortable: true,
+    align: 'left'
 });
 columns.value.push({
     name:'cognom1',
     label:'1er Llinatge',
-    field: row => row.alumne.cognom1,
-    sortable: true
-
+    required: true,
+    field: row => row.cognom1,
+    sortable: true,
+    align: 'left'
 });
 columns.value.push({
     name:'cognom2',
     label:'2on Llinatge',
-    field: row => row.alumne.cognom2,
-    sortable: true
-
+    field: row => row.cognom2,
+    sortable: true,
+    align: 'left'
 });
 columns.value.push({
     name:'accions',
     label:'Accions',
     field: 'accions',
+    align: 'right'
 });
 
 })
