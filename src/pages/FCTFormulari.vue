@@ -20,6 +20,9 @@
         <div class="q-gutter-md row">
           <q-select
             filled
+            v-model="selectedStudent"
+            emit-value
+            map-options
             use-input
             hide-selected
             fill-input
@@ -42,15 +45,6 @@
         </div>
       </div>
 
-        <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Alumne" menu-self="top middle">
-            <q-list>
-                <q-item v-for="student in allStudents" clickable v-close-popup @click="selectStudent(student)">
-                    <q-item-section>
-                        <q-item-label>{{student.nom}} {{student.cognom1}} {{student.cognom2}}</q-item-label>
-                    </q-item-section>
-                </q-item>
-            </q-list>
-        </q-btn-dropdown>
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
         <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show="dadesAlumne.includes(labels[index])">
           <q-input
@@ -229,7 +223,7 @@
 <script setup lang="ts">
 
 
-import {computed, onMounted, ref, Ref} from "vue";
+import {computed, onMounted, ref, Ref, watch} from "vue";
 import {Alumne} from "src/model/Alumne";
 import {Empresa} from "src/model/Empresa";
 import {UsuariService} from "src/service/UsuariService";
@@ -244,7 +238,7 @@ import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
 import IStudentListItem from "src/Interfaces/IStudentListItem";
 
-const selectedStudent:Ref<Alumne> = ref<Alumne>({});
+const selectedStudent:Ref<Alumne> = ref<Alumne>(null);
 
 const companySelected:Ref<boolean> = ref(false);
 const studentSelect:Ref<Alumne> = ref({} as Alumne);
@@ -348,6 +342,9 @@ const filterFn = (val, update, abort) => {
   })
 }
 
+watch(selectedStudent, (newValue, oldValue) => {
+  selectStudent(selectedStudent.value)
+});
 
 function selectCompany(company:Empresa){
 

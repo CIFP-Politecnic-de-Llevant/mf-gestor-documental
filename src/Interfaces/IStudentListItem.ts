@@ -1,6 +1,6 @@
 interface IStudentListItem {
-  label?: number,
-  value?: number
+  label?: string,
+  value?: object
 }
 
 export default IStudentListItem
