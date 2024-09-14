@@ -19,7 +19,7 @@
       <div class="q-pa-md">
         <div class="q-gutter-md row">
           <q-select
-            filled
+            standout
             v-model="selectedStudent"
             emit-value
             map-options
@@ -27,12 +27,12 @@
             hide-selected
             fill-input
             input-debounce="0"
-            :options="filteredOptions"
-            @filter="filterFn"
-            hint="Selecciona Alumne"
+            :options="filteredStudentOptions"
+            @filter="filterStudentsFn"
             style="width: 250px; padding-bottom: 32px"
             label="Alumne"
-            color="primary"
+            color="white"
+            bg-color="primary"
           >
             <template v-slot:no-option>
               <q-item>
@@ -118,24 +118,60 @@
       <div class="bg-primary border-bot-top q-mt-md">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades empresa</p>
       </div>
-      <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Empresa">
-        <q-list>
-          <q-item v-for="company in allCompanies" clickable v-close-popup @click="selectCompany(company)">
-            <q-item-section>
-              <q-item-label>{{company.nom}}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
-        <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Lloc de treball" v-if="companySelected">
-        <q-list>
-          <q-item v-for="workspace in allCompanyWorkspace" clickable v-close-popup @click="selectWorkspace(workspace)">
-            <q-item-section>
-              <q-item-label>{{workspace.nom}}</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-btn-dropdown>
+
+
+      <div class="q-pa-md">
+        <div class="q-gutter-md row">
+          <q-select
+            standout
+            v-model="selectedCompany"
+            emit-value
+            map-options
+            use-input
+            hide-selected
+            fill-input
+            input-debounce="0"
+            :options="filteredCompanyOptions"
+            @filter="filterCompaniesFn"
+            label="Empresa"
+            color="white"
+            bg-color="primary"
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  Sense resultats
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+
+          <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Lloc de treball" v-if="companySelected">
+            <q-list>
+              <q-item v-for="workspace in allCompanyWorkspace" clickable v-close-popup @click="selectWorkspace(workspace)">
+                <q-item-section>
+                  <q-item-label>{{workspace.nom}}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </div>
+      </div>
+
+
+<!--      <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Empresa">-->
+<!--        <q-list>-->
+<!--          <q-item v-for="company in allCompanies" clickable v-close-popup @click="selectCompany(company)">-->
+<!--            <q-item-section>-->
+<!--              <q-item-label>{{company.nom}}</q-item-label>-->
+<!--            </q-item-section>-->
+<!--          </q-item>-->
+<!--        </q-list>-->
+<!--      </q-btn-dropdown>-->
+
+
+
+
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
         <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show=" dadesEmpresa.includes(labels[index])">
           <q-input
@@ -230,29 +266,31 @@ import {UsuariService} from "src/service/UsuariService";
 import {EmpresaService} from "src/service/EmpresaService";
 import {DadesFormulari} from "src/model/DadesFormulari";
 import {Grup} from "src/model/Grup";
-import {GrupService} from "src/service/GrupService";
 import {date} from "quasar";
-import formatDate = date.formatDate;
 import {LlocTreball} from "src/model/LlocTreball";
 import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
 import IStudentListItem from "src/Interfaces/IStudentListItem";
+import ICompanyListItem from "src/Interfaces/ICompanyListItem";
 
-const selectedStudent:Ref<Alumne> = ref<Alumne>(null);
+const allStudents:Ref<Alumne[]> = ref([] as Alumne[]);        // Tots els alumnes
+let studentSelectList:IStudentListItem[] = [];                // Llista d'opcions pel select amb filtre
+const selectedStudent:Ref<Alumne> = ref<Alumne>(null);  // Alumne seleccionat pel select amb filtre
+const studentSelect:Ref<Alumne> = ref({} as Alumne);          // Antic alumne seleccionat en el formulari
+const filteredStudentOptions:IStudentListItem[] = ref(studentSelectList)
+
+const allCompanies:Ref<Empresa[]> = ref([] as Empresa[]);
+let companySelectList:ICompanyListItem[] = []
+const selectedCompany:Ref<Empresa> = ref<Empresa>(null)
+const filteredCompanyOptions:ICompanyListItem[] = ref(companySelectList)
 
 const companySelected:Ref<boolean> = ref(false);
-const studentSelect:Ref<Alumne> = ref({} as Alumne);
-const companySelect:Ref<Empresa> = ref({} as Empresa);
-const allStudents:Ref<Alumne[]> = ref([] as Alumne[]);
-const allCompanies:Ref<Empresa[]> = ref([] as Empresa[]);
+
+
 const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
 const allGrups:Ref<Grup[]> = ref([] as Grup[]);
 const tutorFCT:Ref<Usuari> = ref({} as Usuari);
-const unselectStudent:Ref<Alumne[]> = ref(allStudents);
 
-let studentSelectList:IStudentListItem[] = [];
-
-const filteredOptions:IStudentListItem[] = ref(studentSelectList)
 
 const readOnlyConditionCompany = computed(() => {
 
@@ -326,24 +364,27 @@ function selectStudent(student:Alumne){
     }
     formData.value.grup = student.estudis;
 }
-function filterstudent(val:string) {
-  if (val === '') {
-    unselectStudent.value = allStudents.value;
-  }else {
-    unselectStudent.value = unselectStudent.value.filter(student => student.nom?.toLowerCase().includes(val.toLowerCase()) ||
-      student.cognom1?.toLowerCase().includes(val.toLowerCase()) || student.cognom2?.toLowerCase().includes(val.toLowerCase()))
-  }
-}
 
-const filterFn = (val, update, abort) => {
+const filterStudentsFn = (val, update, abort) => {
   update(() => {
     const needle = val.toLowerCase()
-    filteredOptions.value = studentSelectList.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+    filteredStudentOptions.value = studentSelectList.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
+  })
+}
+
+const filterCompaniesFn = (val, update, abort) => {
+  update(() => {
+    const needle = val.toLowerCase()
+    filteredCompanyOptions.value = companySelectList.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
   })
 }
 
 watch(selectedStudent, (newValue, oldValue) => {
   selectStudent(selectedStudent.value)
+});
+
+watch(selectedCompany, (newValue, oldValue) => {
+  selectCompany(selectedCompany.value)
 });
 
 function selectCompany(company:Empresa){
@@ -473,6 +514,13 @@ onMounted(async () =>{
     label: student.cognom1 + " " + student.cognom2 + ", " + student.nom,
     value: student
   }));
+
+ companySelectList = allCompanies.value
+    .map(company => ({
+      label: company.nom,
+      value: company
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   /*
   allGrups.value = await GrupService.findAllGrups();
