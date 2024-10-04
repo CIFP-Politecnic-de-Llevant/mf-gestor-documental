@@ -9,6 +9,7 @@ export interface Document {
   nomOriginal: string;
   id_googleDrive:string;
   documentEstat: string;
+  observacions: string;
   tipusDocument?: TipusDocument;
   visibilitat: boolean;
   usuari?: Usuari;

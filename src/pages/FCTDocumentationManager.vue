@@ -61,6 +61,9 @@
                   'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
               </q-td>
+              <q-td key="observacions" :props="props" class="text-wrap">
+                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)" />
+              </q-td>
               <q-td key="tipusDocument" :props="props" class="text-wrap">
                 {{ props.row.tipusDocument.nom }}
               </q-td>
@@ -134,6 +137,9 @@
                 <q-select v-model="props.row.documentEstat" :options="[
                   'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
+              </q-td>
+              <q-td key="observacions" :props="props" class="text-wrap">
+                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)" />
               </q-td>
               <q-td key="alumne" :props="props" class="text-wrap">
                 {{ props.row.usuari.nomComplet2 }}
@@ -213,6 +219,7 @@ import {QTableColumn, useQuasar} from "quasar";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
 import {useRoute, useRouter} from "vue-router";
+import debounce from 'lodash/debounce';
 
 const $q = useQuasar();
 const router = useRouter()
@@ -318,6 +325,14 @@ function signDoc(document:Document, signatura:Signatura, signat:boolean){
 
 function changeEstatDocument(document:Document, estat:string){
   DocumentService.changeEstatDocument(document, estat);
+}
+
+const debouncedChangeObservacionsDocument = debounce((document:Document, observacions:string) => {
+  changeObservacionsDocument(document, observacions);
+}, 1000);
+
+function changeObservacionsDocument(document:Document, observacions:string){
+  DocumentService.changeObservacionsDocument(document, observacions, idConvocatoria);
 }
 
 async function getURL(document:Document){
@@ -435,6 +450,13 @@ onMounted(async ()=>{
   });
 
   columnsGrup.value.push({
+    name: 'observacions',
+    label: 'Observacions',
+    field: row => row.observacions,
+    sortable: true
+  });
+
+  columnsGrup.value.push({
     name: 'tipusDocument',
     label: 'Document',
     field: row => row.tipusDocument.nom,
@@ -469,6 +491,13 @@ onMounted(async ()=>{
     name: 'validat',
     label: 'Validat?',
     field: row => row.documentEstat,
+    sortable: true
+  });
+
+  columnsUsuari.value.push({
+    name: 'observacions',
+    label: 'Observacions',
+    field: row => row.observacions,
     sortable: true
   });
 

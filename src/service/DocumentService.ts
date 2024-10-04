@@ -220,6 +220,19 @@ export class DocumentService {
       estat: estat
     });
   }
+
+  static async changeObservacionsDocument(document:Document,observacions:string, idConvocatoria:string){
+    let url = process.env.API + '/api/gestordocumental/document/canviarObservacionsDocument';
+    if(idConvocatoria){
+      url += '?idConvocatoria=' + idConvocatoria;
+    }
+    const response = await axios.post(url,{
+      idDocument: document.id,
+      observacions: observacions
+    });
+
+  }
+
   static async changeVisibilitatDocument(id:number,visibilitat:boolean){
     const response = await axios.post(process.env.API + '/api/gestordocumental/document/canviar-visibilitat-document',{
       idDocument: id,
@@ -308,6 +321,7 @@ export class DocumentService {
         nomOriginal: json.nomOriginal,
         id_googleDrive: json.idGoogleDrive,
         documentEstat: json.estat,
+        observacions: json.observacions,
         visibilitat: json.visibilitat,
         tipusDocument: (json.tipusDocument)?TipusDocumentService.fromJSON(json.tipusDocument):undefined,
         documentSignatures: (json.documentSignatures)?json.documentSignatures.map((documentSignatura:any):any=>{
