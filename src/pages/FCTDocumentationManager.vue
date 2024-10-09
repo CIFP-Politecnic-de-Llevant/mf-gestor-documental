@@ -62,7 +62,11 @@
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
               </q-td>
               <q-td key="observacions" :props="props" class="text-wrap">
-                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)" />
+                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
+                  <template v-slot:after>
+                    <q-btn @click="sendEmailDocument(props.row)" round dense flat icon="send" />
+                  </template>
+                </q-input>
               </q-td>
               <q-td key="tipusDocument" :props="props" class="text-wrap">
                 {{ props.row.tipusDocument.nom }}
@@ -82,7 +86,7 @@
                 </div>
               </q-td>
               <q-td>
-                <div class="flex flex-center" style="width: 200px;">
+                <div class="flex flex-center" style="width: 100px;">
                   <q-btn
                     @click="getURL(props.row)"
                     :color="!props.row.fitxer ? 'white' : 'primary'"
@@ -139,7 +143,11 @@
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
               </q-td>
               <q-td key="observacions" :props="props" class="text-wrap">
-                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)" />
+                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
+                  <template v-slot:after>
+                    <q-btn @click="sendEmailDocument(props.row)" round dense flat icon="send" />
+                  </template>
+                </q-input>
               </q-td>
               <q-td key="alumne" :props="props" class="text-wrap">
                 {{ props.row.usuari.nomComplet2 }}
@@ -162,7 +170,7 @@
                 </div>
               </q-td>
               <q-td>
-                <div class="flex flex-center" style="width: 200px;">
+                <div class="flex flex-center" style="width: 100px;">
                   <q-btn
                     @click="getURL(props.row)"
                     :color="!props.row.fitxer ? 'white' : 'primary'"
@@ -330,6 +338,10 @@ function changeEstatDocument(document:Document, estat:string){
 const debouncedChangeObservacionsDocument = debounce((document:Document, observacions:string) => {
   changeObservacionsDocument(document, observacions);
 }, 1000);
+
+const sendEmailDocument = (document:Document) => {
+  alert(document.observacions)
+}
 
 function changeObservacionsDocument(document:Document, observacions:string){
   DocumentService.changeObservacionsDocument(document, observacions, idConvocatoria);
