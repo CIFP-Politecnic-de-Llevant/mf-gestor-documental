@@ -4,9 +4,10 @@
     <div class="q-mb-lg">
       <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
         <q-list>
-          <q-item v-for="convocatoria in convocatories" clickable v-close-popup @click="selectConvocatoria(convocatoria)">
+          <q-item v-for="convocatoria in convocatories" clickable v-close-popup
+                  @click="selectConvocatoria(convocatoria)">
             <q-item-section>
-              <q-item-label>{{convocatoria.nom}}</q-item-label>
+              <q-item-label>{{ convocatoria.nom }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -15,18 +16,19 @@
 
     <div>
       <q-btn-group push>
-        <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')" />
-        <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')" />
-        <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')" />
-        <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')" />
+        <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')"/>
+        <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')"/>
+        <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')"/>
+        <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')"/>
       </q-btn-group>
     </div>
 
     <div v-for="grupFCT in grupsFiltered">
-      <div v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
-        <h4>Grup:  {{grupFCT.grup.curs.nom}}{{grupFCT.grup.nom}}</h4>
+      <div
+        v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
+        <h4>Grup: {{ grupFCT.grup.curs.nom }}{{ grupFCT.grup.nom }}</h4>
         <p v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)">
-          Tutor FCT: {{tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t=>t.label).join(", ")}}
+          Tutor FCT: {{ tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t => t.label).join(", ") }}
         </p>
         <p v-else>
           Tutor FCT: Carregant tutors...
@@ -59,12 +61,16 @@
               <q-td key="tipusDocument" :props="props" class="text-wrap">
                 <q-select v-model="props.row.documentEstat" :options="[
                   'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
-                ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
+                ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)"/>
               </q-td>
-              <q-td key="observacions" :props="props" class="text-wrap">
-                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
-                  <template v-slot:after>
-                    <q-btn @click="sendEmailDocument(props.row)" round dense flat icon="send" />
+              <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
+                <q-input v-model="props.row.observacions"
+                         @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
+                  <template v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)"
+                            v-slot:after>
+                    <q-btn
+                      @click="sendMailToTutorFCT(tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom), props.row)"
+                      round dense flat icon="send"/>
                   </template>
                 </q-input>
               </q-td>
@@ -140,12 +146,15 @@
               <q-td key="tipusDocument" :props="props" class="text-wrap">
                 <q-select v-model="props.row.documentEstat" :options="[
                   'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
-                ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)" />
+                ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)"/>
               </q-td>
-              <q-td key="observacions" :props="props" class="text-wrap">
-                <q-input v-model="props.row.observacions" @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
+              <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
+                <q-input v-model="props.row.observacions"
+                         @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
                   <template v-slot:after>
-                    <q-btn @click="sendEmailDocument(props.row)" round dense flat icon="send" />
+                    <q-btn
+                      @click="sendMailToTutorFCT(tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom), props.row)"
+                      round dense flat icon="send"/>
                   </template>
                 </q-input>
               </q-td>
@@ -205,7 +214,7 @@
           <q-btn @click="showPdfDialog = false" color="white" flat icon="close"></q-btn>
         </q-bar>
         <div class="fit">
-          <q-pdfviewer :src="pdf.url" />
+          <q-pdfviewer :src="pdf.url"/>
         </div>
       </q-card>
     </q-dialog>
@@ -233,10 +242,10 @@ const $q = useQuasar();
 const router = useRouter()
 const route = useRoute()
 
-const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
+const signatures: Ref<Signatura[]> = ref([] as Signatura[]);
 
-const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
-const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
+const columnsGrup: Ref<QTableColumn[]> = ref([] as QTableColumn[])
+const columnsUsuari: Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
 const grupsFiltered = ref([] as any[]);
@@ -245,7 +254,7 @@ const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 const abortController = new AbortController();
 
 const showPdfDialog = ref(false);
-const pdf:Ref<FitxerBucket | null> = ref({} as FitxerBucket);
+const pdf: Ref<FitxerBucket | null> = ref({} as FitxerBucket);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -256,37 +265,37 @@ const initialPagination = {
 
 //Get query params
 const idConvocatoria = route.query?.convocatoria;
-console.log("Parameter: idConvocatoria",idConvocatoria, route.query?.convocatoria);
+console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
 
-const convocatories:Ref<Convocatoria> = ref();
+const convocatories: Ref<Convocatoria> = ref();
 
-async function setGrup(grup:Grup){
-  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom+grup.nom, idConvocatoria);
+async function setGrup(grup: Grup) {
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom + grup.nom, idConvocatoria);
 
-  const documentsUsuari = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
-    if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
+  const documentsUsuari = documentsAll.filter(d => d.usuari).sort((a: Document, b: Document) => {
+    if (a.usuari && b.usuari && a.usuari.id != b.usuari.id) {
       return a.usuari.nomComplet2.localeCompare(b.usuari.nomComplet2);
     }
-    if(!a.tipusDocument){
+    if (!a.tipusDocument) {
       return -1;
     }
-    if(!b.tipusDocument){
+    if (!b.tipusDocument) {
       return 1;
     }
-    if(a.tipusDocument.nom === b.tipusDocument.nom){
+    if (a.tipusDocument.nom === b.tipusDocument.nom) {
       return a.tipusDocument.nom.localeCompare(b.tipusDocument.nom);
     }
     return 0;
   });
 
-  const documentsGrup = documentsAll.filter(d=>!d.usuari).sort((a:Document, b:Document)=>{
-    if(!a.tipusDocument){
+  const documentsGrup = documentsAll.filter(d => !d.usuari).sort((a: Document, b: Document) => {
+    if (!a.tipusDocument) {
       return -1;
     }
-    if(!b.tipusDocument){
+    if (!b.tipusDocument) {
       return 1;
     }
-    return  a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
+    return a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
   });
 
   //URL documents
@@ -326,31 +335,46 @@ function setTutors(index: number) {
   }
 }
 
-function signDoc(document:Document, signatura:Signatura, signat:boolean){
+function signDoc(document: Document, signatura: Signatura, signat: boolean) {
   //console.log("Entra sign student")
-  DocumentService.signarDocument(document,signatura,signat);
+  DocumentService.signarDocument(document, signatura, signat);
 }
 
-function changeEstatDocument(document:Document, estat:string){
+function changeEstatDocument(document: Document, estat: string) {
   DocumentService.changeEstatDocument(document, estat);
 }
 
-const debouncedChangeObservacionsDocument = debounce((document:Document, observacions:string) => {
+const debouncedChangeObservacionsDocument = debounce((document: Document, observacions: string) => {
   changeObservacionsDocument(document, observacions);
 }, 1000);
 
-const sendEmailDocument = (document:Document) => {
-  alert(document.observacions)
-}
-
-function changeObservacionsDocument(document:Document, observacions:string){
+function changeObservacionsDocument(document: Document, observacions: string) {
   DocumentService.changeObservacionsDocument(document, observacions, idConvocatoria);
 }
 
-async function getURL(document:Document){
-  const documentSaved:Document = await DocumentService.getDocumentById(document.id);
+const sendMailToTutorFCT = (tutors: Usuari[], document: Document) => {
+  var errors = ""
+  if (!tutors || tutors.length == 0)
+    errors += "No es troben dades de tutor FCT \n"
+  if (!document.observacions)
+    errors += "No hi ha observacions a enviar \n"
+
+  if (!errors)
+    tutors.forEach(tutor => {
+      if (tutor.email)
+        DocumentService.sendMailToTutorFCT(tutor.email, document.nomOriginal, document.documentEstat, document.observacions)
+      else
+        errors += `El tutor ${tutor.nomComplet} no té email on enviar el missatge \n`
+    })
+
+  if (errors)
+    alert("No es possible enviar el mail:\n" + errors)
+}
+
+async function getURL(document: Document) {
+  const documentSaved: Document = await DocumentService.getDocumentById(document.id);
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
-  if(fitxer) {
+  if (fitxer) {
     window.open(fitxer.url, '_blank');
   }
 }
@@ -361,41 +385,40 @@ async function viewPdf(document: Document) {
 }
 
 
-function filterDocuments(filter:string){
+function filterDocuments(filter: string) {
   const filtered: any[] = [];
   grupsFiltered.value = [];
 
-  if(filter==='pending'){
+  if (filter === 'pending') {
     filtered.push(...grupsFCT.value.map(grup => {
       const grupClone = JSON.parse(JSON.stringify(grup));
-      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
-      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.PENDENT_SIGNATURES);
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
       return grupClone;
     }));
-  } else if(filter==='accepted'){
+  } else if (filter === 'accepted') {
     filtered.push(...grupsFCT.value.map(grup => {
       const grupClone = JSON.parse(JSON.stringify(grup));
-      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
-      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.ACCEPTAT);
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
       return grupClone;
     }));
-  } else if(filter==='rejected'){
+  } else if (filter === 'rejected') {
     filtered.push(...grupsFCT.value.map(grup => {
       const grupClone = JSON.parse(JSON.stringify(grup));
-      grupClone.documentsGrup = grupClone.documentsGrup.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
-      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d:any)=>d.documentEstat===DocumentEstat.REBUTJAT);
+      grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
+      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
       return grupClone;
     }));
-  }
-  else
+  } else
     filtered.push(...grupsFCT.value);
 
   grupsFiltered.value = [...filtered];
 }
 
-async function loadGrups(){
+async function loadGrups() {
   const grups = await GrupService.findGrupsAmbDocumentsFct(idConvocatoria);
-  grups.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom))
+  grups.sort((a: Grup, b: Grup) => (a.curs.nom + a.nom).localeCompare(b.curs.nom + b.nom))
 
   /*const promises = [];
   for(const grup of grups){
@@ -406,7 +429,7 @@ async function loadGrups(){
 
   //TODO: si feim promises.push dóna error de net::ERR_INSUFFICIENT_RESOURCES
   grupsFCT.value = [];
-  for(const grup of grups){
+  for (const grup of grups) {
     await setGrup(grup);
   }
 }
@@ -417,7 +440,7 @@ async function selectConvocatoria(convocatoria: Convocatoria) {
   window.location.reload();
 }
 
-onMounted(async ()=>{
+onMounted(async () => {
   const dialog = $q.dialog({
     message: 'Carregant...',
     progress: true, // we enable default settings
@@ -426,7 +449,7 @@ onMounted(async ()=>{
   })
   await loadGrups();
   await nextTick();
-  grupsFCT.value.sort((a, b)=>(a.grup.curs.nom+a.grup.nom).localeCompare(b.grup.curs.nom+b.grup.nom));
+  grupsFCT.value.sort((a, b) => (a.grup.curs.nom + a.grup.nom).localeCompare(b.grup.curs.nom + b.grup.nom));
 
   setTutors(0);
 
@@ -475,7 +498,7 @@ onMounted(async ()=>{
     sortable: true
   });
 
-  for(const signatura of signatures.value){
+  for (const signatura of signatures.value) {
     columnsGrup.value.push({
       name: signatura.id,
       label: signatura.nom,
@@ -527,7 +550,7 @@ onMounted(async ()=>{
     sortable: true
   });
 
-  for(const signatura of signatures.value){
+  for (const signatura of signatures.value) {
     columnsUsuari.value.push({
       name: signatura.id,
       label: signatura.nom,
@@ -558,11 +581,12 @@ onMounted(async ()=>{
 </script>
 
 <style scoped>
-.text-wrap-center{
+.text-wrap-center {
   text-wrap: wrap;
   text-align: center;
 }
-.text-wrap{
+
+.text-wrap {
   text-wrap: wrap;
   text-align: left;
 }
