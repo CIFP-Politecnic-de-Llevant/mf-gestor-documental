@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div>
-      <p class="text-h5 q-mt-lg">Alumnesss</p>
+      <p class="text-h5 q-mt-lg">Alumnes</p>
     </div>
     <q-form @submit="saveFile" class="q-gutter-md q-mt-md" style="display: flex">
       <q-file
