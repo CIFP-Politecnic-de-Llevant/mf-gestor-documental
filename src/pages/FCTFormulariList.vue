@@ -1,98 +1,159 @@
 <script setup lang="ts">
-import {onMounted} from "vue";
+import {onMounted, Ref, ref} from "vue";
+import {FormulariService} from "src/service/FormulariService";
+import {Formulari} from "src/model/Formulari";
+import {QTableColumn} from "quasar";
 
-const formularis = [];
+const formularis:Ref<Formulari[]> = ref([] as Formulari[]);
 
-onMounted(()=>{
+/*
+  id:string;
+  anyCurs:string;
+  nomAlumne:string;
+  llinatgesAlumne:string;
+  poblacio:string;
+  dni:string;
+  menorEdat:string;
+  edat:string;
+  estudis:string;
+  cicleFormatiu:string;
+  grup:string;
+  duradaCicle:string;
+  totalHoresProposadesFct:string;
+  horesDiaries:string;
+  km:string;
+  periode:string;
+  dataInici:string;
+  dataFi:string;
+  dataAcabament:string;
+  tipusJornada:string;
+  horari:string;
+  nomTutor:string;
+  llinatgesTutor:string;
+  telefonTutor:string;
+  empresaNova:string;
+  empresaAdministracioPublica:string;
+  numeroConveni:string;
+  numeroAnnex:string;
+  nomEmpresa:string;
+  cif:string;
+  adrecaEmpresa:string;
+  cpempresa:string;
+  poblacioEmpresa:string;
+  telefonEmpresa:string;
+  nomLlocTreball:string;
+  adrecaLlocTreball:string;
+  cpLlocTreball:string;
+  poblacioLlocTreball:string;
+  telefonLlocTreball:string;
+  activitatLlocTreball:string;
+  nomCompletRepresentantLegal:string;
+  nifRepresentantLegal:string;
+  nomCompletTutorEmpresa:string;
+  nifTutorEmpresa:string;
+  nacionalitatTutorEmpresa:string;
+  municipiTutorEmpresa:string;
+  carrecTutorEmpresa:string;
+  emailEmpresa:string;
+  diaSeguimentCentreEducatiu:string;
+  horaSeguimentCentreEducatiu:string;
+  diaSeguimentResponsableFct:string;
+  horaSeguimentResponsableFct:string;
+  flexibilitzacioModulFct:string;
+  nExpedient:string;
+ */
+const columns:QTableColumn[] = [] as QTableColumn[];
+columns.push({
+  name:'nomAlumne',
+  label:'Nom Alumne',
+  field: row => row.nomAlumne,
+  sortable: true
+});
 
+columns.push({
+  name:'llinatgesAlumne',
+  label:'Llinatges Alumne',
+  field: row => row.llinatgesAlumne,
+  sortable: true
+
+});
+
+columns.push({
+  name:'dni',
+  label:'DNI',
+  field: row => row.dni,
+  sortable: true
+
+});
+
+columns.push({
+  name:'menorEdat',
+  label:'Menor Edat',
+  field: row => row.menorEdat,
+  sortable: true
+});
+
+columns.push({
+  name:'edat',
+  label:'Edat',
+  field: row => row.edat,
+  sortable: true
+});
+
+columns.push({
+  name:'estudis',
+  label:'Estudis',
+  field: row => row.estudis,
+  sortable: true
+});
+
+columns.push({
+  name:'cicleFormatiu',
+  label:'Cicle Formatiu',
+  field: row => row.cicleFormatiu,
+  sortable: true
+});
+
+columns.push({
+  name:'grup',
+  label:'Grup',
+  field: row => row.grup,
+  sortable: true
+});
+
+columns.push({
+  name:'duradaCicle',
+  label:'Durada Cicle',
+  field: row => row.duradaCicle,
+  sortable: true
+});
+
+columns.push({
+  name:'totalHoresProposadesFct',
+  label:'Total Hores Proposades FCT',
+  field: row => row.totalHoresProposadesFct,
+  sortable: true
+
+});
+
+onMounted(async ()=>{
+  formularis.value = await FormulariService.getFormularis();
 })
 </script>
 
 <template>
-  <q-table
-    flat bordered
-    title="Documents del grup"
-    :rows="grupFCT.documentsGrup"
-    :columns="columnsGrup"
-    row-key="name"
-    binary-state-sort
-    class="q-mb-lg"
-    :pagination="initialPagination"
-  >
-    <template v-slot:header="props">
-      <q-tr :props="props">
-        <q-th
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-          class="text-wrap-center"
-        >
-          {{ col.label }}
-        </q-th>
-      </q-tr>
-    </template>
-    <template v-slot:body="props">
-      <q-tr :props="props">
-        <q-td key="tipusDocument" :props="props" class="text-wrap">
-          <q-select v-model="props.row.documentEstat" :options="[
-                  'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
-                ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)"/>
-        </q-td>
-        <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
-          <q-input v-model="props.row.observacions"
-                   @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
-            <template v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)"
-                      v-slot:after>
-              <q-btn
-                @click="sendMailToTutorFCT(tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom), props.row)"
-                round dense flat icon="send"/>
-            </template>
-          </q-input>
-        </q-td>
-        <q-td key="tipusDocument" :props="props" class="text-wrap">
-          {{ props.row.tipusDocument.nom }}
-        </q-td>
-        <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-          <q-checkbox
-            v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
-            v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-            @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
-          />
-        </q-td>
-        <q-td>
-          <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
-            <p v-for="nom in props.row.fitxer.signants">
-              {{ nom }}
-            </p>
-          </div>
-        </q-td>
-        <q-td>
-          <div class="flex flex-center" style="width: 100px;">
-            <q-btn
-              @click="getURL(props.row)"
-              :color="!props.row.fitxer ? 'white' : 'primary'"
-              :text-color="!props.row.fitxer ? 'primary' : 'white'"
-              :disable="!props.row.fitxer"
-              round
-              dense
-              class="q-ml-xs"
-              icon="picture_as_pdf"
-            />
-            <q-btn
-              @click="viewPdf(props.row)"
-              :color="!props.row.fitxer ? 'white' : 'primary'"
-              :text-color="!props.row.fitxer ? 'primary' : 'white'"
-              :disable="!props.row.fitxer"
-              round
-              dense
-              class="q-ml-xs"
-              icon="plagiarism"
-            />
-          </div>
-        </q-td>
-      </q-tr>
-    </template>
-  </q-table>
+  <q-page padding>
+    <q-btn class="q-mb-lg" icon="add" to="/fct/formulari/form" label="Nou formulari" color="primary"/>
+    <q-table
+      flat bordered
+      title="Documents del grup"
+      :rows="formularis"
+      :columns="columns"
+      row-key="name"
+      binary-state-sort
+      class="q-mb-lg"
+    />
+  </q-page>
 </template>
 
 <style scoped>

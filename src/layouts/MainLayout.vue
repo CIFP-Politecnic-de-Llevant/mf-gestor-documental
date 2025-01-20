@@ -41,7 +41,7 @@
             <q-item-label>FCT - Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/formulari" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/formulari/list" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="description" />
           </q-item-section>
