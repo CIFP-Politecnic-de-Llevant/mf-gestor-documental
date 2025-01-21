@@ -134,14 +134,16 @@
     <q-dialog v-model="listStudents" persistent>
       <q-card style="max-width: 1000px;">
         <q-card-section>
+          <q-btn @click="selectAll" label="Seleccionar tots" color="primary" class="q-mb-md"/>
+          <q-btn @click="unselectAll" label="Desmarcar tots" color="primary" class="q-mb-md"/>
           <q-form @submit="saveStudents"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Alumnes a guardar</p>
             <div class="row flex justify-center">
-              <div class="col-5 q-mx-sm" v-for="(student, index) in selectListStudents" :key="index">
+              <div class="col-5 q-mx-sm" v-for="(student, index) in selectListStudents.sort(((a:any,b:any)=>(a.cognom1+a.cognom2+a.nom).localeCompare(b.cognom1+b.cognom1+b.nom)))" :key="index">
                   <q-checkbox
                     dense
                     v-model="student.noExisteix"
-                    :label=" student.numeroExpedient + ' - ' + student.nom + ' '  + student.cognom1 + ' ' + student.cognom2"
+                    :label="`${student.cognom1} ${student.cognom2}, ${student.nom} (${student.numeroExpedient})`"
                     color="teal" />
               </div>
                 <div v-if="selectListStudents.length % 2 !== 0" class="col-5 q-mx-sm">
@@ -251,6 +253,14 @@ async function deleteStudent(){
     studentData.value.splice(index,1);
     await UsuariService.deleteStudent(nExpAlumneSelected.value);
   }
+}
+
+function selectAll(){
+  selectListStudents.value.forEach(student => student.noExisteix = true);
+}
+
+function unselectAll(){
+  selectListStudents.value.forEach(student => student.noExisteix = false);
 }
 
 onMounted(async () =>{

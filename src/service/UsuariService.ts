@@ -107,11 +107,11 @@ export class UsuariService {
     const response = await axios.get(process.env.API + '/api/gestordocumental/alumnes/all-students');
     const data = await response.data;
 
-    return data;
-    // return data.map((alumne:any):Alumne=>{
-    //
-    //   return this.fromJSONAlumne(alumne)
-    // }).sort();
+    //return data;
+     return data.map((alumne:any):Alumne=>{
+
+       return this.fromJSONAlumne(alumne)
+     }).sort();
   }
 
   static async updateStudent(alumne:Object){

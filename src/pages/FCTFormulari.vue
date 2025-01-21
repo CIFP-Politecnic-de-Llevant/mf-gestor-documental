@@ -300,7 +300,7 @@ const readOnlyConditionCompany = computed(() => {
 const allNomGrups = ['TMV11B', 'COM11B', 'COM21B', 'TMV21B', 'TMV22B', 'TMV22D', 'ADG21B', 'ELE21B', 'IFC21B',
   'IFC21D', 'ADG32B', 'IFC31B', 'ADG31B', 'TMV31B', 'IFC33B', 'COM33B', 'COM31B'];
 
-const formData: Ref<DadesFormulari> = ref({ anyCurs: '', nomAlumne: '', llinatgesAlumne: '', poblacio: '',
+const formData: Ref<DadesFormulari> = ref({ anyCurs: '2024/25', nomAlumne: '', llinatgesAlumne: '', poblacio: '',
   dni: '', nExpedient: '', menorEdat: undefined, edat: '', estudis: '', cicleFormatiu: '', grup: '', duradaCicle: '',
   totalHoresProposadesFct: '', horesDiaries: '', km: '', periode: '', dataInici: '', dataFi: '', dataAcabament: '',
   tipusJornada: '', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: undefined,
