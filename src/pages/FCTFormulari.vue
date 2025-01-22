@@ -633,13 +633,13 @@
     </q-form>
    </div>
       <div class="flex justify-end q-gutter-sm q-mt-md">
-          <q-btn label="Guardar" type="submit" @click="saveForm" color="primary"/>
+          <q-btn label="Desar" type="submit" @click="confirmSave" color="primary"/>
       </div>
   </q-page>
 </template>
 <script setup lang="ts">
 
-
+import {useQuasar} from "quasar";
 import {computed, onMounted, ref, Ref, watch} from "vue";
 import {Alumne} from "src/model/Alumne";
 import {Empresa} from "src/model/Empresa";
@@ -653,6 +653,8 @@ import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
 import IStudentListItem from "src/Interfaces/IStudentListItem";
 import ICompanyListItem from "src/Interfaces/ICompanyListItem";
+
+const $q = useQuasar();
 
 const allStudents:Ref<Alumne[]> = ref([] as Alumne[]);        // Tots els alumnes
 let studentSelectList:IStudentListItem[] = [];                // Llista d'opcions pel select amb filtre
@@ -699,36 +701,6 @@ const ciclesFormatius = ['FP Bàsica Manteniment de vehicles', 'FP Bàsica Serve
   'CFGS Assistència a la Direcció', 'CFGS Automoció', 'CFGS Desenvolupament d\'aplicacions web', 'CFGS Gestió de Vendes i Espais Comercials',
   'CFGS Màrketing i publicitat'
 ];
-const labels = ["Curs Escolar","Nom alumne","Llinatges alumne","Població","DNI","Nombre expedient",
-  "Es menor d'edat en el moment de començar la FCT? ","Edat de l'alumne (només número)","Estudis",
-  "Cicle Formatiu","Grup","Durada del cicle", "Número d'hores totals proposades per FCT (només número)",
-  "Número d'hores diàries (només número)","Km centre treball-població alumne (només número)","Període",
-  "Data inicial","Data final","Data màxima acabament","Tipus de jornada","Horari(Exemple jornada partida: 8.00-12:00 15:00-18:00)","Nom tutor","Llinatges tutor",
-  "Telèfon mòbil","És una empresa nova?","És una empresa de l'Administració Pública?","Número de conveni",
-  "Número d'annex","Nom de l'empresa","CIF","Adreça","Còdig postal","Població","Telèfon","Nom Centre de treball",
-  "Adreça Centre de treball","Còdig postal Centre de treball","Població Centre de treball","Telèfon Centre de treball",
-  "Activitat Centre de treball","Nom representant legal","NIF representant legal", "Nom tutor empresa",
-  "NIF tutor empresa","Nacionalitat tutor empresa", "Municipi tutor empresa", "Càrrec del tutor dins l'empresa","Correu electrònic de l'empresa",
-  "Dia seguiment centre educatiu","Hora seguiment centre educatiu", "Dia seguiment amb responsable FCT","Hora seguiment amb responsable FCT"];
-
-const dadesAlumne = ["Nom alumne","Llinatges alumne","Població alumne","DNI","Nombre expedient",
-  "Es menor d'edat en el moment de començar la FCT? ","Edat de l'alumne (només número)","Estudis",
-  "Cicle Formatiu","Grup","Durada del cicle", "Número d'hores totals proposades per FCT (només número)",
-  "Número d'hores diàries (només número)","Km centre treball-població alumne (només número)","Període",
-  "Data inicial","Data final","Data màxima acabament","Tipus de jornada","Horari(Exemple jornada partida: 8.00-12:00 15:00-18:00)"];
-
-const dadesTutor = ["Nom tutor","Llinatges tutor","Telèfon mòbil"];
-
-const dadesEmpresa = ["És una empresa nova?","És una empresa de l'Administració Pública?","Número de conveni",
-  "Número d'annex","Nom de l'empresa","CIF","Adreça","Còdig postal","Població tutor","Telèfon"];
-
-const dadesLlocTreball = ["Nom Centre de treball", "Adreça Centre de treball","Còdig postal Centre de treball",
-    "Població Centre de treball","Telèfon Centre de treball", "Activitat Centre de treball","Nom representant legal",
-    "NIF representant legal", "Nom tutor empresa", "NIF tutor empresa","Nacionalitat tutor empresa","Municipi tutor empresa",
-    "Càrrec del tutor dins l'empresa", "Correu electrònic de l'empresa"];
-
-const dadesAltresInformacions = ["Dia seguiment centre educatiu","Hora seguiment centre educatiu",
-  "Dia seguiment amb responsable FCT","Hora seguiment amb responsable FCT"];
 
 
 function selectStudent(student:Alumne){
@@ -821,6 +793,17 @@ function ageCalculate(date:Date){
         formData.value.edat = age.toString();
         age >= 18 ? formData.value.menorEdat = false : formData.value.menorEdat = true;
     }
+}
+
+function confirmSave(){
+  $q.dialog({
+    title: 'Alerta',
+    message: 'Està segur que vol desar el formulari? No es podrà modificar després',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    saveForm();
+  });
 }
 
 async function saveForm(){
