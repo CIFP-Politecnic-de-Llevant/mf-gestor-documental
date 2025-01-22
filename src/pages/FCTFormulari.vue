@@ -131,6 +131,7 @@
             outlined
             type="date"
             label="Data inici pràctiques"
+            mask="YYYY-MM-DD"
             v-model="formData.dataInici"
             @change="ageCalculate(formData.dataInici)"
           />
