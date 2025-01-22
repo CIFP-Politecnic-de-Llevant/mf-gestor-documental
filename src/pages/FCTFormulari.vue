@@ -45,80 +45,233 @@
         </div>
       </div>
 
+
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show="dadesAlumne.includes(labels[index])">
+        <div class="col-md-2">
           <q-input
-              v-if="key !== 'menorEdat' && key !== 'estudis' && key !== 'cicleFormatiu'
-              && key !== 'grup' && key !== 'duradaCicle' && key !== 'periode' && key !== 'tipusJornada'"
-              class="q-pa-sm"
-              outlined
-              :type="key === 'dataInici'? 'date':'text' && key === 'dataFi'? 'date':'text' && key === 'dataAcabament'? 'date':'text'"
-              :label="labels[index]"
-              v-model="formData[key]"
-              :model-value="formData[key]"
-              @change="key === 'dataInici'? ageCalculate(formData[key]) : ''"
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Número expedient"
+            v-model="formData.nExpedient"
           />
-          <q-select
-              v-if="key === 'cicleFormatiu' || key === 'grup'"
-              outlined
-              class="q-pa-sm"
-              v-model="formData[key]"
-              :options= "key === 'cicleFormatiu'? ciclesFormatius : allNomGrups"
-              :label="labels[index]"
+        </div>
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Nom alumne"
+            v-model="formData.nomAlumne"
           />
-          <div
-              class=" q-pl-sm"
-              v-if="key === 'menorEdat' || key === 'estudis'
-               || key === 'duradaCicle' || key === 'periode'
-               || key === 'estudis'">
-              <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">{{labels[index]}}</p>
-              <div class="q-gutter-sm " v-if="key === 'menorEdat'">
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'estudis'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="FP Bàsica" label="FP Bàsica" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Mitjà" label="CF Grau Mitjà" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Superior" label="CF Grau Superior" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'duradaCicle'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="1 any" label="1 any" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="2 anys" label="2 anys" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'periode'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Ordinari" label="Ordinari" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="No ordinari" label="No ordinari" />
-              </div>
-              <div class="q-gutter-sm" v-else-if="key === 'periode'">
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Continuada" label="Continuada" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Partida" label="Partida" />
-                <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Continuada i Partida" label="Continuada i Partida" />
-              </div>
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Llinatges alumne"
+            v-model="formData.llinatgesAlumne"
+          />
+        </div>
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="DNI/NIE"
+            v-model="formData.dni"
+          />
+        </div>
+      </div>
+
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+        <div class=" q-pl-sm">
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Estudis</p>
+          <div class="q-gutter-sm">
+            <q-radio size="sm" v-model="formData.estudis" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="FP Bàsica" label="FP Bàsica" />
+            <q-radio size="sm" v-model="formData.estudis" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Mitjà" label="CF Grau Mitjà" />
+            <q-radio size="sm" v-model="formData.estudis" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="CF Grau Superior" label="CF Grau Superior" />
           </div>
         </div>
-        <div class="col-md-4"></div>
-        <div class="col-md-4"></div>
+
+        <div class="col-md-3">
+          <q-select
+            outlined
+            class="q-pa-sm"
+            v-model="formData.cicleFormatiu"
+            :options= "ciclesFormatius"
+            label="Cicle Formatiu"
+          />
+        </div>
+
+        <div class="col-md-2">
+          <q-select
+            outlined
+            class="q-pa-sm"
+            v-model="formData.grup"
+            :options= "allNomGrups"
+            label="Grup"
+          />
+        </div>
+
+        <div class=" q-pl-sm">
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Durada del cicle</p>
+          <div class="q-gutter-sm">
+            <q-radio size="sm" v-model="formData.duradaCicle" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="1 any" label="1 any" />
+            <q-radio size="sm" v-model="formData.duradaCicle" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="2 anys" label="2 anys" />
+          </div>
+        </div>
       </div>
+
+      <div class="row flex justify-center q-mt-sm q-gutter-y-md">
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="date"
+            label="Data inici pràctiques"
+            v-model="formData.dataInici"
+            @change="ageCalculate(formData.dataInici)"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="date"
+            label="Data final"
+            v-model="formData.dataFi"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="date"
+            label="Data màxima acabament"
+            v-model="formData.dataAcabament"
+          />
+        </div>
+      </div>
+
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+        <div class=" q-pl-sm">
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Període</p>
+          <div class="q-gutter-sm ">
+            <q-radio size="sm" v-model="formData.periode" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="Ordinari" label="Ordinari" />
+            <q-radio size="sm" v-model="formData.periode" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="No ordinari" label="No ordinari" />
+          </div>
+        </div>
+
+        <div class=" q-pl-sm">
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Es menor d'edat en el moment de començar la FCT?</p>
+          <div class="q-gutter-sm ">
+            <q-radio size="sm" v-model="formData.menorEdat" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+            <q-radio size="sm" v-model="formData.menorEdat" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
+          </div>
+          <small>Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament</small>
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="number"
+            label="Edat de l'alumne (només número)"
+            v-model="formData.edat"
+            hint="Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament"
+          />
+        </div>
+      </div>
+
+
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="number"
+            label="Número hores proposades"
+            v-model="formData.totalHoresProposadesFct"
+            hint="Només número"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="number"
+            label="Número hores diàries"
+            v-model="formData.horesDiaries"
+            hint="Només número"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="number"
+            label="Km centre treball-població alumne"
+            v-model="formData.km"
+            hint="Només número"
+          />
+        </div>
+
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Horari"
+            v-model="formData.horari"
+            hint="Exemple: jornada partida: 8.00-12:00 15:00-18:00"
+          />
+        </div>
+      </div>
+
+
       <div class="bg-primary border-bot-top q-mt-md">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades del professor-tutor</p>
       </div>
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show="dadesTutor.includes(labels[index])">
+        <div class="col-md-4">
           <q-input
-              class="q-pa-sm"
-              outlined
-              type="text"
-              :label="labels[index]"
-              v-model="formData[key]"
-              :model-value="formData[key]"
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Nom tutor"
+            v-model="formData.nomTutor"
           />
         </div>
-        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Llinatges tutor"
+            v-model="formData.llinatgesTutor"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Telèfon mòbil tutor"
+            v-model="formData.telefonTutor"
+          />
+        </div>
       </div>
+
+
+
       <div class="bg-primary border-bot-top q-mt-md">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades empresa</p>
       </div>
-
 
       <div class="q-pa-md">
         <div class="q-gutter-md row">
@@ -170,9 +323,105 @@
 <!--      </q-btn-dropdown>-->
 
 
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+        <div class=" q-pl-sm">
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">És una empresa nova?</p>
+          <div class="q-gutter-sm ">
+            <q-radio size="sm" v-model="formData.empresaNova" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+            <q-radio size="sm" v-model="formData.empresaNova" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
+          </div>
+        </div>
 
+        <div class=" q-pl-sm">
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">És una empresa de l'Administració Pública?</p>
+          <div class="q-gutter-sm ">
+            <q-radio size="sm" v-model="formData.empresaAdministracioPublica" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+            <q-radio size="sm" v-model="formData.empresaAdministracioPublica" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Número de conveni"
+            v-model="formData.numeroConveni"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Número d'annex"
+            v-model="formData.numeroAnnex"
+          />
+        </div>
+      </div>
+
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            readonly
+            bg-color="primary"
+            type="text"
+            label="Nom de l'empresa"
+            v-model="formData.nomEmpresa"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            readonly
+            bg-color="primary"
+            type="text"
+            label="CIF de l'empresa"
+            v-model="formData.cif"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            readonly
+            bg-color="primary"
+            type="text"
+            label="Adreça de l'empresa"
+            v-model="formData.adrecaEmpresa"
+          />
+        </div>
+      </div>
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Codi postal empresa"
+            v-model="formData.cpempresa"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Telèfon"
+            v-model="formData.telefonEmpresa"
+          />
+        </div>
+      </div>
 
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
+
         <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show=" dadesEmpresa.includes(labels[index])">
           <q-input
               v-if="key !== 'empresaNova' && key !== 'empresaAdministracioPublica'"
@@ -447,7 +696,6 @@ async function saveForm(){
     await DocumentService.saveForm(formData.value,tutorFCT.value.email);
     companySelected.value = false;
 
-    formData.value.anyCurs = '';
     formData.value.nomAlumne = '';
     formData.value.llinatgesAlumne = '';
     formData.value.poblacio = '';
