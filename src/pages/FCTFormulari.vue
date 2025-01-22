@@ -234,7 +234,7 @@
       </div>
 
 
-      <div class="bg-primary border-bot-top q-mt-md">
+      <div class="bg-primary border-bot-top q-mt-lg">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades del professor-tutor</p>
       </div>
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
@@ -269,7 +269,7 @@
 
 
 
-      <div class="bg-primary border-bot-top q-mt-md">
+      <div class="bg-primary border-bot-top q-mt-lg">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades empresa</p>
       </div>
 
@@ -420,70 +420,202 @@
         </div>
       </div>
 
-      <div class="row flex justify-center q-mt-sm q-gutter-y-md">
 
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show=" dadesEmpresa.includes(labels[index])">
+      <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Lloc de treball</p>
+
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+        <div class="col-md-4">
           <q-input
-              v-if="key !== 'empresaNova' && key !== 'empresaAdministracioPublica'"
-              class="q-pa-sm"
-              outlined
-              :readonly="readOnlyConditionCompany(key)"
-              :bg-color="readOnlyConditionCompany(key) ? 'primary' : ''"
-              type="text"
-              :label="labels[index]"
-              v-model="formData[key]"
-              :model-value="formData[key]"
-          />
-          <div class="col-md-4 q-pl-sm" v-if="key === 'empresaNova' || key === 'empresaAdministracioPublica'">
-              <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">{{labels[index]}}</p>
-              <div class="q-gutter-sm ">
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
-                  <q-radio size="sm" v-model="formData[key]" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
-              </div>
-          </div>
-        </div>
-        <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Lloc de treball</p>
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show=" dadesLlocTreball.includes(labels[index])">
-        <q-input
             class="q-pa-sm"
             outlined
-            :readonly="readOnlyConditionCompany(key)"
-            :bg-color="readOnlyConditionCompany(key) ? 'primary' : ''"
             type="text"
-            :label="labels[index]"
-            v-model="formData[key]"
-            :model-value="formData[key]"
-        />
-      </div>
-        <div class="col-md-4"></div>
-        <div class="col-md-4"></div>
-      </div>
-      <div class="bg-primary border-bot-top q-mt-md">
-          <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Altres informacions</p>
-      </div>
-      <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4" v-for="(value,key,index) in formData" :key="key" v-show="dadesAltresInformacions.includes(labels[index])">
-          <q-input
-              v-if="key !== 'diaSeguimentCentreEducatiu' && key !== 'diaSeguimentResponsableFct'"
-              class="q-pa-sm"
-              outlined
-              type="text"
-              :label="labels[index]"
-              v-model="formData[key]"
-              :model-value="formData[key]"
-          />
-          <q-select
-              v-if="key === 'diaSeguimentCentreEducatiu' || key === 'diaSeguimentResponsableFct'"
-              outlined
-              class="q-pa-sm"
-              v-model="formData[key]"
-              :options= "['Dilluns','Dimarts','Dimecres','Dijous','Divendres']"
-              :label="labels[index]"
+            label="Nom centre de treball"
+            v-model="formData.nomLlocTreball"
           />
         </div>
-        <div class="col-md-4"></div>
-        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            readonly
+            bg-color="primary"
+            type="text"
+            label="Nom representant legal"
+            v-model="formData.nomRepresentantLegal"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            readonly
+            bg-color="primary"
+            type="text"
+            label="NIF representant legal"
+            v-model="formData.nifRepresentantLegal"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Telèfon lloc de treball"
+            v-model="formData.telefonLlocTreball"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Correu electrònic"
+            v-model="formData.emailEmpresa"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Activitat centre de treball"
+            v-model="formData.activitatLlocTreball"
+          />
+        </div>
       </div>
+
+      <div class="row flex justify-center q-mt-sm q-gutter-y-md">
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Adreça centre de treball"
+            v-model="formData.adrecaLlocTreball"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Població centre de treball"
+            v-model="formData.poblacioLlocTreball"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="CP centre de treball"
+            v-model="formData.cpLlocTreball"
+          />
+        </div>
+      </div>
+
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Nom tutor empresa"
+            v-model="formData.nomTutorEmpresa"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="NIF/NIE tutor empresa"
+            v-model="formData.nifTutorEmpresa"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Nacionalitat tutor empresa"
+            v-model="formData.nacionalitatTutorEmpresa"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Municipi tutor empresa"
+            v-model="formData.municipiTutorEmpresa"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Càrrec empresa"
+            v-model="formData.carrecTutorEmpresa"
+          />
+        </div>
+      </div>
+
+
+      <div class="bg-primary border-bot-top q-mt-lg">
+          <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Altres informacions</p>
+      </div>
+
+      <div class="row flex justify-center q-mt-sm q-gutter-y-md">
+        <div class="col-md-3">
+          <q-select
+            outlined
+            class="q-pa-sm"
+            v-model="formData.diaSeguimentCentreEducatiu"
+            :options= "['Dilluns','Dimarts','Dimecres','Dijous','Divendres']"
+            label="Dia seguiment centre educatiu"
+          />
+        </div>
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Hora seguiment centre educatiu"
+            v-model="formData.horaSeguimentCentreEducatiu"
+          />
+        </div>
+        <div class="col-md-3">
+          <q-select
+            outlined
+            class="q-pa-sm"
+            v-model="formData.diaSeguimentResponsableFct"
+            :options= "['Dilluns','Dimarts','Dimecres','Dijous','Divendres']"
+            label="Dia seguiment amb responsable FCT"
+          />
+        </div>
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Hora seguiment amb responsable FCT"
+            v-model="formData.horaSeguimentResponsableFct"
+          />
+        </div>
+      </div>
+
+
       <div class="bg-primary border-bot-top q-mt-md">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Flexibilització en el mòdul FCT</p>
       </div>
