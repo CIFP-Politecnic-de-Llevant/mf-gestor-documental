@@ -54,6 +54,7 @@
             type="text"
             label="Número expedient"
             v-model="formData.nExpedient"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-3">
@@ -63,6 +64,7 @@
             type="text"
             label="Nom alumne"
             v-model="formData.nomAlumne"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-4">
@@ -72,6 +74,7 @@
             type="text"
             label="Llinatges alumne"
             v-model="formData.llinatgesAlumne"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-3">
@@ -81,6 +84,7 @@
             type="text"
             label="DNI/NIE"
             v-model="formData.dni"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -624,8 +628,8 @@
           <div class="col-md-4  q-pl-sm">
               <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Hi ha algun tipus de flexibilització en el mòdul de FCT?</p>
               <div class="q-gutter-sm ">
-                  <q-radio v-model="formData.flexibilitzacioModulFct" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="true" label="Si" />
-                  <q-radio v-model="formData.flexibilitzacioModulFct" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" val="false" label="No" />
+                  <q-radio v-model="formData.flexibilitzacioModulFct" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+                  <q-radio v-model="formData.flexibilitzacioModulFct" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
               </div>
           </div>
         <div class="col-md-4"></div>
@@ -636,6 +640,8 @@
       <div class="flex justify-end q-gutter-sm q-mt-md">
           <q-btn label="Desar" type="submit" @click="confirmSave" color="primary"/>
       </div>
+
+    sss{{formData.menorEdat}}sssss
   </q-page>
 </template>
 <script setup lang="ts">
@@ -684,24 +690,41 @@ const readOnlyConditionCompany = computed(() => {
 const allNomGrups = ['TMV11B', 'COM11B', 'COM21B', 'TMV21B', 'TMV22B', 'TMV22D', 'ADG21B', 'ELE21B', 'IFC21B',
   'IFC21D', 'ADG32B', 'IFC31B', 'ADG31B', 'TMV31B', 'IFC33B', 'COM33B', 'COM31B'];
 
-const formData: Ref<DadesFormulari> = ref({ anyCurs: '2024/25', nomAlumne: '', llinatgesAlumne: '', poblacio: '',
-  dni: '', nExpedient: '', menorEdat: undefined, edat: '', estudis: '', cicleFormatiu: '', grup: '', duradaCicle: '',
-  totalHoresProposadesFct: '', horesDiaries: '', km: '', periode: '', dataInici: '', dataFi: '', dataAcabament: '',
-  tipusJornada: '', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: undefined,
-  empresaAdministracioPublica: undefined, numeroConveni: '', numeroAnnex: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
-  cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
-  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomRepresentantLegal: '',
-  nifRepresentantLegal: '', nomTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
-  municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmrpesa: '', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
-  diaSeguimentResponsableFct: '', horaSeguimentResponsableFct: '', flexibilitzacioModulFct: undefined,
-});
-
 const ciclesFormatius = ['FP Bàsica Manteniment de vehicles', 'FP Bàsica Serveis Comercials', 'CFGM Activitats comercials',
   'CFGM Carroseria', 'CFGM Electromecànica de vehicles', 'CFGM Gestió Administrativa', 'CFGM Instal·lacions elèctriques i automàtiques',
   'CFGM Sistemes microinformàtics i xarxes', 'CFGS Administració i finances', 'CFGS Administració de sistemes informàtics',
   'CFGS Assistència a la Direcció', 'CFGS Automoció', 'CFGS Desenvolupament d\'aplicacions web', 'CFGS Gestió de Vendes i Espais Comercials',
   'CFGS Màrketing i publicitat'
 ];
+
+const formData: Ref<DadesFormulari> = ref({
+  anyCurs: '2024/25',
+  nomAlumne: '',
+  llinatgesAlumne: '',
+  poblacio: '',
+  dni: '',
+  nExpedient: '',
+  menorEdat: false,
+  edat: '',
+  estudis: localStorage.getItem('estudis') || 'FP Bàsica',
+  cicleFormatiu: localStorage.getItem('cicleformatiu') || ciclesFormatius[0],
+  grup: '',
+  duradaCicle: localStorage.getItem('duradacicle') || '1 any',
+  totalHoresProposadesFct: '',
+  horesDiaries: '',
+  km: '',
+  periode: localStorage.getItem('periode') || 'Ordinari',
+  dataInici: '', dataFi: '', dataAcabament: '',
+  tipusJornada: '', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: false,
+  empresaAdministracioPublica: false, numeroConveni: '', numeroAnnex: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
+  cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
+  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomRepresentantLegal: '',
+  nifRepresentantLegal: '', nomTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
+  municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmrpesa: '', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
+  diaSeguimentResponsableFct: '', horaSeguimentResponsableFct: '', flexibilitzacioModulFct: false,
+});
+
+
 
 
 function selectStudent(student:Alumne){
@@ -809,59 +832,71 @@ function confirmSave(){
 
 async function saveForm(){
 
-    await DocumentService.saveForm(formData.value,tutorFCT.value.email);
-    companySelected.value = false;
+  if(formData.value.cicleFormatiu) {
+    localStorage.setItem('cicleformatiu', formData.value.cicleFormatiu);
+  }
+  if(formData.value.estudis){
+    localStorage.setItem('estudis', formData.value.estudis);
+  }
+  if(formData.value.duradaCicle){
+    localStorage.setItem('duradacicle', formData.value.duradaCicle);
+  }
+  if(formData.value.periode){
+    localStorage.setItem('periode', formData.value.periode);
+  }
+  await DocumentService.saveForm(formData.value,tutorFCT.value.email);
+  companySelected.value = false;
 
-    formData.value.nomAlumne = '';
-    formData.value.llinatgesAlumne = '';
-    formData.value.poblacio = '';
-    formData.value.dni = '';
-    formData.value.nExpedient = '';
-    formData.value.menorEdat = undefined;
-    formData.value.edat = '';
-    formData.value.estudis = '';
-    formData.value.cicleFormatiu = '';
-    formData.value.grup = '';
-    formData.value.duradaCicle = '';
-    formData.value.totalHoresProposadesFct = '';
-    formData.value.horesDiaries = '';
-    formData.value.km = '';
-    formData.value.periode = '';
-    formData.value.dataInici = '';
-    formData.value.dataFi = '';
-    formData.value.dataAcabament = '';
-    formData.value.tipusJornada = '';
-    formData.value.horari = '';
-    formData.value.telefonTutor = '';
-    formData.value.empresaNova = undefined;
-    formData.value.empresaAdministracioPublica = undefined;
-    formData.value.numeroConveni = '';
-    formData.value.numeroAnnex = '';
-    formData.value.nomEmpresa = '';
-    formData.value.cif = '';
-    formData.value.adrecaEmpresa = '';
-    formData.value.cpempresa = '';
-    formData.value.poblacioEmpresa = '';
-    formData.value.telefonEmpresa = '';
-    formData.value.nomLlocTreball = '';
-    formData.value.adrecaLlocTreball = '';
-    formData.value.cpLlocTreball = '';
-    formData.value.poblacioLlocTreball = '';
-    formData.value.telefonLlocTreball = '';
-    formData.value.activitatLlocTreball = '';
-    formData.value.nomRepresentantLegal = '';
-    formData.value.nifRepresentantLegal = '';
-    formData.value.nomTutorEmpresa = '';
-    formData.value.nifTutorEmpresa = '';
-    formData.value.nacionalitatTutorEmpresa = '';
-    formData.value.municipiTutorEmpresa = '';
-    formData.value.carrecTutorEmpresa = '';
-    formData.value.emailEmpresa = '';
-    formData.value.diaSeguimentCentreEducatiu = '';
-    formData.value.horaSeguimentCentreEducatiu = '';
-    formData.value.diaSeguimentResponsableFct = '';
-    formData.value.horaSeguimentResponsableFct = '';
-    formData.value.flexibilitzacioModulFct = undefined;
+  formData.value.nomAlumne = '';
+  formData.value.llinatgesAlumne = '';
+  formData.value.poblacio = '';
+  formData.value.dni = '';
+  formData.value.nExpedient = '';
+  formData.value.menorEdat = false;
+  formData.value.edat = '';
+  formData.value.estudis = localStorage.getItem('estudis') || 'FP Bàsica';
+  formData.value.cicleFormatiu =  localStorage.getItem('cicleformatiu') || ciclesFormatius[0];
+  formData.value.grup = '';
+  formData.value.duradaCicle = localStorage.getItem('duradacicle') || '1 any';
+  formData.value.totalHoresProposadesFct = '';
+  formData.value.horesDiaries = '';
+  formData.value.km = '';
+  formData.value.periode = localStorage.getItem('periode') || 'Ordinari';
+  formData.value.dataInici = '';
+  formData.value.dataFi = '';
+  formData.value.dataAcabament = '';
+  formData.value.tipusJornada = '';
+  formData.value.horari = '';
+  formData.value.telefonTutor = '';
+  formData.value.empresaNova = false;
+  formData.value.empresaAdministracioPublica = false;
+  formData.value.numeroConveni = '';
+  formData.value.numeroAnnex = '';
+  formData.value.nomEmpresa = '';
+  formData.value.cif = '';
+  formData.value.adrecaEmpresa = '';
+  formData.value.cpempresa = '';
+  formData.value.poblacioEmpresa = '';
+  formData.value.telefonEmpresa = '';
+  formData.value.nomLlocTreball = '';
+  formData.value.adrecaLlocTreball = '';
+  formData.value.cpLlocTreball = '';
+  formData.value.poblacioLlocTreball = '';
+  formData.value.telefonLlocTreball = '';
+  formData.value.activitatLlocTreball = '';
+  formData.value.nomRepresentantLegal = '';
+  formData.value.nifRepresentantLegal = '';
+  formData.value.nomTutorEmpresa = '';
+  formData.value.nifTutorEmpresa = '';
+  formData.value.nacionalitatTutorEmpresa = '';
+  formData.value.municipiTutorEmpresa = '';
+  formData.value.carrecTutorEmpresa = '';
+  formData.value.emailEmpresa = '';
+  formData.value.diaSeguimentCentreEducatiu = '';
+  formData.value.horaSeguimentCentreEducatiu = '';
+  formData.value.diaSeguimentResponsableFct = '';
+  formData.value.horaSeguimentResponsableFct = '';
+  formData.value.flexibilitzacioModulFct = false;
 }
 
 onMounted(async () =>{
