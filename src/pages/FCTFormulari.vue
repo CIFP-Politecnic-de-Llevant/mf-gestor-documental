@@ -11,7 +11,7 @@
       </div>
     </div>
    <div class="border">
-    <q-form>
+    <q-form @submit="confirmSave">
       <div class="bg-primary border-bottom">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades de l'alumne</p>
       </div>
@@ -635,13 +635,17 @@
         <div class="col-md-4"></div>
         <div class="col-md-4"></div>
       </div>
+
+      <div class="bg-primary border-bot-top q-mt-md">
+        <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center"></p>
+      </div>
+      <div class="flex justify-center q-gutter-sm q-ma-lg">
+        <q-btn label="Desar Formulari" type="submit" color="primary" size="lg"/>
+        <!--q-btn label="Desar" type="submit" @click="confirmSave" color="primary"/-->
+      </div>
     </q-form>
    </div>
-      <div class="flex justify-end q-gutter-sm q-mt-md">
-          <q-btn label="Desar" type="submit" @click="confirmSave" color="primary"/>
-      </div>
 
-    sss{{formData.menorEdat}}sssss
   </q-page>
 </template>
 <script setup lang="ts">
