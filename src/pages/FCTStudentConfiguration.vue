@@ -215,27 +215,23 @@ async function saveFile(){
 
 }
 async function saveStudents(){
-
   const studentsToSave = selectListStudents.value.filter(student => student.noExisteix);
   await UsuariService.saveStudents(studentsToSave);
   studentData.value = await UsuariService.allStudents();
 }
 
 async function updateStudent(){
-
     studentSelect.value.sexe = studentSelect.value.sexe?.substring(0,1);
     await UsuariService.updateStudent(studentSelect.value);
-
 }
-function editStudent(id:number){
 
+function editStudent(id:number){
   const student  = studentData.value.find(a => a.idAlumne === id);
 
   if(student){
     studentSelect.value = student;
   }
   seeStudentEdition.value = true;
-
 }
 
 function deleteConfirmation(exp:number, nom:string, cognom1:string, cognom2:string){

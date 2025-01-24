@@ -11,7 +11,7 @@
       </div>
     </div>
    <div class="border">
-    <q-form @submit="confirmSave" ref="formulariAlumnes">
+    <q-form @submit="confirmSave" @validationError="errorForm" ref="formulariAlumnes">
       <div class="bg-primary border-bottom">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades de l'alumne</p>
       </div>
@@ -832,7 +832,16 @@ function ageCalculate(date:Date){
     }
 }
 
+function errorForm(){
+  $q.notify({
+    color: 'negative',
+    message: 'Hi ha camps incorrectes',
+    icon: 'report_problem'
+  });
+}
+
 function confirmSave(){
+  console.log('confirm save form');
   formulariAlumnes.value.validate().then(success => {
     if (success) {
       // yay, models are correct
@@ -844,15 +853,22 @@ function confirmSave(){
       }).onOk(() => {
         saveForm();
       });
-    }
-    else {
+    } else {
+      console.log('error')
       $q.notify({
         color: 'negative',
-        position: 'top',
         message: 'Hi ha camps incorrectes',
         icon: 'report_problem'
-      })
+      });
     }
+  }).catch(() => {
+    // error
+    console.log('error')
+    $q.notify({
+      color: 'negative',
+      message: 'Hi ha camps incorrectes',
+      icon: 'report_problem'
+    })
   })
 
 
