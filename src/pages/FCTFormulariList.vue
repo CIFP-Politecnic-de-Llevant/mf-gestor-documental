@@ -89,7 +89,7 @@ columns.push({
 columns.push({
   name:'menorEdat',
   label:'Menor Edat',
-  field: row => row.menorEdat,
+  field: row => (row.menorEdat)?'Si':'No',
   sortable: true
 });
 
@@ -146,7 +146,7 @@ onMounted(async ()=>{
     <q-btn class="q-mb-lg" icon="add" to="/fct/formulari/form" label="Nou formulari" color="primary"/>
     <q-table
       flat bordered
-      title="Documents del grup"
+      title="Llistat d'alumnes en pràctiques"
       :rows="formularis"
       :columns="columns"
       row-key="name"

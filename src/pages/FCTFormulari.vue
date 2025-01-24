@@ -11,7 +11,7 @@
       </div>
     </div>
    <div class="border">
-    <q-form @submit="confirmSave">
+    <q-form @submit="confirmSave" ref="formulariAlumnes">
       <div class="bg-primary border-bottom">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades de l'alumne</p>
       </div>
@@ -129,33 +129,26 @@
       </div>
 
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            type="date"
-            label="Data inici pràctiques"
-            mask="YYYY-MM-DD"
+        <div class="col-md-4 q-pa-md">
+          <p class="text-h6">Data inici pràctiques</p>
+          <q-date
             v-model="formData.dataInici"
-            @change="ageCalculate(formData.dataInici)"
+            minimal
+            @update:model-value="ageCalculate(formData.dataInici)"
           />
         </div>
-        <div class="col-md-4">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            type="date"
-            label="Data final"
+        <div class="col-md-4 q-pa-md">
+          <p class="text-h6">Data final pràctiques</p>
+          <q-date
             v-model="formData.dataFi"
+            minimal
           />
         </div>
-        <div class="col-md-4">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            type="date"
-            label="Data màxima acabament"
+        <div class="col-md-4 q-pa-md">
+          <p class="text-h6">Data màxima acabament</p>
+          <q-date
             v-model="formData.dataAcabament"
+            minimal
           />
         </div>
       </div>
@@ -234,6 +227,7 @@
             label="Horari"
             v-model="formData.horari"
             hint="Exemple: jornada partida: 8.00-12:00 15:00-18:00"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -250,6 +244,7 @@
             type="text"
             label="Nom tutor"
             v-model="formData.nomTutor"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-4">
@@ -259,6 +254,7 @@
             type="text"
             label="Llinatges tutor"
             v-model="formData.llinatgesTutor"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-4">
@@ -268,6 +264,7 @@
             type="text"
             label="Telèfon mòbil tutor"
             v-model="formData.telefonTutor"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -352,6 +349,7 @@
             type="text"
             label="Número de conveni"
             v-model="formData.numeroConveni"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -362,6 +360,7 @@
             type="text"
             label="Número d'annex"
             v-model="formData.numeroAnnex"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -371,11 +370,11 @@
           <q-input
             class="q-pa-sm"
             outlined
-            readonly
             bg-color="primary"
             type="text"
             label="Nom de l'empresa"
             v-model="formData.nomEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -383,11 +382,11 @@
           <q-input
             class="q-pa-sm"
             outlined
-            readonly
             bg-color="primary"
             type="text"
             label="CIF de l'empresa"
             v-model="formData.cif"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -395,11 +394,11 @@
           <q-input
             class="q-pa-sm"
             outlined
-            readonly
             bg-color="primary"
             type="text"
             label="Adreça de l'empresa"
             v-model="formData.adrecaEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -411,6 +410,7 @@
             type="text"
             label="Codi postal empresa"
             v-model="formData.cpempresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -421,6 +421,7 @@
             type="text"
             label="Telèfon"
             v-model="formData.telefonEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -436,28 +437,29 @@
             type="text"
             label="Nom centre de treball"
             v-model="formData.nomLlocTreball"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-4">
           <q-input
             class="q-pa-sm"
             outlined
-            readonly
             bg-color="primary"
             type="text"
             label="Nom representant legal"
             v-model="formData.nomRepresentantLegal"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-4">
           <q-input
             class="q-pa-sm"
             outlined
-            readonly
             bg-color="primary"
             type="text"
             label="NIF representant legal"
             v-model="formData.nifRepresentantLegal"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -468,6 +470,7 @@
             type="text"
             label="Telèfon lloc de treball"
             v-model="formData.telefonLlocTreball"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -478,6 +481,7 @@
             type="text"
             label="Correu electrònic"
             v-model="formData.emailEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -488,6 +492,7 @@
             type="text"
             label="Activitat centre de treball"
             v-model="formData.activitatLlocTreball"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -500,6 +505,7 @@
             type="text"
             label="Adreça centre de treball"
             v-model="formData.adrecaLlocTreball"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -510,6 +516,7 @@
             type="text"
             label="Població centre de treball"
             v-model="formData.poblacioLlocTreball"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -520,6 +527,7 @@
             type="text"
             label="CP centre de treball"
             v-model="formData.cpLlocTreball"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -532,6 +540,7 @@
             type="text"
             label="Nom tutor empresa"
             v-model="formData.nomTutorEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -542,6 +551,7 @@
             type="text"
             label="NIF/NIE tutor empresa"
             v-model="formData.nifTutorEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -552,6 +562,7 @@
             type="text"
             label="Nacionalitat tutor empresa"
             v-model="formData.nacionalitatTutorEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -562,6 +573,7 @@
             type="text"
             label="Municipi tutor empresa"
             v-model="formData.municipiTutorEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
 
@@ -572,6 +584,7 @@
             type="text"
             label="Càrrec empresa"
             v-model="formData.carrecTutorEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -598,6 +611,7 @@
             type="text"
             label="Hora seguiment centre educatiu"
             v-model="formData.horaSeguimentCentreEducatiu"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
         <div class="col-md-3">
@@ -616,6 +630,7 @@
             type="text"
             label="Hora seguiment amb responsable FCT"
             v-model="formData.horaSeguimentResponsableFct"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
@@ -658,7 +673,6 @@ import {UsuariService} from "src/service/UsuariService";
 import {EmpresaService} from "src/service/EmpresaService";
 import {DadesFormulari} from "src/model/DadesFormulari";
 import {Grup} from "src/model/Grup";
-import {date} from "quasar";
 import {LlocTreball} from "src/model/LlocTreball";
 import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
@@ -685,12 +699,8 @@ const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
 const allGrups:Ref<Grup[]> = ref([] as Grup[]);
 const tutorFCT:Ref<Usuari> = ref({} as Usuari);
 
+const formulariAlumnes = ref(null)
 
-const readOnlyConditionCompany = computed(() => {
-
-  return (key:string) => key === 'cif' || key === 'adrecaEmpresa' || key === 'nomEmpresa' || key === 'nomRepresentantLegal'
-
-})
 const allNomGrups = ['TMV11B', 'COM11B', 'COM21B', 'TMV21B', 'TMV22B', 'TMV22D', 'ADG21B', 'ELE21B', 'IFC21B',
   'IFC21D', 'ADG32B', 'IFC31B', 'ADG31B', 'TMV31B', 'IFC33B', 'COM33B', 'COM31B'];
 
@@ -770,7 +780,6 @@ watch(selectedCompany, (newValue, oldValue) => {
 
 function selectCompany(company:Empresa){
 
-
   formData.value.empresaNova = false;
   formData.value.numeroConveni = company.numeroConveni;
   formData.value.numeroAnnex = company.numeroAnnex;
@@ -824,14 +833,30 @@ function ageCalculate(date:Date){
 }
 
 function confirmSave(){
-  $q.dialog({
-    title: 'Alerta',
-    message: 'Està segur que vol desar el formulari? No es podrà modificar després',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    saveForm();
-  });
+  formulariAlumnes.value.validate().then(success => {
+    if (success) {
+      // yay, models are correct
+      $q.dialog({
+        title: 'Alerta',
+        message: 'Està segur que vol desar el formulari? No es podrà modificar després',
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        saveForm();
+      });
+    }
+    else {
+      $q.notify({
+        color: 'negative',
+        position: 'top',
+        message: 'Hi ha camps incorrectes',
+        icon: 'report_problem'
+      })
+    }
+  })
+
+
+
 }
 
 async function saveForm(){
