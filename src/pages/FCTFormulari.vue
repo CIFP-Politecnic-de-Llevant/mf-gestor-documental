@@ -771,11 +771,15 @@ const filterCompaniesFn = (val, update, abort) => {
 }
 
 watch(selectedStudent, (newValue, oldValue) => {
-  selectStudent(selectedStudent.value)
+  if(selectedStudent.value !== null){
+    selectStudent(selectedStudent.value);
+  }
 });
 
 watch(selectedCompany, (newValue, oldValue) => {
-  selectCompany(selectedCompany.value)
+  if(selectedCompany.value !== null) {
+    selectCompany(selectedCompany.value);
+  }
 });
 
 function selectCompany(company:Empresa){
@@ -942,6 +946,11 @@ async function saveForm(){
   formData.value.diaSeguimentResponsableFct = '';
   formData.value.horaSeguimentResponsableFct = '';
   formData.value.flexibilitzacioModulFct = false;
+
+  selectedStudent.value = null;
+  selectedCompany.value = null;
+  allCompanyWorkspace.value = [];
+
 }
 
 onMounted(async () =>{
