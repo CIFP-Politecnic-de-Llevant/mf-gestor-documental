@@ -260,6 +260,9 @@
             <q-td key="tipusDocument" :props="props" class="text-wrap">
               {{ props.row.tipusDocument.nom }}
             </q-td>
+            <q-td key="estat" :props="props" class="text-wrap">
+              {{ props.row.documentEstat }}
+            </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
                 v-if="props.row.documentSignatures && props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
@@ -857,7 +860,14 @@ onMounted(async ()=>{
   columnsUsuari.value.push({
     name: 'tipusDocument',
     label: 'Document',
-    field: row => row.tipusDocumenttipusDocument.nom,
+    field: row => row.tipusDocument?.nom || '',
+    sortable: true
+  });
+
+  columnsUsuari.value.push({
+    name: 'estat',
+    label: 'Estat',
+    field: row => row.estat,
     sortable: true
   });
 
