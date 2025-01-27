@@ -8,6 +8,7 @@ import {Signatura} from "src/model/Signatura";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {DocumentEstat} from "src/model/DocumentEstat";
 import {DadesFormulari} from "src/model/DadesFormulari";
+import {AbortControllerService} from "src/service/AbortControllerService";
 
 export class DocumentService {
 
@@ -318,6 +319,7 @@ export class DocumentService {
   }
 
   static async getSignantsFitxerBucket(document: Document) {
+    AbortControllerService.addAbortController('DocumentService-getSignantsFitxerBucket', new AbortController());
     const fetchBucket = await axios.get(process.env.API + '/api/core/fitxerbucket/' + document.fitxer!.id);
     const bucket: FitxerBucket = fetchBucket.data;
     const names = await axios.post(process.env.API + '/api/core/googlestorage/signatures', {

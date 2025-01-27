@@ -8,6 +8,7 @@ import {
 
 import routes from './routes';
 import axios from "axios";
+import {AbortControllerService} from "src/service/AbortControllerService";
 
 /*
  * If not building with SSR mode, you can
@@ -34,6 +35,7 @@ export default route(function (/* { store, ssrContext } */) {
   });
 
   Router.beforeEach((to, from, next) => {
+    AbortControllerService.abortAll();
     axios.defaults.withCredentials = true;
     axios.defaults.headers.common['Authorization'] = 'Bearer '+localStorage.getItem('token');
     next();

@@ -235,7 +235,7 @@ import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
-import {useRoute, useRouter} from "vue-router";
+import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import debounce from 'lodash/debounce';
 
 const $q = useQuasar();
@@ -255,6 +255,8 @@ const abortController = new AbortController();
 
 const showPdfDialog = ref(false);
 const pdf: Ref<FitxerBucket | null> = ref({} as FitxerBucket);
+
+const workersAll = [];
 
 const initialPagination = {
   sortBy: 'desc',
@@ -333,6 +335,7 @@ function setTutors(index: number) {
     setTutors(++index);
     worker.terminate();
   }
+  workersAll.push(worker);
 }
 
 function signDoc(document: Document, signatura: Signatura, signat: boolean) {
@@ -472,6 +475,7 @@ onMounted(async () => {
       document.fitxer!.signants = doc.fitxer.signants;
     }
   }
+  workersAll.push(worker);
 
   signatures.value = await SignaturaService.findAll();
   grupsFiltered.value = grupsFCT.value;
@@ -577,6 +581,12 @@ onMounted(async () => {
 
   signatures.value = await SignaturaService.findAll();
   convocatories.value = await ConvocatoriaService.getConvocatories();
+})
+
+onBeforeRouteLeave((to, from) => {
+  for(const w of workersAll){
+    w.terminate();
+  }
 })
 </script>
 
