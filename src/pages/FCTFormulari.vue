@@ -134,6 +134,7 @@
           <q-date
             v-model="formData.dataInici"
             minimal
+            mask="YYYY-MM-DD"
             @update:model-value="ageCalculate(formData.dataInici)"
           />
         </div>
@@ -142,6 +143,7 @@
           <q-date
             v-model="formData.dataFi"
             minimal
+            mask="YYYY-MM-DD"
           />
         </div>
         <div class="col-md-4 q-pa-md">
@@ -149,6 +151,7 @@
           <q-date
             v-model="formData.dataAcabament"
             minimal
+            mask="YYYY-MM-DD"
           />
         </div>
       </div>
