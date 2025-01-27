@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-
+    <p class="text-h3">Convocatòria {{convocatoria.nom}}</p>
     <div class="q-mb-lg">
       <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
         <q-list>
@@ -449,6 +449,7 @@ import {Rol} from "src/model/Rol";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {useRoute, useRouter} from "vue-router";
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
+import {Convocatoria} from "src/model/Convocatoria";
 
 const myUser:Ref<Usuari> = ref({} as Usuari);
 const isSearching:Ref<boolean> = ref(false);
@@ -496,7 +497,8 @@ const route = useRoute()
 const idConvocatoria = route.query?.convocatoria;
 console.log("Parameter: idConvocatoria",idConvocatoria, route.query?.convocatoria);
 
-const convocatories:Ref<Convocatoria> = ref();
+const convocatories:Ref<Convocatoria[]> = ref([] as Convocatoria[]);
+const convocatoria:Ref<Convocatoria> = ref({} as Convocatoria);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -876,6 +878,7 @@ onMounted(async ()=>{
   });
 
   convocatories.value = await ConvocatoriaService.getConvocatories();
+  convocatoria.value = convocatories.value.find(c=>c.id===parseInt(idConvocatoria)) || convocatories.value[0];
 })
 </script>
 

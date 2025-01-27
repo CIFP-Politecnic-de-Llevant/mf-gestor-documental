@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-
+    <p class="text-h3">Convocatòria {{convocatoria.nom}}</p>
     <div class="q-mb-lg">
       <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
         <q-list>
@@ -237,6 +237,7 @@ import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
 import {onBeforeRouteLeave, useRoute, useRouter} from "vue-router";
 import debounce from 'lodash/debounce';
+import {Convocatoria} from "src/model/Convocatoria";
 
 const $q = useQuasar();
 const router = useRouter()
@@ -269,7 +270,8 @@ const initialPagination = {
 const idConvocatoria = route.query?.convocatoria;
 console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
 
-const convocatories: Ref<Convocatoria> = ref();
+const convocatories: Ref<Convocatoria[]> = ref([] as Convocatoria[]);
+const convocatoria:Ref<Convocatoria> = ref({} as Convocatoria);
 
 async function setGrup(grup: Grup) {
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom + grup.nom, idConvocatoria);
@@ -581,6 +583,7 @@ onMounted(async () => {
 
   signatures.value = await SignaturaService.findAll();
   convocatories.value = await ConvocatoriaService.getConvocatories();
+  convocatoria.value = convocatories.value.find(c=>c.id===parseInt(idConvocatoria)) || convocatories.value[0];
 })
 
 onBeforeRouteLeave((to, from) => {

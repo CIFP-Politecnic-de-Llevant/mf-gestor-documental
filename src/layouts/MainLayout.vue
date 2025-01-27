@@ -33,7 +33,7 @@
             <q-item-label>FCT - Generar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/manageDocumentation" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable :to="`/fct/manageDocumentation?convocatoria=${idconvocatoria}`" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="folder" />
           </q-item-section>
@@ -49,7 +49,7 @@
             <q-item-label>FCT - Formulari</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/group">
+        <q-item clickable :to="`/fct/group?convocatoria=${idconvocatoria}`">
           <q-item-section avatar>
             <q-icon name="group" />
           </q-item-section>
@@ -99,24 +99,18 @@
 </template>
 
 
-<script lang="ts">
+<script setup lang="ts">
 
-import {defineComponent, ref} from 'vue'
+import {defineComponent, onMounted, ref} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {Rol} from '../model/Rol'
 import Menuapp from '../components/common/AppsMenu.vue';
+import {ConvocatoriaService} from "src/service/ConvocatoriaService";
 
-
-export default defineComponent({
-  name: 'MainLayout',
-  components:{
-    Menuapp
-  },
-  setup () {
     const leftDrawerOpen = ref(false)
     const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
-    const router = useRouter()
-    const route = useRoute()
+    const router = useRouter();
+    const route = useRoute();
     const rols = Rol;
 
     const enableGrupsCooperatius = (process.env.APP_ENABLE_GRUPSCOOPERATIUS==='true');
@@ -125,25 +119,20 @@ export default defineComponent({
 
     const enableApps = enableGrupsCooperatius || enableConvalidacions || enableProfessoratManager;
 
+    const idconvocatoria = ref(0);
 
-    return {
-      rolsUser,
-      rols,
-      enableApps,
-      leftDrawerOpen,
-      route,
-      router,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      },
-      goBack(){
-        router.go(-1);
-      }
+    function toggleLeftDrawer () {
+      leftDrawerOpen.value = !leftDrawerOpen.value
     }
-  },
-  async mounted (){
-    //this.calendaris = await ReservatService.findAllCalendaris();
-    //console.log("Calendaris",this.calendaris)
-  }
-})
+
+    function goBack(){
+      router.go(-1);
+    }
+
+    onMounted(async () => {
+      //Find convocatoria with max id
+      const convocatories = await ConvocatoriaService.getConvocatories();
+      idconvocatoria.value  = convocatories.find(c=>c.actual)?.id || 0;
+      console.log("Convocatoria", idconvocatoria.value, convocatories)
+    })
 </script>
