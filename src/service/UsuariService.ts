@@ -95,7 +95,8 @@ export class UsuariService {
      }*/
      return data.map((alumne: any): Alumne => {
        const alumneObj = this.fromJSONAlumne(alumne)
-       alumneObj.noExisteix = !alumnesbd.some(abd => abd.numeroExpedient === alumneObj.numeroExpedient);
+       //alumneObj.noExisteix = !alumnesbd.some(abd => abd.numeroExpedient === alumneObj.numeroExpedient);
+       alumneObj.noExisteix = true;
        return alumneObj
      });
 
