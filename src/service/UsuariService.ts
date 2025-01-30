@@ -83,22 +83,21 @@ export class UsuariService {
     const response= await axios.post(process.env.API + '/api/gestordocumental/alumnes/get-students-from-file',formData);
      const data = await response.data;
      const alumnesbd = await this.allStudents()
-     const alumnes:Alumne[] = data.map((alumne:any):Alumne=>{
-
-       return this.fromJSONAlumne(alumne)
-     }).sort();
-
-     alumnes.forEach(a => {
+     /*alumnes.forEach(a => {
 
          a.noExisteix = !alumnesbd.some(abd => abd.numeroExpedient === a.numeroExpedient);
-     });
+     });*/
 
-     for (const alumne of alumnes) {
+     /*for (const alumne of alumnes) {
        console.log("Per verificar")
 
        console.log(alumne)
-     }
-     return alumnes;
+     }*/
+     return data.map((alumne: any): Alumne => {
+       const alumneObj = this.fromJSONAlumne(alumne)
+       alumneObj.noExisteix = !alumnesbd.some(abd => abd.numeroExpedient === alumneObj.numeroExpedient);
+       return alumneObj
+     });
 
    }
 
@@ -107,11 +106,9 @@ export class UsuariService {
     const response = await axios.get(process.env.API + '/api/gestordocumental/alumnes/all-students');
     const data = await response.data;
 
-    //return data;
      return data.map((alumne:any):Alumne=>{
-
        return this.fromJSONAlumne(alumne)
-     }).sort();
+     })
   }
 
   static async updateStudent(alumne:Object){

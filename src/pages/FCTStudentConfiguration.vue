@@ -14,7 +14,7 @@
         style="max-width: 300px;  margin-right: 10px;"
       ></q-file>
       <div>
-        <q-btn label="Obrir" type="submit" color="primary"/>
+        <q-btn label="Pujar fitxer" type="submit" color="primary"/>
       </div>
     </q-form>
 
@@ -139,7 +139,7 @@
           <q-form @submit="saveStudents"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Alumnes a guardar</p>
             <div class="row flex justify-center">
-              <div class="col-5 q-mx-sm" v-for="(student, index) in selectListStudents.sort(((a:any,b:any)=>(a.cognom1+a.cognom2+a.nom).localeCompare(b.cognom1+b.cognom1+b.nom)))" :key="index">
+              <div class="col-5 q-mx-sm" v-for="(student, index) in selectListStudents" :key="index">
                   <q-checkbox
                     dense
                     v-model="student.noExisteix"
@@ -206,10 +206,9 @@ const dadesTutor = ["Tutor","Telèfon Tutor","E-mail Tutor","DNI Tutor","Adreça
 
 async function saveFile(){
     if(file !== null && file.value instanceof File){
-
       selectListStudents.value = await UsuariService.getStudentFromFile(file.value);
+      selectListStudents.value.sort(((a:any,b:any)=>(a.cognom1+a.cognom2+a.nom).localeCompare(b.cognom1+b.cognom1+b.nom)));
       listStudents.value = true;
-    }else {
     }
     file.value = null;
 
