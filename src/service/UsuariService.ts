@@ -70,7 +70,6 @@ export class UsuariService {
       grup3: json.gestibGrup3,
       value: json.gsuiteEmail,
       label: json.gsuiteFullName + ' <'+json.gsuiteEmail+'>'
-
     }
   }
 
@@ -129,7 +128,7 @@ export class UsuariService {
       console.log("Aquest es per guardarels alumnes")
       console.log(alumne)
     }
-      await axios.post(process.env.API + `/api/gestordocumental/alumnes/save-student`,alumnes)
+    await axios.post(process.env.API + `/api/gestordocumental/alumnes/save-student`,alumnes)
   }
 
   static fromJSONAlumne(json:any):Alumne{

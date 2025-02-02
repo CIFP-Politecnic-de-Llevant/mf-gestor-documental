@@ -450,7 +450,7 @@
             bg-color="primary"
             type="text"
             label="Nom representant legal"
-            v-model="formData.nomRepresentantLegal"
+            v-model="formData.nomCompletRepresentantLegal"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -542,7 +542,7 @@
             outlined
             type="text"
             label="Nom tutor empresa"
-            v-model="formData.nomTutorEmpresa"
+            v-model="formData.nomCompletTutorEmpresa"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -735,8 +735,8 @@ const formData: Ref<DadesFormulari> = ref({
   tipusJornada: '', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: false,
   empresaAdministracioPublica: false, numeroConveni: '', numeroAnnex: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
   cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
-  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomRepresentantLegal: '',
-  nifRepresentantLegal: '', nomTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
+  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomCompletRepresentantLegal: '',
+  nifRepresentantLegal: '', nomCompletTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
   municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmrpesa: '', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
   diaSeguimentResponsableFct: '', horaSeguimentResponsableFct: '', flexibilitzacioModulFct: false,
 });
@@ -811,9 +811,9 @@ function selectWorkspace(workspace:LlocTreball){
     formData.value.poblacioLlocTreball = workspace.poblacio;
     formData.value.telefonLlocTreball = workspace.telefon;
     formData.value.activitatLlocTreball = workspace.activitat;
-    formData.value.nomRepresentantLegal = workspace.nomRepresentantLegal;
+    formData.value.nomCompletRepresentantLegal = workspace.nomCompletRepresentantLegal;
     formData.value.nifRepresentantLegal = workspace.dniRepresentantLegal;
-    formData.value.nomTutorEmpresa = workspace.nomTutorEmpresa;
+    formData.value.nomCompletTutorEmpresa = workspace.nomCompletTutorEmpresa;
     formData.value.nifTutorEmpresa = workspace.dniTutorEmpresa;
     formData.value.municipiTutorEmpresa = workspace.municipi;
     formData.value.carrecTutorEmpresa = workspace.carrecTutor;
@@ -936,9 +936,9 @@ async function saveForm(){
   formData.value.poblacioLlocTreball = '';
   formData.value.telefonLlocTreball = '';
   formData.value.activitatLlocTreball = '';
-  formData.value.nomRepresentantLegal = '';
+  formData.value.nomCompletRepresentantLegal = '';
   formData.value.nifRepresentantLegal = '';
-  formData.value.nomTutorEmpresa = '';
+  formData.value.nomCompletTutorEmpresa = '';
   formData.value.nifTutorEmpresa = '';
   formData.value.nacionalitatTutorEmpresa = '';
   formData.value.municipiTutorEmpresa = '';

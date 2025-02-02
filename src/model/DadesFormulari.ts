@@ -1,3 +1,9 @@
+export enum Ensenyament {
+    FPGB = "FPGB",
+    GM = "GM",
+    GS = "GS"
+}
+
 export interface DadesFormulari {
 
     anyCurs?:string;
@@ -40,9 +46,9 @@ export interface DadesFormulari {
     poblacioLlocTreball?:string;
     telefonLlocTreball?:string;
     activitatLlocTreball?:string;
-    nomRepresentantLegal?:string;
+    nomCompletRepresentantLegal?:string;
     nifRepresentantLegal?:string;
-    nomTutorEmpresa?:string;
+    nomCompletTutorEmpresa?:string;
     nifTutorEmpresa?:string;
     nacionalitatTutorEmpresa?:string;
     municipiTutorEmpresa?:string;
