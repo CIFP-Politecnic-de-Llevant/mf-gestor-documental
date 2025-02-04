@@ -73,14 +73,14 @@
             <q-item-label>FCT - Configuració Alumnes</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/programaFormatiu" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <!--q-item clickable to="/fct/programaFormatiu" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="book" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Programa Formatiu</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item-->
         <q-item clickable to="/logout">
           <q-item-section avatar>
             <q-icon name="logout" />
