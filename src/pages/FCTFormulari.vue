@@ -725,7 +725,7 @@ const formData: Ref<DadesFormulari> = ref({
   estudis: localStorage.getItem('estudis') || 'FP Bàsica',
   cicleFormatiu: localStorage.getItem('cicleformatiu') || ciclesFormatius[0],
   grup: '',
-  duradaCicle: localStorage.getItem('duradacicle') || '1 any',
+  duradaCicle: localStorage.getItem('duradacicle') || '2 anys',
   totalHoresProposadesFct: '',
   horesDiaries: '',
   km: '',
@@ -908,7 +908,7 @@ async function saveForm(){
   formData.value.estudis = localStorage.getItem('estudis') || 'FP Bàsica';
   formData.value.cicleFormatiu =  localStorage.getItem('cicleformatiu') || ciclesFormatius[0];
   formData.value.grup = '';
-  formData.value.duradaCicle = localStorage.getItem('duradacicle') || '1 any';
+  formData.value.duradaCicle = localStorage.getItem('duradacicle') || '2 anys';
   formData.value.totalHoresProposadesFct = '';
   formData.value.horesDiaries = '';
   formData.value.km = '';
