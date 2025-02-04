@@ -410,6 +410,17 @@
             class="q-pa-sm"
             outlined
             type="text"
+            label="Població empresa"
+            v-model="formData.poblacioEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
             label="Codi postal empresa"
             v-model="formData.cpempresa"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
