@@ -62,7 +62,7 @@ export class EmpresaService {
             cif: json.cif,
             adreca: json.adreca,
             codiPostal: json.codiPostal,
-            poblacio: json.poblacioEmpresa,
+            poblacio: json.poblacio,
             provincia: json.provincia,
             telefon: json.telefon,
             llocsTreball: json.llocsTreball
