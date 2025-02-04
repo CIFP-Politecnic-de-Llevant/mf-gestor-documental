@@ -11,7 +11,7 @@ export interface DadesFormulari {
     llinatgesAlumne?:string;
     poblacio?:string;
     dni?:string;
-    nExpedient?:string;
+    numeroExpedient?:string;
     menorEdat?:boolean;
     edat?:string;
     estudis?:string;

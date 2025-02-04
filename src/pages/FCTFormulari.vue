@@ -53,7 +53,7 @@
             outlined
             type="text"
             label="Número expedient"
-            v-model="formData.nExpedient"
+            v-model="formData.numeroExpedient"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -719,7 +719,7 @@ const formData: Ref<DadesFormulari> = ref({
   llinatgesAlumne: '',
   poblacio: '',
   dni: '',
-  nExpedient: '',
+  numeroExpedient: '',
   menorEdat: false,
   edat: '',
   estudis: localStorage.getItem('estudis') || 'FP Bàsica',
@@ -752,8 +752,8 @@ function selectStudent(student:Alumne){
     formData.value.dni = student.dni;
 
     if (student && typeof student.numeroExpedient !== 'undefined') {
-        formData.value.nExpedient = student.numeroExpedient.toString();
-      console.log(formData.value.nExpedient)
+        formData.value.numeroExpedient = student.numeroExpedient.toString();
+      console.log(formData.value.numeroExpedient)
     }
     formData.value.grup = student.estudis;
 }
@@ -794,6 +794,7 @@ function selectCompany(company:Empresa){
   formData.value.adrecaEmpresa = company.adreca;
   formData.value.cpempresa = company.codiPostal;
   formData.value.telefonEmpresa = company.telefon;
+  formData.value.poblacioEmpresa = company.poblacio;
 
     console.log(company.llocsTreball);
   if(company.llocsTreball !== undefined){
@@ -896,63 +897,7 @@ async function saveForm(){
     localStorage.setItem('periode', formData.value.periode);
   }
   await DocumentService.saveForm(formData.value,tutorFCT.value.email);
-  companySelected.value = false;
-
-  formData.value.nomAlumne = '';
-  formData.value.llinatgesAlumne = '';
-  formData.value.poblacio = '';
-  formData.value.dni = '';
-  formData.value.nExpedient = '';
-  formData.value.menorEdat = false;
-  formData.value.edat = '';
-  formData.value.estudis = localStorage.getItem('estudis') || 'FP Bàsica';
-  formData.value.cicleFormatiu =  localStorage.getItem('cicleformatiu') || ciclesFormatius[0];
-  formData.value.grup = '';
-  formData.value.duradaCicle = localStorage.getItem('duradacicle') || '2 anys';
-  formData.value.totalHoresProposadesFct = '';
-  formData.value.horesDiaries = '';
-  formData.value.km = '';
-  formData.value.periode = localStorage.getItem('periode') || 'Ordinari';
-  formData.value.dataInici = '';
-  formData.value.dataFi = '';
-  formData.value.dataAcabament = '';
-  formData.value.tipusJornada = '';
-  formData.value.horari = '';
-  formData.value.telefonTutor = '';
-  formData.value.empresaNova = false;
-  formData.value.empresaAdministracioPublica = false;
-  formData.value.numeroConveni = '';
-  formData.value.numeroAnnex = '';
-  formData.value.nomEmpresa = '';
-  formData.value.cif = '';
-  formData.value.adrecaEmpresa = '';
-  formData.value.cpempresa = '';
-  formData.value.poblacioEmpresa = '';
-  formData.value.telefonEmpresa = '';
-  formData.value.nomLlocTreball = '';
-  formData.value.adrecaLlocTreball = '';
-  formData.value.cpLlocTreball = '';
-  formData.value.poblacioLlocTreball = '';
-  formData.value.telefonLlocTreball = '';
-  formData.value.activitatLlocTreball = '';
-  formData.value.nomCompletRepresentantLegal = '';
-  formData.value.nifRepresentantLegal = '';
-  formData.value.nomCompletTutorEmpresa = '';
-  formData.value.nifTutorEmpresa = '';
-  formData.value.nacionalitatTutorEmpresa = '';
-  formData.value.municipiTutorEmpresa = '';
-  formData.value.carrecTutorEmpresa = '';
-  formData.value.emailEmpresa = '';
-  formData.value.diaSeguimentCentreEducatiu = '';
-  formData.value.horaSeguimentCentreEducatiu = '';
-  formData.value.diaSeguimentResponsableFct = '';
-  formData.value.horaSeguimentResponsableFct = '';
-  formData.value.flexibilitzacioModulFct = false;
-
-  selectedStudent.value = null;
-  selectedCompany.value = null;
-  allCompanyWorkspace.value = [];
-
+  window.location.reload();
 }
 
 onMounted(async () =>{

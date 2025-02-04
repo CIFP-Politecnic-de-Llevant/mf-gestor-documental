@@ -52,5 +52,5 @@ export interface Formulari {
   diaSeguimentResponsableFct:string;
   horaSeguimentResponsableFct:string;
   flexibilitzacioModulFct:string;
-  nExpedient:string;
+  numeroExpedient:string;
 }

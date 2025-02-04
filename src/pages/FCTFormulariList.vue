@@ -60,7 +60,7 @@ const formularis:Ref<Formulari[]> = ref([] as Formulari[]);
   diaSeguimentResponsableFct:string;
   horaSeguimentResponsableFct:string;
   flexibilitzacioModulFct:string;
-  nExpedient:string;
+  numeroExpedient:string;
  */
 const columns:QTableColumn[] = [] as QTableColumn[];
 columns.push({

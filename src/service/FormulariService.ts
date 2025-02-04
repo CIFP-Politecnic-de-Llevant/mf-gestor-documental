@@ -46,7 +46,7 @@ export class FormulariService {
       llinatgesTutor: json.llinatgesTutor,
       menorEdat: json.menorEdat,
       municipiTutorEmpresa: json.municipiTutorEmpresa,
-      nExpedient: json.nExpedient,
+      numeroExpedient: json.numeroExpedient,
       nacionalitatTutorEmpresa: json.nacionalitatTutorEmpresa,
       nifRepresentantLegal: json.nifRepresentantLegal,
       nifTutorEmpresa: json.nifTutorEmpresa,
