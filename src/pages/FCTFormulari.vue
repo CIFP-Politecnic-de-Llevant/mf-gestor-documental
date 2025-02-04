@@ -363,7 +363,6 @@
             type="text"
             label="Número d'annex"
             v-model="formData.numeroAnnex"
-            :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
       </div>
