@@ -189,7 +189,7 @@
 
       <div class="row flex justify-start q-mt-sm q-gutter-y-md">
 
-        <div class="col-md-3">
+        <div class="col-md-2">
           <q-input
             class="q-pa-sm"
             outlined
@@ -200,7 +200,7 @@
           />
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
           <q-input
             class="q-pa-sm"
             outlined
@@ -211,7 +211,7 @@
           />
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
           <q-input
             class="q-pa-sm"
             outlined
@@ -220,6 +220,14 @@
             v-model="formData.km"
             hint="Només número"
           />
+        </div>
+
+        <div class="col-md-3">
+          <q-select
+            v-model="formData.tipusJornada"
+            outlined
+            label="Tipus jornada"
+            :options="['Continuada', 'Partida', 'Continuada i Partida']" />
         </div>
 
         <div class="col-md-3">
