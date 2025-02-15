@@ -28,22 +28,12 @@
       inline-label
       align="left"
       class="bg-grey-2 text-black shadow-2">
-<!--      @update:model-value="(value:string) => filterDocuments(value)"-->
 
       <q-tab name="TOTS" icon="timeline" label="Tots"  />
       <q-tab name="PENDENT_SIGNATURES" icon="visibility" label="Pendents de validar" />
       <q-tab name="ACCEPTAT" icon="done" label="Acceptats" />
       <q-tab name="REBUTJAT" icon="deleted" label="Rebutjats" />
     </q-tabs>
-
-<!--    <div>-->
-<!--      <q-btn-group push>-->
-<!--        <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')"/>-->
-<!--        <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')"/>-->
-<!--        <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')"/>-->
-<!--        <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')"/>-->
-<!--      </q-btn-group>-->
-<!--    </div>-->
 
     <q-list bordered class="rounded-borders">
       <q-expansion-item v-for="grupFCT in grupsFCT?.filter(g => g.visible) || []"
@@ -306,10 +296,7 @@ const columnsGrup: Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari: Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
-// const grupsFiltered = ref([] as any[]);
 const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
-
-const abortController = new AbortController();
 
 const showPdfDialog = ref(false);
 const pdf: Ref<FitxerBucket | null> = ref({} as FitxerBucket);
@@ -488,41 +475,6 @@ async function viewPdf(document: Document) {
   pdf.value = await DocumentService.getURLFitxerDocument(document, false);
 }
 
-
-// function filterDocuments(filter: string) {
-//   const filtered: any[] = [];
-//   grupsFiltered.value = [];
-//
-//   if (filter === 'pending') {
-//     filtered.push(...grupsFCT.value.map(grup => {
-//       const grupClone = JSON.parse(JSON.stringify(grup));
-//       grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
-//       grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
-//       return grupClone;
-//     }));
-//   } else if (filter === 'accepted') {
-//     filtered.push(...grupsFCT.value.map(grup => {
-//       const grupClone = JSON.parse(JSON.stringify(grup));
-//       grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
-//       grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
-//       return grupClone;
-//     }));
-//   } else if (filter === 'rejected') {
-//     filtered.push(...grupsFCT.value.map(grup => {
-//       const grupClone = JSON.parse(JSON.stringify(grup));
-//       grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
-//       grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
-//       return grupClone;
-//     }));
-//   } else
-//     filtered.push(...grupsFCT.value);
-//
-//   // filtered.map(grup => {
-//   //     grup.visible = !(grup.documentsGrup.length === 0 && grup.documentsUsuari.length === 0)
-//   // })
-//
-//   grupsFiltered.value = [...filtered];
-// }
 
 async function loadGrups() {
   const grups = await GrupService.findGrupsAmbDocumentsFct(idConvocatoria);
