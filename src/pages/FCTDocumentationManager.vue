@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p class="text-h3">Convocatòria {{convocatoria.nom}}</p>
+    <p class="text-h3">Convocatòria {{ convocatoria.nom }}</p>
     <div class="q-mb-lg">
       <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
         <q-list>
@@ -15,198 +15,240 @@
     </div>
 
     <div>
-      <q-btn-group push>
-        <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')"/>
-        <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')"/>
-        <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')"/>
-        <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')"/>
-      </q-btn-group>
+      <p class="text-h5 q-mt-lg">Selecciona els grups a visualitzar</p>
+    </div>
+    <div class="q-mb-md">
+      <q-checkbox v-for="grupFCT in grupsFCT" v-model="grupFCT.visible" @update:model-value="(value:boolean) => showGrup(value, grupFCT.grup.id)" :label="grupFCT.grup.curs.nom + grupFCT.grup.nom" class="q-mr-md"/>
     </div>
 
-    <div v-for="grupFCT in grupsFiltered">
-      <div
-        v-if="(grupFCT.documentsGrup && grupFCT.documentsGrup.length>0) || (grupFCT.documentsUsuari && grupFCT.documentsUsuari.length>0)">
-        <h4>Grup: {{ grupFCT.grup.curs.nom }}{{ grupFCT.grup.nom }}</h4>
-        <p v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)">
-          Tutor FCT: {{ tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t => t.label).join(", ") }}
-        </p>
-        <p v-else>
-          Tutor FCT: Carregant tutors...
-        </p>
+    <q-tabs
+      v-model="filtre"
+      dense
+      no-caps
+      inline-label
+      align="left"
+      class="bg-grey-2 text-black shadow-2">
+<!--      @update:model-value="(value:string) => filterDocuments(value)"-->
 
-        <q-table
-          flat bordered
-          title="Documents del grup"
-          :rows="grupFCT.documentsGrup"
-          :columns="columnsGrup"
-          row-key="name"
-          binary-state-sort
-          class="q-mb-lg"
-          :pagination="initialPagination"
-        >
-          <template v-slot:header="props">
-            <q-tr :props="props">
-              <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-                class="text-wrap-center"
+      <q-tab name="TOTS" icon="timeline" label="Tots"  />
+      <q-tab name="PENDENT_SIGNATURES" icon="visibility" label="Pendents de validar" />
+      <q-tab name="ACCEPTAT" icon="done" label="Acceptats" />
+      <q-tab name="REBUTJAT" icon="deleted" label="Rebutjats" />
+    </q-tabs>
+
+<!--    <div>-->
+<!--      <q-btn-group push>-->
+<!--        <q-btn push label="Tots" icon="timeline" @click="filterDocuments('all')"/>-->
+<!--        <q-btn push label="Pendents de validar" icon="visibility" @click="filterDocuments('pending')"/>-->
+<!--        <q-btn push label="Acceptats" icon="done" @click="filterDocuments('accepted')"/>-->
+<!--        <q-btn push label="Rebutjats" icon="deleted" @click="filterDocuments('rejected')"/>-->
+<!--      </q-btn-group>-->
+<!--    </div>-->
+
+    <q-list bordered class="rounded-borders">
+      <q-expansion-item v-for="grupFCT in grupsFCT?.filter(g => g.visible) || []"
+                        :key="grupFCT.grup.id" expand-separator>
+        <template v-slot:header>
+          <span class="text-h4 q-my-sm">{{ grupFCT.grup.curs.nom }}{{ grupFCT.grup.nom }}</span>
+        </template>
+        <q-card>
+          <q-card-section v-if="grupFCT.loaded">
+            <div>
+              <p v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)">
+                Tutor FCT: {{
+                  tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom).map(t => t.label).join(", ")
+                }}
+              </p>
+              <p v-else>
+                Tutor FCT: Carregant tutors...
+              </p>
+            </div>
+            <div v-if="(grupFCT.documentsGrupFiltered && grupFCT.documentsGrupFiltered.length>0) || (grupFCT.documentsUsuariFiltered && grupFCT.documentsUsuariFiltered.length>0)">
+              <!-- DOCUMENTS DE GRUP -->
+              <q-table
+                flat bordered
+                title="Documents del grup"
+                :rows="grupFCT.documentsGrupFiltered"
+                :columns="columnsGrup"
+                row-key="name"
+                binary-state-sort
+                class="q-mb-lg"
+                :pagination="initialPagination"
               >
-                {{ col.label }}
-              </q-th>
-            </q-tr>
-          </template>
-          <template v-slot:body="props">
-            <q-tr :props="props">
-              <q-td key="tipusDocument" :props="props" class="text-wrap">
-                <q-select v-model="props.row.documentEstat" :options="[
+                <template v-slot:header="props">
+                  <q-tr :props="props">
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                      class="text-wrap-center"
+                    >
+                      {{ col.label }}
+                    </q-th>
+                  </q-tr>
+                </template>
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="tipusDocument" :props="props" class="text-wrap">
+                      <q-select v-model="props.row.documentEstat" :options="[
                   'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)"/>
-              </q-td>
-              <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
-                <q-input v-model="props.row.observacions"
-                         @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
-                  <template v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)"
-                            v-slot:after>
-                    <q-btn
-                      @click="sendMailToTutorFCT(tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom), props.row)"
-                      round dense flat icon="send"/>
-                  </template>
-                </q-input>
-              </q-td>
-              <q-td key="tipusDocument" :props="props" class="text-wrap">
-                {{ props.row.tipusDocument.nom }}
-              </q-td>
-              <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-                <q-checkbox
-                  v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
-                  v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                  @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
-                />
-              </q-td>
-              <q-td>
-                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
-                  <p v-for="nom in props.row.fitxer.signants">
-                    {{ nom }}
-                  </p>
-                </div>
-              </q-td>
-              <q-td>
-                <div class="flex flex-center" style="width: 100px;">
-                  <q-btn
-                    @click="getURL(props.row)"
-                    :color="!props.row.fitxer ? 'white' : 'primary'"
-                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                    :disable="!props.row.fitxer"
-                    round
-                    dense
-                    class="q-ml-xs"
-                    icon="picture_as_pdf"
-                  />
-                  <q-btn
-                    @click="viewPdf(props.row)"
-                    :color="!props.row.fitxer ? 'white' : 'primary'"
-                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                    :disable="!props.row.fitxer"
-                    round
-                    dense
-                    class="q-ml-xs"
-                    icon="plagiarism"
-                  />
-                </div>
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
+                    </q-td>
+                    <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
+                      <q-input v-model="props.row.observacions"
+                               @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
+                        <template v-if="tutorsGrupsFCT && tutorsGrupsFCT.get(grupFCT.grup.curs.nom + grupFCT.grup.nom)"
+                                  v-slot:after>
+                          <q-btn
+                            @click="sendMailToTutorFCT(tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom), props.row)"
+                            round dense flat icon="send"/>
+                        </template>
+                      </q-input>
+                    </q-td>
+                    <q-td key="tipusDocument" :props="props" class="text-wrap">
+                      {{ props.row.tipusDocument.nom }}
+                    </q-td>
+                    <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
+                      <q-checkbox
+                        v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
+                        v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
+                        @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
+                      />
+                    </q-td>
+                    <q-td>
+                      <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                        <p v-for="nom in props.row.fitxer.signants">
+                          {{ nom }}
+                        </p>
+                      </div>
+                    </q-td>
+                    <q-td>
+                      <div class="flex flex-center" style="width: 100px;">
+                        <q-btn
+                          @click="getURL(props.row)"
+                          :color="!props.row.fitxer ? 'white' : 'primary'"
+                          :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                          :disable="!props.row.fitxer"
+                          round
+                          dense
+                          class="q-ml-xs"
+                          icon="picture_as_pdf"
+                        />
+                        <q-btn
+                          @click="viewPdf(props.row)"
+                          :color="!props.row.fitxer ? 'white' : 'primary'"
+                          :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                          :disable="!props.row.fitxer"
+                          round
+                          dense
+                          class="q-ml-xs"
+                          icon="plagiarism"
+                        />
+                      </div>
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
 
-        <q-table
-          flat
-          bordered
-          title="Documents de l'usuari"
-          :rows="grupFCT.documentsUsuari"
-          :columns="columnsUsuari"
-          row-key="name"
-          binary-state-sort
-          :pagination="initialPagination"
-        >
-          <template v-slot:header="props">
-            <q-tr :props="props">
-              <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-                class="text-wrap-center"
+              <!-- DOCUMENTS D'USUARI -->
+              <q-table
+                flat
+                bordered
+                title="Documents de l'usuari"
+                :rows="grupFCT.documentsUsuariFiltered"
+                :columns="columnsUsuari"
+                row-key="name"
+                binary-state-sort
+                :pagination="initialPagination"
               >
-                {{ col.label }}
-              </q-th>
-            </q-tr>
-          </template>
-          <template v-slot:body="props">
-            <q-tr :props="props">
-              <q-td key="tipusDocument" :props="props" class="text-wrap">
-                <q-select v-model="props.row.documentEstat" :options="[
+                <template v-slot:header="props">
+                  <q-tr :props="props">
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                      class="text-wrap-center"
+                    >
+                      {{ col.label }}
+                    </q-th>
+                  </q-tr>
+                </template>
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="tipusDocument" :props="props" class="text-wrap">
+                      <q-select v-model="props.row.documentEstat" :options="[
                   'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)"/>
-              </q-td>
-              <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
-                <q-input v-model="props.row.observacions"
-                         @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
-                  <template v-slot:after>
-                    <q-btn
-                      @click="sendMailToTutorFCT(tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom), props.row)"
-                      round dense flat icon="send"/>
-                  </template>
-                </q-input>
-              </q-td>
-              <q-td key="alumne" :props="props" class="text-wrap">
-                {{ props.row.usuari.nomComplet2 }}
-              </q-td>
-              <q-td key="tipusDocument" :props="props" class="text-wrap">
-                {{ props.row.tipusDocument.nom }}
-              </q-td>
-              <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-                <q-checkbox
-                  v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
-                  v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                  @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
-                />
-              </q-td>
-              <q-td>
-                <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
-                  <p v-for="nom in props.row.fitxer.signants">
-                    {{ nom }}
-                  </p>
-                </div>
-              </q-td>
-              <q-td>
-                <div class="flex flex-center" style="width: 100px;">
-                  <q-btn
-                    @click="getURL(props.row)"
-                    :color="!props.row.fitxer ? 'white' : 'primary'"
-                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                    :disable="!props.row.fitxer"
-                    round
-                    dense
-                    class="q-ml-xs"
-                    icon="picture_as_pdf"
-                  />
-                  <q-btn
-                    @click="viewPdf(props.row)"
-                    :color="!props.row.fitxer ? 'white' : 'primary'"
-                    :text-color="!props.row.fitxer ? 'primary' : 'white'"
-                    :disable="!props.row.fitxer"
-                    round
-                    dense
-                    class="q-ml-xs"
-                    icon="plagiarism"
-                  />
-                </div>
-              </q-td>
-            </q-tr>
-          </template>
-        </q-table>
-      </div>
-    </div>
+                    </q-td>
+                    <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
+                      <q-input v-model="props.row.observacions"
+                               @update:model-value="debouncedChangeObservacionsDocument(props.row,props.row.observacions)">
+                        <template v-slot:after>
+                          <q-btn
+                            @click="sendMailToTutorFCT(tutorsGrupsFCT!.get(grupFCT.grup.curs.nom + grupFCT.grup.nom), props.row)"
+                            round dense flat icon="send"/>
+                        </template>
+                      </q-input>
+                    </q-td>
+                    <q-td key="alumne" :props="props" class="text-wrap">
+                      {{ props.row.usuari.nomComplet2 }}
+                    </q-td>
+                    <q-td key="tipusDocument" :props="props" class="text-wrap">
+                      {{ props.row.tipusDocument.nom }}
+                    </q-td>
+                    <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
+                      <q-checkbox
+                        v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
+                        v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
+                        @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
+                      />
+                    </q-td>
+                    <q-td>
+                      <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
+                        <p v-for="nom in props.row.fitxer.signants">
+                          {{ nom }}
+                        </p>
+                      </div>
+                    </q-td>
+                    <q-td>
+                      <div class="flex flex-center" style="width: 100px;">
+                        <q-btn
+                          @click="getURL(props.row)"
+                          :color="!props.row.fitxer ? 'white' : 'primary'"
+                          :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                          :disable="!props.row.fitxer"
+                          round
+                          dense
+                          class="q-ml-xs"
+                          icon="picture_as_pdf"
+                        />
+                        <q-btn
+                          @click="viewPdf(props.row)"
+                          :color="!props.row.fitxer ? 'white' : 'primary'"
+                          :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                          :disable="!props.row.fitxer"
+                          round
+                          dense
+                          class="q-ml-xs"
+                          icon="plagiarism"
+                        />
+                      </div>
+                    </q-td>
+                  </q-tr>
+                </template>
+              </q-table>
+            </div>
+            <div v-else><span class="text-h4 text-grey">Sense documents {{filtreText}}</span></div>
+          </q-card-section>
+          <q-card-section v-else>
+            <h3>Carregant dades...</h3>
+          </q-card-section>
+          <q-inner-loading :showing="!grupFCT.loaded">
+            <q-spinner-gears size="100px" color="primary" />
+          </q-inner-loading>
+        </q-card>
+      </q-expansion-item>
+    </q-list>
 
     <q-dialog v-model="showPdfDialog">
       <q-card class="no-scroll" style="background: gray; min-width: 80vw; min-height: 80vh; width: 100%; height: 100%;">
@@ -223,7 +265,7 @@
 </template>
 
 <script setup lang="ts">
-import {nextTick, onMounted, Ref, ref, toRaw} from "vue";
+import {computed, nextTick, onMounted, Ref, ref, toRaw} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
@@ -245,11 +287,26 @@ const route = useRoute()
 
 const signatures: Ref<Signatura[]> = ref([] as Signatura[]);
 
+const filtre:Ref<string> = ref("TOTS")
+
+const filtreText = computed(() => {
+  switch (filtre.value) {
+    case "ACCEPTAT":
+      return "ACCEPTATS";
+    case "REBUTJAT":
+      return "REBUTJATS";
+    case "PENDENT_SIGNATURES":
+      return "PENDENTS DE VALIDAR";
+    default:
+      return "...";
+  }
+});
+
 const columnsGrup: Ref<QTableColumn[]> = ref([] as QTableColumn[])
 const columnsUsuari: Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
 const grupsFCT = ref([] as any[]);
-const grupsFiltered = ref([] as any[]);
+// const grupsFiltered = ref([] as any[]);
 const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 
 const abortController = new AbortController();
@@ -271,12 +328,37 @@ const idConvocatoria = route.query?.convocatoria;
 console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
 
 const convocatories: Ref<Convocatoria[]> = ref([] as Convocatoria[]);
-const convocatoria:Ref<Convocatoria> = ref({} as Convocatoria);
+const convocatoria: Ref<Convocatoria> = ref({} as Convocatoria);
 
-async function setGrup(grup: Grup) {
+
+
+async function createGrup(grup: Grup) {
+  let documentsUsuari: Document[] = []
+  let documentsGrup: Document[] = []
+
+  const documentFCT = ref({
+    grup: grup,
+    tutorsFCT: [] as Usuari[],
+    documentsUsuari: documentsUsuari,
+    documentsGrup: documentsGrup,
+    loaded: false,
+    visible: false
+  });
+
+  grupsFCT.value.push(documentFCT.value);
+}
+
+async function setGrup(documentFCT: any) {
+  let documentsUsuari: Document[] = []
+  let documentsGrup: Document[] = []
+
+  const grup: Grup = documentFCT.grup;
+
+  console.log(documentFCT);
+
   const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom + grup.nom, idConvocatoria);
 
-  const documentsUsuari = documentsAll.filter(d => d.usuari).sort((a: Document, b: Document) => {
+  documentsUsuari = documentsAll.filter(d => d.usuari).sort((a: Document, b: Document) => {
     if (a.usuari && b.usuari && a.usuari.id != b.usuari.id) {
       return a.usuari.nomComplet2.localeCompare(b.usuari.nomComplet2);
     }
@@ -292,7 +374,7 @@ async function setGrup(grup: Grup) {
     return 0;
   });
 
-  const documentsGrup = documentsAll.filter(d => !d.usuari).sort((a: Document, b: Document) => {
+  documentsGrup = documentsAll.filter(d => !d.usuari).sort((a: Document, b: Document) => {
     if (!a.tipusDocument) {
       return -1;
     }
@@ -302,18 +384,22 @@ async function setGrup(grup: Grup) {
     return a.tipusDocument.nom.localeCompare(b.tipusDocument.nom)
   });
 
-  //URL documents
-  //console.log(documentsUsuari)
-  //console.log(documentsGrup)
+  documentFCT.documentsUsuari = documentsUsuari
+  documentFCT.documentsGrup = documentsGrup
 
-  const documentFCT = ref({
-    grup: grup,
-    tutorsFCT: [] as Usuari[],
-    documentsUsuari: documentsUsuari,
-    documentsGrup: documentsGrup,
-  });
+  documentFCT.documentsUsuariFiltered = computed(() =>{
+    if (filtre.value != "TOTS")
+      return documentFCT.documentsUsuari.filter((d: any) => d.documentEstat === filtre.value)
+    return documentFCT.documentsUsuari
+  })
 
-  grupsFCT.value.push(documentFCT.value);
+  documentFCT.documentsGrupFiltered = computed(() =>{
+    if (filtre.value != "TOTS")
+      return documentFCT.documentsGrup.filter((d: any) => d.documentEstat === filtre.value)
+    return documentFCT.documentsGrup
+  })
+
+  documentFCT.loaded = true
 }
 
 function setTutors(index: number) {
@@ -357,6 +443,19 @@ function changeObservacionsDocument(document: Document, observacions: string) {
   DocumentService.changeObservacionsDocument(document, observacions, idConvocatoria);
 }
 
+const showGrup = (newValue: boolean, id:number) => {
+  const grupFCT = grupsFCT.value.find(d => d.grup.id === id);
+  if (!grupFCT) return;
+  if (newValue) {
+    grupFCT.visible = true;
+    if (!grupFCT.loaded)
+      setGrup(grupFCT);
+  } else {
+    grupFCT.visible = false;
+  }
+};
+
+
 const sendMailToTutorFCT = (tutors: Usuari[], document: Document) => {
   var errors = ""
   if (!tutors || tutors.length == 0)
@@ -390,52 +489,48 @@ async function viewPdf(document: Document) {
 }
 
 
-function filterDocuments(filter: string) {
-  const filtered: any[] = [];
-  grupsFiltered.value = [];
-
-  if (filter === 'pending') {
-    filtered.push(...grupsFCT.value.map(grup => {
-      const grupClone = JSON.parse(JSON.stringify(grup));
-      grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
-      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
-      return grupClone;
-    }));
-  } else if (filter === 'accepted') {
-    filtered.push(...grupsFCT.value.map(grup => {
-      const grupClone = JSON.parse(JSON.stringify(grup));
-      grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
-      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
-      return grupClone;
-    }));
-  } else if (filter === 'rejected') {
-    filtered.push(...grupsFCT.value.map(grup => {
-      const grupClone = JSON.parse(JSON.stringify(grup));
-      grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
-      grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
-      return grupClone;
-    }));
-  } else
-    filtered.push(...grupsFCT.value);
-
-  grupsFiltered.value = [...filtered];
-}
+// function filterDocuments(filter: string) {
+//   const filtered: any[] = [];
+//   grupsFiltered.value = [];
+//
+//   if (filter === 'pending') {
+//     filtered.push(...grupsFCT.value.map(grup => {
+//       const grupClone = JSON.parse(JSON.stringify(grup));
+//       grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
+//       grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.PENDENT_SIGNATURES);
+//       return grupClone;
+//     }));
+//   } else if (filter === 'accepted') {
+//     filtered.push(...grupsFCT.value.map(grup => {
+//       const grupClone = JSON.parse(JSON.stringify(grup));
+//       grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
+//       grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.ACCEPTAT);
+//       return grupClone;
+//     }));
+//   } else if (filter === 'rejected') {
+//     filtered.push(...grupsFCT.value.map(grup => {
+//       const grupClone = JSON.parse(JSON.stringify(grup));
+//       grupClone.documentsGrup = grupClone.documentsGrup.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
+//       grupClone.documentsUsuari = grupClone.documentsUsuari.filter((d: any) => d.documentEstat === DocumentEstat.REBUTJAT);
+//       return grupClone;
+//     }));
+//   } else
+//     filtered.push(...grupsFCT.value);
+//
+//   // filtered.map(grup => {
+//   //     grup.visible = !(grup.documentsGrup.length === 0 && grup.documentsUsuari.length === 0)
+//   // })
+//
+//   grupsFiltered.value = [...filtered];
+// }
 
 async function loadGrups() {
   const grups = await GrupService.findGrupsAmbDocumentsFct(idConvocatoria);
   grups.sort((a: Grup, b: Grup) => (a.curs.nom + a.nom).localeCompare(b.curs.nom + b.nom))
 
-  /*const promises = [];
-  for(const grup of grups){
-    promises.push(setGrup(grup));
-  }
-
-  await Promise.all(promises);*/
-
-  //TODO: si feim promises.push dóna error de net::ERR_INSUFFICIENT_RESOURCES
   grupsFCT.value = [];
   for (const grup of grups) {
-    await setGrup(grup);
+    await createGrup(grup);
   }
 }
 
@@ -480,7 +575,7 @@ onMounted(async () => {
   workersAll.push(worker);
 
   signatures.value = await SignaturaService.findAll();
-  grupsFiltered.value = grupsFCT.value;
+  // grupsFiltered.value = grupsFCT.value;
 
   //Grup
   columnsGrup.value.push({
@@ -583,11 +678,11 @@ onMounted(async () => {
 
   signatures.value = await SignaturaService.findAll();
   convocatories.value = await ConvocatoriaService.getConvocatories();
-  convocatoria.value = convocatories.value.find(c=>c.id===parseInt(idConvocatoria)) || convocatories.value[0];
+  convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
 })
 
 onBeforeRouteLeave((to, from) => {
-  for(const w of workersAll){
+  for (const w of workersAll) {
     w.terminate();
   }
 })
