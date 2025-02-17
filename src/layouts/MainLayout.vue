@@ -105,12 +105,13 @@ import {onMounted, ref} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Menuapp from '../components/common/AppsMenu.vue';
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
-import type {Rol as rols} from "src/model/Rol";
+import {Rol} from "src/model/Rol";
 
     const leftDrawerOpen = ref(false)
     const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
     const router = useRouter();
     const route = useRoute();
+    const rols = Rol;
 
     const enableGrupsCooperatius = (process.env.APP_ENABLE_GRUPSCOOPERATIUS==='true');
     const enableConvalidacions=(process.env.APP_ENABLE_CONVALIDACIONS==='true');
