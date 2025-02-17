@@ -224,6 +224,7 @@
 
         <div class="col-md-3">
           <q-select
+            class="q-pa-sm"
             v-model="formData.tipusJornada"
             outlined
             label="Tipus jornada"
@@ -750,7 +751,7 @@ const formData: Ref<DadesFormulari> = ref({
   km: '',
   periode: localStorage.getItem('periode') || 'Ordinari',
   dataInici: '', dataFi: '', dataAcabament: '',
-  tipusJornada: '', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: false,
+  tipusJornada: 'Continuada', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: false,
   empresaAdministracioPublica: false, numeroConveni: '', numeroAnnex: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
   cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
   poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomCompletRepresentantLegal: '',
