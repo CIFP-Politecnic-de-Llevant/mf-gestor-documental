@@ -25,7 +25,7 @@
       bordered
     >
       <q-list>
-        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find((rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR)">
           <q-item-section avatar>
             <q-icon name="add" />
           </q-item-section>
@@ -33,7 +33,7 @@
             <q-item-label>FCT - Generar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable :to="`/fct/manageDocumentation?convocatoria=${idconvocatoria}`" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable :to="`/fct/manageDocumentation?convocatoria=${idconvocatoria}`" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="folder" />
           </q-item-section>
@@ -41,7 +41,7 @@
             <q-item-label>FCT - Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/formulari/list" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/formulari/list" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT || rol===rols.PROFESSOR)">
           <q-item-section avatar>
             <q-icon name="description" />
           </q-item-section>
@@ -57,7 +57,7 @@
             <q-item-label>FCT - Grup</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/empresaConfiguration" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/empresaConfiguration" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="store" />
           </q-item-section>
@@ -65,7 +65,7 @@
             <q-item-label>FCT - Configuració Empresa</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/studentConfiguration" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fct/studentConfiguration" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR)">
           <q-item-section avatar>
             <q-icon name="diversity_3" />
           </q-item-section>
@@ -73,7 +73,7 @@
             <q-item-label>FCT - Configuració Alumnes</q-item-label>
           </q-item-section>
         </q-item>
-        <!--q-item clickable to="/fct/programaFormatiu" v-if="rolsUser.find((rol:Rol)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <!--q-item clickable to="/fct/programaFormatiu" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="book" />
           </q-item-section>
@@ -101,17 +101,16 @@
 
 <script setup lang="ts">
 
-import {defineComponent, onMounted, ref} from 'vue'
+import {defineComponent, onMounted, Ref, ref} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import {Rol} from '../model/Rol'
 import Menuapp from '../components/common/AppsMenu.vue';
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
+import type {Rol as rols} from "src/model/Rol";
 
     const leftDrawerOpen = ref(false)
     const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
     const router = useRouter();
     const route = useRoute();
-    const rols = Rol;
 
     const enableGrupsCooperatius = (process.env.APP_ENABLE_GRUPSCOOPERATIUS==='true');
     const enableConvalidacions=(process.env.APP_ENABLE_CONVALIDACIONS==='true');
