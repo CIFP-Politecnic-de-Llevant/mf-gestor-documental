@@ -101,7 +101,7 @@
 
 <script setup lang="ts">
 
-import {defineComponent, onMounted, Ref, ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Menuapp from '../components/common/AppsMenu.vue';
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
