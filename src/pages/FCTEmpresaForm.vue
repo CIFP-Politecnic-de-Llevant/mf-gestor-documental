@@ -21,8 +21,6 @@
               filled
               type="text"
               :label="labelsCompany[index]"
-              :readonly="readOnlyConditionCompany(key)"
-              :bg-color="readOnlyConditionCompany(key) ? 'primary' : ''"
               v-model="companyData[key]"
               :model-value="companyData[key]"
               class="q-pa-sm"
@@ -61,8 +59,6 @@
               filled
               type="text"
               :label="labelsWorkspace[index]"
-              :readonly="readOnlyConditionWorkspace(key)"
-              :bg-color="readOnlyConditionWorkspace(key) ? 'primary' : ''"
               v-model="workspace[key]"
               :model-value="workspace[key]"
               class="q-pa-sm "
@@ -130,12 +126,7 @@ const idCompany = ref<number>(0);
 const nameWorkspaceSelected = ref('');
 const idWorkspaceSelected = ref(0);
 const companyData:Ref<Empresa> = ref({} as Empresa);
-const readOnlyConditionCompany = computed(() => {
-  return (key:string) => key === 'cif' || key === 'adreca' || key === 'nom'
-})
-const readOnlyConditionWorkspace = computed(() => {
-  return (key:string) => key === 'nomRepresentantLegal'
-})
+
 const workplace:Ref<LlocTreball> = ref({nom:'', adreca:'', codiPostal: '', telefon: '',
   poblacio: '', activitat: '', nomRepresentantLegal: '', dniRepresentantLegal: '',
   nomTutorEmpresa: '', dniTutorEmpresa: '', municipi: '', carrecTutor: '', email: ''} as LlocTreball)
