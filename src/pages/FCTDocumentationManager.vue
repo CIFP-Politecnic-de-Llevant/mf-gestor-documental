@@ -311,7 +311,7 @@ const initialPagination = {
 }
 
 //Get query params
-const idConvocatoria = route.query?.convocatoria;
+const idConvocatoria:string = route.query?.convocatoria?.toString() || '0';
 console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
 
 const convocatories: Ref<Convocatoria[]> = ref([] as Convocatoria[]);
@@ -630,7 +630,11 @@ onMounted(async () => {
 
   signatures.value = await SignaturaService.findAll();
   convocatories.value = await ConvocatoriaService.getConvocatories();
-  convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+  if(idConvocatoria=='0'){
+    convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
+  } else {
+    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+  }
 })
 
 onBeforeRouteLeave((to, from) => {

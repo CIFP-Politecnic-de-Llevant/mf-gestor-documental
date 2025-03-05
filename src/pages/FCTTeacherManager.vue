@@ -497,7 +497,7 @@ const router = useRouter()
 const route = useRoute()
 
 //Get query params
-const idConvocatoria = route.query?.convocatoria;
+const idConvocatoria:string = route.query?.convocatoria?.toString() || '0';
 console.log("Parameter: idConvocatoria",idConvocatoria, route.query?.convocatoria);
 
 const convocatories:Ref<Convocatoria[]> = ref([] as Convocatoria[]);
@@ -524,7 +524,7 @@ async function selectGrup(grup:Grup){
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   console.log(tutorsFCT.value);
-  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom, idConvocatoria);
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom, idConvocatoria.toString());
   allDocumentsGrup.value = documentsAll;
 
   alumnesGrup.value = await getAlumnesAmbDocsFCT();
@@ -888,7 +888,11 @@ onMounted(async ()=>{
   });
 
   convocatories.value = await ConvocatoriaService.getConvocatories();
-  convocatoria.value = convocatories.value.find(c=>c.id===parseInt(idConvocatoria)) || convocatories.value[0];
+  if(idConvocatoria=='0'){
+    convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
+  } else {
+    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+  }
 })
 </script>
 
