@@ -69,7 +69,7 @@
               <q-checkbox
                 v-if="props.row.documentSignatures && props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
                 v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
+                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat,convocatoria.id)"
               />
             </q-td>
             <q-td>
@@ -267,7 +267,7 @@
               <q-checkbox
                 v-if="props.row.documentSignatures && props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
                 v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
+                @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat,convocatoria.id)"
               />
             </q-td>
             <q-td>
@@ -570,9 +570,9 @@ async function selectGrup(grup:Grup){
   isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
 }
 
-function signDoc(document:Document, signatura:Signatura, signat:boolean){
+function signDoc(document:Document, signatura:Signatura, signat:boolean, idConvocatoria:string){
   console.log("Entra sign student")
-  DocumentService.signarDocument(document,signatura,signat);
+  DocumentService.signarDocument(document,signatura,signat, idConvocatoria);
 }
 
 async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
@@ -582,7 +582,7 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
   documentSaved.file = document.file;
   await sendFile(documentSaved);
 
-  const documentFitxer:Document = await DocumentService.getDocumentById(documentSaved.id);
+  const documentFitxer:Document = await DocumentService.getDocumentById(documentSaved.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentFitxer);
 
   if(fitxer){
@@ -601,8 +601,8 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
 
 async function sendFile(document:Document){
   console.log("Entra send file")
-  await DocumentService.uploadDocument(document);
-  const documentSaved:Document = await DocumentService.getDocumentById(document.id);
+  await DocumentService.uploadDocument(document, convocatoria.value.id.toString());
+  const documentSaved:Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
   if(fitxer) {
     const documentGrup = documentsGrup.value.find(d=>d.id===documentSaved.id);
@@ -619,7 +619,7 @@ async function sendFile(document:Document){
 }
 
 async function getURL(document:Document){
-  const documentSaved:Document = await DocumentService.getDocumentById(document.id);
+  const documentSaved:Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
   if(fitxer) {
     window.open(fitxer.url, '_blank');
@@ -627,7 +627,7 @@ async function getURL(document:Document){
 }
 
 async function viewPdf(document: Document) {
-  const documentSaved:Document = await DocumentService.getDocumentById(document.id);
+  const documentSaved:Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved, false);
   if(fitxer) {
     showPdfDialog.value = true;
@@ -648,7 +648,7 @@ function deleteDocument(document: Document) {
     message: "Aquesta acció no es pot desfer",
     cancel: true
   }).onOk(async () => {
-    await DocumentService.deleteDocument(document);
+    await DocumentService.deleteDocument(document,convocatoria.value.id.toString());
     if (documentsUsuari.value.indexOf(document) > -1)
       documentsUsuari.value.splice(documentsUsuari.value.indexOf(document), 1);
 
@@ -740,7 +740,7 @@ async function deleteAllDocumentsAlumneId(id:number) {
     documentIds.push(doc.id_googleDrive);
   }
 
-  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email);
+  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email, convocatoria.value.id.toString());
   alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
 }
 

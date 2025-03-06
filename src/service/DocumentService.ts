@@ -12,8 +12,8 @@ import {AbortControllerService} from "src/service/AbortControllerService";
 
 export class DocumentService {
 
-  static async getDocumentsByPath(path: string, email: string): Promise<Array<Document>> {
-    const response = await axios.post(process.env.API + '/api/gestordocumental/documents', {
+  static async getDocumentsByPath(path: string, email: string, idConvocatoria:string): Promise<Array<Document>> {
+    const response = await axios.post(process.env.API + '/api/gestordocumental/documents?idConvocatoria='+idConvocatoria, {
       path: path,
       email: email
     });
@@ -46,13 +46,13 @@ export class DocumentService {
     }).sort());
   }
 
-  static async getDocumentById(id: string): Promise<Document> {
-    const response = await axios.get(process.env.API + '/api/gestordocumental/documents/' + id);
+  static async getDocumentById(id: string, idConvocatoria:string): Promise<Document> {
+    const response = await axios.get(process.env.API + '/api/gestordocumental/documents/' + id+'?idConvocatoria='+idConvocatoria);
     const data = await response.data;
     return this.fromJSONDocument(data);
   }
 
-  static async deleteDocumentByGoogleDriveId(ids: string[], nomAlumne: string, cicle: string, email: string) {
+  static async deleteDocumentByGoogleDriveId(ids: string[], nomAlumne: string, cicle: string, email: string, idConvocatoria: string) {
 
     const FOLDER_BASE: string = process.env.APP_DESTFOLDER_GESTORDOCUMENTAL!;
     const APP_EMAIL: string = process.env.APP_EMAIL_GESTORDOCUMENTAL!;
@@ -72,7 +72,7 @@ export class DocumentService {
     const carpetaCicle = carpetaCicleFetch.data;
 
 
-    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne', {
+    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-documents-alumne?idConvocatoria='+idConvocatoria, {
       documentIds: ids,
       email: APP_EMAIL,
       folderName: nomAlumne,
@@ -80,8 +80,8 @@ export class DocumentService {
     });
   }
 
-  static async deleteDocument(document: Document) {
-    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-document', {
+  static async deleteDocument(document: Document, idConvocatoria:string) {
+    return await axios.post(process.env.API + '/api/gestordocumental/documents/eliminar-document?idConvocatoria='+idConvocatoria, {
       documentId: document.id,
       email: process.env.APP_EMAIL_GESTORDOCUMENTAL!,
       fitxerId: document.fitxer?.id
@@ -249,7 +249,7 @@ export class DocumentService {
         alert('Correu enviat correctament');  // Muestra el mensaje de confirmación
       }
     }).catch(function (error) {
-      alert(`Error enviant correu a ${mailTutor}`, error);
+      console.log(`Error enviant correu a ${mailTutor}`, error);
       })
 
   }
@@ -261,8 +261,8 @@ export class DocumentService {
     });
   }
 
-  static async signarDocument(document: Document, signatura: Signatura, signat: boolean) {
-    const response = await axios.post(process.env.API + '/api/gestordocumental/document/signar', {
+  static async signarDocument(document: Document, signatura: Signatura, signat: boolean, idConvocatoria: string) {
+    const response = await axios.post(process.env.API + '/api/gestordocumental/document/signar?idConvocatoria='+idConvocatoria, {
       idDocument: document.id,
       idSignatura: signatura.id,
       signat: signat
@@ -279,7 +279,7 @@ export class DocumentService {
     return this.fromJSONDocument(response.data);
   }
 
-  static async uploadDocument(document: Document) {
+  static async uploadDocument(document: Document, idConvocatoria:string) {
     console.log("Upload document", document)
     if (document.file) {
       const formData = new FormData();
@@ -287,7 +287,7 @@ export class DocumentService {
       formData.append("id", document.id);
 
       const response = await axios.post(
-        process.env.API + "/api/gestordocumental/document/uploadFile",
+        process.env.API + "/api/gestordocumental/document/uploadFile?idConvocatoria="+idConvocatoria,
         formData,
         {
           headers: {

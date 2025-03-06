@@ -343,7 +343,7 @@ async function setGrup(documentFCT: any) {
 
   console.log(documentFCT);
 
-  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom + grup.nom, idConvocatoria);
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grup.curs.nom + grup.nom, convocatoria.value.id.toString());
 
   documentsUsuari = documentsAll.filter(d => d.usuari).sort((a: Document, b: Document) => {
     if (a.usuari && b.usuari && a.usuari.id != b.usuari.id) {
@@ -413,9 +413,9 @@ function setTutors(index: number) {
   workersAll.push(worker);
 }
 
-function signDoc(document: Document, signatura: Signatura, signat: boolean) {
+function signDoc(document: Document, signatura: Signatura, signat: boolean, idConvocatoria: string) {
   //console.log("Entra sign student")
-  DocumentService.signarDocument(document, signatura, signat);
+  DocumentService.signarDocument(document, signatura, signat, idConvocatoria);
 }
 
 function changeEstatDocument(document: Document, estat: string) {
@@ -427,7 +427,7 @@ const debouncedChangeObservacionsDocument = debounce((document: Document, observ
 }, 1000);
 
 function changeObservacionsDocument(document: Document, observacions: string) {
-  DocumentService.changeObservacionsDocument(document, observacions, idConvocatoria);
+  DocumentService.changeObservacionsDocument(document, observacions, convocatoria.value.id.toString());
 }
 
 const showGrup = (newValue: boolean, id:number) => {
@@ -463,7 +463,7 @@ const sendMailToTutorFCT = (tutors: Usuari[], document: Document) => {
 }
 
 async function getURL(document: Document) {
-  const documentSaved: Document = await DocumentService.getDocumentById(document.id);
+  const documentSaved: Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
   if (fitxer) {
     window.open(fitxer.url, '_blank');
@@ -477,7 +477,7 @@ async function viewPdf(document: Document) {
 
 
 async function loadGrups() {
-  const grups = await GrupService.findGrupsAmbDocumentsFct(idConvocatoria);
+  const grups = await GrupService.findGrupsAmbDocumentsFct(convocatoria.value.id.toString());
   grups.sort((a: Grup, b: Grup) => (a.curs.nom + a.nom).localeCompare(b.curs.nom + b.nom))
 
   grupsFCT.value = [];

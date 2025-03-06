@@ -17,7 +17,7 @@ export class GrupService {
     }));
   }
 
-  static async findGrupsAmbDocumentsFct(idConvocatoria:String): Promise<Array<Grup>> {
+  static async findGrupsAmbDocumentsFct(idConvocatoria:string): Promise<Array<Grup>> {
     let url = process.env.API + '/api/gestordocumental/grups-amb-documentsfct';
     if(idConvocatoria){
       url += '?idConvocatoria=' + idConvocatoria;
