@@ -370,8 +370,8 @@
             class="q-pa-sm"
             outlined
             type="text"
-            label="Número d'annex"
-            v-model="formData.numeroAnnex"
+            label="Correu electrònic empresa"
+            v-model="formData.emailEmpresa"
           />
         </div>
       </div>
@@ -501,8 +501,8 @@
             class="q-pa-sm"
             outlined
             type="text"
-            label="Correu electrònic"
-            v-model="formData.emailEmpresa"
+            label="Correu electrònic tutor empresa"
+            v-model="formData.emailTutorEmpresa"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -752,11 +752,11 @@ const formData: Ref<DadesFormulari> = ref({
   periode: localStorage.getItem('periode') || 'Ordinari',
   dataInici: '', dataFi: '', dataAcabament: '',
   tipusJornada: 'Continuada', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: false,
-  empresaAdministracioPublica: false, numeroConveni: '', numeroAnnex: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
+  empresaAdministracioPublica: false, numeroConveni: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
   cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
   poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomCompletRepresentantLegal: '',
   nifRepresentantLegal: '', nomCompletTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
-  municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmrpesa: '', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
+  municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmpresa: '', emailTutorEmpresa:'', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
   diaSeguimentResponsableFct: '', horaSeguimentResponsableFct: '', flexibilitzacioModulFct: false,
 });
 
@@ -808,8 +808,8 @@ function selectCompany(company:Empresa){
 
   formData.value.empresaNova = false;
   formData.value.numeroConveni = company.numeroConveni;
-  formData.value.numeroAnnex = company.numeroAnnex;
   formData.value.nomEmpresa = company.nom;
+  formData.value.emailEmpresa = company.emailEmpresa;
   formData.value.cif = company.cif;
   formData.value.adrecaEmpresa = company.adreca;
   formData.value.cpempresa = company.codiPostal;
@@ -837,7 +837,7 @@ function selectWorkspace(workspace:LlocTreball){
     formData.value.nifTutorEmpresa = workspace.dniTutorEmpresa;
     formData.value.municipiTutorEmpresa = workspace.municipi;
     formData.value.carrecTutorEmpresa = workspace.carrecTutor;
-    formData.value.emailEmpresa = workspace.email;
+    formData.value.emailTutorEmpresa = workspace.emailTutorEmpresa;
 }
 function ageCalculate(date:Date){
 

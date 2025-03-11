@@ -4,10 +4,10 @@ export interface Empresa {
 
     idEmpresa:number;
     numeroConveni?:string;
-    numeroAnnex?:string;
     nom?:string;
     cif?:string;
     adreca?:string;
+    emailEmpresa: string;
     codiPostal?:string;
     poblacio?:string;
     provincia?:string;

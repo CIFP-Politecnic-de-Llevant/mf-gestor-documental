@@ -15,6 +15,6 @@ export interface LlocTreball {
     dniTutorEmpresa:string;
     carrecTutor:string;
     municipi:string;
-    email:string;
+    emailTutorEmpresa:string;
     empresa:Empresa;
 }

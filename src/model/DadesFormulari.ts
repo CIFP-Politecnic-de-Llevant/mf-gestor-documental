@@ -33,7 +33,6 @@ export interface DadesFormulari {
     empresaNova?:boolean;
     empresaAdministracioPublica?:boolean;
     numeroConveni?:string;
-    numeroAnnex?:string;
     nomEmpresa?:string;
     cif?:string;
     adrecaEmpresa?:string;
@@ -54,6 +53,7 @@ export interface DadesFormulari {
     municipiTutorEmpresa?:string;
     carrecTutorEmpresa?:string;
     emailEmpresa?:string;
+    emailTutorEmpresa?:string;
     diaSeguimentCentreEducatiu?:string;
     horaSeguimentCentreEducatiu?:string;
     diaSeguimentResponsableFct?:string;

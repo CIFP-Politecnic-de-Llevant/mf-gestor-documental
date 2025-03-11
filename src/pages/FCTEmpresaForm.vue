@@ -134,7 +134,7 @@ const labelsCompany = ["Id","Número Conveni","Número Annnex","Nom","CIF","Adre
     "Codi Postal","Població","Provicia","Telèfon"];
 
 const labelsWorkspace = ["Id","Nom","Adreça", "Codi Postal","Telèfon","Població","Activitat","Nom Representant Legal",
-    "DNI Representant Legal","Nom Tutor/a Empresa","DNI Tutor/a Empresa","Municipi","Carrec Tutor/a","E-mail"];
+    "DNI Representant Legal","Nom Tutor/a Empresa","DNI Tutor/a Empresa","Municipi","Carrec Tutor/a","E-mail tutor empresa"];
 
 
 async function saveWorkplace(){
