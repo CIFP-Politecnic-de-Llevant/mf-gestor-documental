@@ -700,6 +700,7 @@ import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
 import IStudentListItem from "src/Interfaces/IStudentListItem";
 import ICompanyListItem from "src/Interfaces/ICompanyListItem";
+import {GrupService} from "src/service/GrupService";
 
 const $q = useQuasar();
 
@@ -718,13 +719,12 @@ const companySelected:Ref<boolean> = ref(false);
 
 
 const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
-const allGrups:Ref<Grup[]> = ref([] as Grup[]);
 const tutorFCT:Ref<Usuari> = ref({} as Usuari);
 
 const formulariAlumnes = ref(null)
 
-const allNomGrups = ['TMV11B', 'COM11B', 'COM21B', 'TMV21B', 'TMV22B', 'TMV22D', 'ADG21B', 'ELE21B', 'IFC21B',
-  'IFC21D', 'ADG32B', 'IFC31B', 'ADG31B', 'TMV31B', 'IFC33B', 'COM33B', 'COM31B'];
+//const allNomGrups = ['TMV11B', 'COM11B', 'COM21B', 'TMV21B', 'TMV22B', 'TMV22D', 'ADG21B', 'ELE21B', 'IFC21B', 'IFC21D', 'ADG32B', 'IFC31B', 'ADG31B', 'TMV31B', 'IFC33B', 'COM33B', 'COM31B'];
+const allNomGrups = ref([] as string[]);
 
 const ciclesFormatius = ['FP Bàsica Manteniment de vehicles', 'FP Bàsica Serveis Comercials', 'CFGM Activitats comercials',
   'CFGM Carroseria', 'CFGM Electromecànica de vehicles', 'CFGM Gestió Administrativa', 'CFGM Instal·lacions elèctriques i automàtiques',
@@ -942,15 +942,13 @@ onMounted(async () =>{
     }))
     .sort((a, b) => a.label.localeCompare(b.label));
 
-  /*
-  allGrups.value = await GrupService.findAllGrups();
-  for (const grup of allGrups.value) {
+
+  const allGrups = await GrupService.findAllGrups();
+  for (const grup of allGrups) {
     const nomGrup = grup.curs.nom + grup.nom;
-    allNomGrups.push(nomGrup);
+    allNomGrups.value.push(nomGrup);
     console.log(nomGrup)
   }
-
-   */
 
 })
 </script>
