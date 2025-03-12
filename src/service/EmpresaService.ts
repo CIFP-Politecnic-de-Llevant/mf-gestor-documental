@@ -57,7 +57,7 @@ export class EmpresaService {
         return {
             idEmpresa: json.idEmpresa,
             numeroConveni: json.numeroConveni,
-            numeroAnnex: json.numeroAnnex,
+            emailEmpresa: json.emailEmpresa,
             nom: json.nom,
             cif: json.cif,
             adreca: json.adreca,
@@ -66,7 +66,6 @@ export class EmpresaService {
             provincia: json.provincia,
             telefon: json.telefon,
             llocsTreball: json.llocsTreball
-
         }
     }
 

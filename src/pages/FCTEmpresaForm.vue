@@ -15,7 +15,7 @@
             icon="save"
         />
       </div>
-      <div class="row flex justify-center q-my-sm">
+      <div class="row flex justify-start q-my-sm">
         <div class="col-md-4">
           <q-input
             filled
@@ -408,12 +408,6 @@ const nameWorkspaceSelected = ref('');
 const idWorkspaceSelected = ref(0);
 const companyData:Ref<Empresa> = ref({} as Empresa);
 const workplace:Ref<LlocTreball> = ref({} as LlocTreball)
-const labelsCompany = ["Id","Número Conveni","Número Annnex","Nom","CIF","Adreça",
-    "Codi Postal","Població","Provicia","Telèfon"];
-
-const labelsWorkspace = ["Id","Nom","Adreça", "Codi Postal","Telèfon","Població","Activitat","Nom Representant Legal",
-    "DNI Representant Legal","Nom Tutor/a Empresa","DNI Tutor/a Empresa","Municipi","Carrec Tutor/a","E-mail tutor empresa"];
-
 
 async function saveWorkplace(){
 

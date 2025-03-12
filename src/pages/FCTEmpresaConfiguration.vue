@@ -75,16 +75,87 @@
         <q-card-section>
           <q-form @submit="saveCompany"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Empresa</p>
-            <div class="row flex justify-center">
-              <div class="col-5 q-mx-sm q-my-sm" v-for="(value,key, index) in company" :key="index">
+            <div class="row flex justify-center q-my-sm">
+              <div class="col-md-4">
                 <q-input
                   filled
                   type="text"
-                  :label="labels[index]"
-                  v-model="company[key]"
+                  label="Número Conveni"
+                  v-model="company.numeroConveni"
+                  class="q-pa-sm"
                 />
               </div>
-              <div class="col-5 q-mx-sm">
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="E-mail empresa"
+                  v-model="company.emailEmpresa"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom"
+                  v-model="company.nom"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="CIF"
+                  v-model="company.cif"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Adreça"
+                  v-model="company.adreca"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Codi Postal"
+                  v-model="company.codiPostal"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Població"
+                  v-model="company.poblacio"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Població"
+                  v-model="company.provincia"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Telèfon"
+                  v-model="company.telefon"
+                  class="q-pa-sm"
+                />
               </div>
             </div>
             <div class="flex justify-end q-gutter-sm">
@@ -123,11 +194,9 @@ const addCompany = ref(false);
 const confirmation = ref(false);
 const idCompanySelected = ref<number>(0)
 const nameCompanySelected = ref('');
-const company:Ref<Empresa> = ref({numeroConveni: '', nom: '', cif: '',
-  adreca: '', codiPostal: '', poblacio: '', provincia: '', telefon: '', emailEmpresa:''} as Empresa);
+const company:Ref<Empresa> = ref({} as Empresa);
 const companiesData:Ref<Empresa[]> = ref([] as Empresa[]);
 const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[]);
-const labels = ["Número Conveni","E-mail empresa","Nom","CIF","Adreça", "Codi Postal","Població","Provicia","Telèfon"];
 const initialPagination = {
   sortBy: 'desc',
   descending: false,
