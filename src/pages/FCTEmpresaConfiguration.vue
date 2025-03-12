@@ -15,6 +15,7 @@
       binary-state-sort
       class="q-mb-lg q-mt-lg"
       :pagination="initialPagination"
+      :filter="filter"
     >
       <template v-slot:header="props">
         <q-tr :props="props">
@@ -27,6 +28,13 @@
             {{ col.label }}
           </q-th>
         </q-tr>
+      </template>
+      <template v-slot:top-right>
+        <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </template>
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -115,25 +123,25 @@ const addCompany = ref(false);
 const confirmation = ref(false);
 const idCompanySelected = ref<number>(0)
 const nameCompanySelected = ref('');
-const company:Ref<Empresa> = ref({numeroConveni: '', numeroAnnex: '', nom: '', cif: '',
-  adreca: '', codiPostal: '', poblacio: '', provincia: '', telefon: ''} as Empresa);
+const company:Ref<Empresa> = ref({numeroConveni: '', nom: '', cif: '',
+  adreca: '', codiPostal: '', poblacio: '', provincia: '', telefon: '', emailEmpresa:''} as Empresa);
 const companiesData:Ref<Empresa[]> = ref([] as Empresa[]);
 const columns:Ref<QTableColumn[]> = ref([] as QTableColumn[]);
-const labels = ["Número Conveni","Número Annnex","Nom","CIF","Adreça",
-  "Codi Postal","Població","Provicia","Telèfon"];
+const labels = ["Número Conveni","E-mail empresa","Nom","CIF","Adreça", "Codi Postal","Població","Provicia","Telèfon"];
 const initialPagination = {
   sortBy: 'desc',
   descending: false,
   page: 1,
   rowsPerPage: 0
 };
+const filter = ref('');
 
 async function saveCompany(){
 
     await EmpresaService.saveCompany(company.value);
     companiesData.value = await EmpresaService.allCompanies();
     company.value.numeroConveni = "";
-    company.value.numeroAnnex = "";
+    company.value.emailEmpresa = "";
     company.value.nom = "";
     company.value.cif = "";
     company.value.adreca = "";

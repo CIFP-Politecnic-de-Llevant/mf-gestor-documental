@@ -16,14 +16,85 @@
         />
       </div>
       <div class="row flex justify-center q-my-sm">
-        <div class="col-md-4" v-for="(value,key,index) in companyData" :key="key" v-show="key !== 'idEmpresa' && key !== 'llocsTreball'">
+        <div class="col-md-4">
           <q-input
-              filled
-              type="text"
-              :label="labelsCompany[index]"
-              v-model="companyData[key]"
-              :model-value="companyData[key]"
-              class="q-pa-sm"
+            filled
+            type="text"
+            label="Número Conveni"
+            v-model="companyData.numeroConveni"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="E-mail empresa"
+            v-model="companyData.emailEmpresa"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Nom"
+            v-model="companyData.nom"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="CIF"
+            v-model="companyData.cif"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Adreça"
+            v-model="companyData.adreca"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Codi Postal"
+            v-model="companyData.codiPostal"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Població"
+            v-model="companyData.poblacio"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Població"
+            v-model="companyData.provincia"
+            class="q-pa-sm"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Telèfon"
+            v-model="companyData.telefon"
+            class="q-pa-sm"
           />
         </div>
       </div>
@@ -54,19 +125,122 @@
         </div>
       </div>
       <div class="row flex justify-center q-my-sm">
-        <div class="col-md-4" v-for="(value,key,index) in workspace" :key="key" v-show="key !== 'idLlocTreball' && key !== 'empresa'">
+        <div class="col-md-4">
           <q-input
-              filled
-              type="text"
-              :label="labelsWorkspace[index]"
-              v-model="workspace[key]"
-              :model-value="workspace[key]"
-              class="q-pa-sm "
+            filled
+            type="text"
+            label="Nom"
+            v-model="workspace.nom"
+            class="q-pa-sm "
           />
         </div>
         <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Adreça"
+            v-model="workspace.adreca"
+            class="q-pa-sm "
+          />
         </div>
         <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Codi Postal"
+            v-model="workspace.codiPostal"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Telèfon"
+            v-model="workspace.telefon"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Població"
+            v-model="workspace.poblacio"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Activitat"
+            v-model="workspace.activitat"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Nom Representant Legal"
+            v-model="workspace.nomCompletRepresentantLegal"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="DNI Representant Legal"
+            v-model="workspace.dniRepresentantLegal"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Nom Tutor/a Empresa"
+            v-model="workspace.nomCompletTutorEmpresa"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="DNI Tutor/a Empresa"
+            v-model="workspace.dniTutorEmpresa"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Municipi"
+            v-model="workspace.municipi"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Carrec Tutor/a"
+            v-model="workspace.carrecTutor"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="E-mail tutor empresa"
+            v-model="workspace.emailTutorEmpresa"
+            class="q-pa-sm "
+          />
         </div>
       </div>
     </q-form>
@@ -75,16 +249,123 @@
         <q-card-section>
           <q-form @submit="saveWorkplace"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Lloc de treball</p>
-            <div class="row flex justify-center">
-              <div class="col-5 q-mx-sm q-my-sm" v-for="(value,key, index) in workplace" :key="index">
+            <div class="row flex justify-center q-my-sm">
+              <div class="col-md-4">
                 <q-input
                   filled
                   type="text"
-                  :label="labelsWorkspace[index+1]"
-                  v-model="workplace[key]"
+                  label="Nom"
+                  v-model="workplace.nom"
+                  class="q-pa-sm "
                 />
               </div>
-              <div class="col-5 q-mx-sm">
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Adreça"
+                  v-model="workplace.adreca"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Codi Postal"
+                  v-model="workplace.codiPostal"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Telèfon"
+                  v-model="workplace.telefon"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Població"
+                  v-model="workplace.poblacio"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Activitat"
+                  v-model="workplace.activitat"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom Representant Legal"
+                  v-model="workplace.nomCompletRepresentantLegal"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="DNI Representant Legal"
+                  v-model="workplace.dniRepresentantLegal"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom Tutor/a Empresa"
+                  v-model="workplace.nomCompletTutorEmpresa"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="DNI Tutor/a Empresa"
+                  v-model="workplace.dniTutorEmpresa"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Municipi"
+                  v-model="workplace.municipi"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Carrec Tutor/a"
+                  v-model="workplace.carrecTutor"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="E-mail tutor empresa"
+                  v-model="workplace.emailTutorEmpresa"
+                  class="q-pa-sm "
+                />
               </div>
             </div>
             <div class="flex justify-end q-gutter-sm">
@@ -126,10 +407,7 @@ const idCompany = ref<number>(0);
 const nameWorkspaceSelected = ref('');
 const idWorkspaceSelected = ref(0);
 const companyData:Ref<Empresa> = ref({} as Empresa);
-
-const workplace:Ref<LlocTreball> = ref({nom:'', adreca:'', codiPostal: '', telefon: '',
-  poblacio: '', activitat: '', nomRepresentantLegal: '', dniRepresentantLegal: '',
-  nomTutorEmpresa: '', dniTutorEmpresa: '', municipi: '', carrecTutor: '', email: ''} as LlocTreball)
+const workplace:Ref<LlocTreball> = ref({} as LlocTreball)
 const labelsCompany = ["Id","Número Conveni","Número Annnex","Nom","CIF","Adreça",
     "Codi Postal","Població","Provicia","Telèfon"];
 
