@@ -83,7 +83,7 @@
           <q-input
             filled
             type="text"
-            label="Població"
+            label="Província"
             v-model="companyData.provincia"
             class="q-pa-sm"
           />
