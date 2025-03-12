@@ -116,6 +116,7 @@
             v-model="formData.grup"
             :options= "allNomGrups"
             label="Grup"
+            :clearable="false"
           />
         </div>
 
@@ -775,7 +776,7 @@ function selectStudent(student:Alumne){
         formData.value.numeroExpedient = student.numeroExpedient.toString();
       console.log(formData.value.numeroExpedient)
     }
-    formData.value.grup = student.estudis;
+    formData.value.grup = allNomGrups.value.find(g=>g===student.estudis) || allNomGrups.value[0];
 }
 
 const filterStudentsFn = (val, update, abort) => {
@@ -947,7 +948,6 @@ onMounted(async () =>{
   for (const grup of allGrups) {
     const nomGrup = grup.curs.nom + grup.nom;
     allNomGrups.value.push(nomGrup);
-    console.log(nomGrup)
   }
 
 })
