@@ -724,13 +724,23 @@ const tutorFCT:Ref<Usuari> = ref({} as Usuari);
 
 const formulariAlumnes = ref(null)
 
-//const allNomGrups = ['TMV11B', 'COM11B', 'COM21B', 'TMV21B', 'TMV22B', 'TMV22D', 'ADG21B', 'ELE21B', 'IFC21B', 'IFC21D', 'ADG32B', 'IFC31B', 'ADG31B', 'TMV31B', 'IFC33B', 'COM33B', 'COM31B'];
 const allNomGrups = ref([] as string[]);
 
-const ciclesFormatius = ['FP Bàsica Manteniment de vehicles', 'FP Bàsica Serveis Comercials', 'CFGM Activitats comercials',
-  'CFGM Carroseria', 'CFGM Electromecànica de vehicles', 'CFGM Gestió Administrativa', 'CFGM Instal·lacions elèctriques i automàtiques',
-  'CFGM Sistemes microinformàtics i xarxes', 'CFGS Administració i finances', 'CFGS Administració de sistemes informàtics',
-  'CFGS Assistència a la Direcció', 'CFGS Automoció', 'CFGS Desenvolupament d\'aplicacions web', 'CFGS Gestió de Vendes i Espais Comercials',
+const ciclesFormatius = [
+  'FP Bàsica Manteniment de vehicles',
+  'FP Bàsica Serveis Comercials',
+  'CFGM Activitats comercials',
+  'CFGM Carroseria',
+  'CFGM Electromecànica de vehicles',
+  'CFGM Gestió Administrativa',
+  'CFGM Instal·lacions elèctriques i automàtiques',
+  'CFGM Sistemes microinformàtics i xarxes',
+  'CFGS Administració i finances',
+  'CFGS Administració de sistemes informàtics',
+  'CFGS Assistència a la Direcció',
+  'CFGS Automoció',
+  "CFGS Desenvolupament d'aplicacions web",
+  'CFGS Gestió de Vendes i Espais Comercials',
   'CFGS Màrketing i publicitat'
 ];
 
@@ -765,7 +775,6 @@ const formData: Ref<DadesFormulari> = ref({
 
 
 function selectStudent(student:Alumne){
-
     studentSelect.value = student;
     formData.value.nomAlumne = student.nom;
     formData.value.llinatgesAlumne = student.cognom1 + " " + student.cognom2;
@@ -776,7 +785,77 @@ function selectStudent(student:Alumne){
         formData.value.numeroExpedient = student.numeroExpedient.toString();
       console.log(formData.value.numeroExpedient)
     }
-    formData.value.grup = allNomGrups.value.find(g=>g===student.estudis) || allNomGrups.value[0];
+    formData.value.grup = allNomGrups.value.find(g=>g===( (student.estudis||'') + (student.grup || '') )) || allNomGrups.value[0];
+
+  formData.value.cicleFormatiu = ciclesFormatius[0];
+  //Fem el mapeig de les dades de l'usuari
+  /*
+  0- 'FP Bàsica Manteniment de vehicles', - TMV11
+  1- 'FP Bàsica Serveis Comercials', - COM11
+  2- 'CFGM Activitats comercials', - COM21
+  3- 'CFGM Carroseria', - TMV21
+  4- 'CFGM Electromecànica de vehicles', - TMV22
+  5- 'CFGM Gestió Administrativa', - ADG21
+  6- 'CFGM Instal·lacions elèctriques i automàtiques', - ELE21
+  7- 'CFGM Sistemes microinformàtics i xarxes', - IFC21
+  8- 'CFGS Administració i finances', - ADG32
+  9- 'CFGS Administració de sistemes informàtics', - IFC31
+  10- 'CFGS Assistència a la Direcció', - ADG31
+  11- 'CFGS Automoció', - TMV31
+  12- "CFGS Desenvolupament d'aplicacions web", - IFC33
+  13- 'CFGS Gestió de Vendes i Espais Comercials', - COM33
+  14- 'CFGS Màrketing i publicitat' - COM31
+   */
+  /*
+    Mapeig de Cicles Formatius
+    "FP Bàsica", "CF Grau Mitjà", "CF Grau Superior"
+   */
+  if(student.estudis === 'TMV11'){
+    formData.value.cicleFormatiu = ciclesFormatius[0];
+    formData.value.estudis = 'FP Bàsica';
+  } else if(student.estudis === 'COM11'){
+    formData.value.cicleFormatiu = ciclesFormatius[1];
+    formData.value.estudis = 'FP Bàsica';
+  } else if(student.estudis === 'COM21'){
+    formData.value.cicleFormatiu = ciclesFormatius[2];
+    formData.value.estudis = 'CF Grau Mitjà';
+  } else if(student.estudis === 'TMV21'){
+    formData.value.cicleFormatiu = ciclesFormatius[3];
+    formData.value.estudis = 'CF Grau Mitjà';
+  } else if(student.estudis === 'TMV22'){
+    formData.value.cicleFormatiu = ciclesFormatius[4];
+    formData.value.estudis = 'CF Grau Mitjà';
+  } else if(student.estudis === 'ADG21'){
+    formData.value.cicleFormatiu = ciclesFormatius[5];
+    formData.value.estudis = 'CF Grau Mitjà';
+  } else if(student.estudis === 'ELE21'){
+    formData.value.cicleFormatiu = ciclesFormatius[6];
+    formData.value.estudis = 'CF Grau Mitjà';
+  } else if(student.estudis === 'IFC21'){
+    formData.value.cicleFormatiu = ciclesFormatius[7];
+    formData.value.estudis = 'CF Grau Mitjà';
+  } else if(student.estudis === 'ADG32'){
+    formData.value.cicleFormatiu = ciclesFormatius[8];
+    formData.value.estudis = 'CF Grau Superior';
+  } else if(student.estudis === 'IFC31'){
+    formData.value.cicleFormatiu = ciclesFormatius[9];
+    formData.value.estudis = 'CF Grau Superior';
+  } else if(student.estudis === 'ADG31'){
+    formData.value.cicleFormatiu = ciclesFormatius[10];
+    formData.value.estudis = 'CF Grau Superior';
+  } else if(student.estudis === 'TMV31'){
+    formData.value.cicleFormatiu = ciclesFormatius[11];
+    formData.value.estudis = 'CF Grau Superior';
+  } else if(student.estudis === 'IFC33'){
+    formData.value.cicleFormatiu = ciclesFormatius[12];
+    formData.value.estudis = 'CF Grau Superior';
+  } else if(student.estudis === 'COM33'){
+    formData.value.cicleFormatiu = ciclesFormatius[13];
+    formData.value.estudis = 'CF Grau Superior';
+  } else if(student.estudis === 'COM31') {
+    formData.value.cicleFormatiu = ciclesFormatius[14];
+    formData.value.estudis = 'CF Grau Superior';
+  }
 }
 
 const filterStudentsFn = (val, update, abort) => {
@@ -949,6 +1028,7 @@ onMounted(async () =>{
     const nomGrup = grup.curs.nom + grup.nom;
     allNomGrups.value.push(nomGrup);
   }
+  allNomGrups.value.sort((a, b) => a.localeCompare(b));
 
 })
 </script>
