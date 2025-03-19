@@ -499,6 +499,14 @@ onMounted(async () => {
     persistent: true, // we want the user to not be able to close it
     ok: false // we want the user to not be able to close it
   })
+
+  convocatories.value = await ConvocatoriaService.getConvocatories();
+  if(idConvocatoria=='0'){
+    convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
+  } else {
+    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+  }
+
   await loadGrups();
   await nextTick();
   grupsFCT.value.sort((a, b) => (a.grup.curs.nom + a.grup.nom).localeCompare(b.grup.curs.nom + b.grup.nom));
@@ -629,12 +637,6 @@ onMounted(async () => {
   dialog.hide();
 
   signatures.value = await SignaturaService.findAll();
-  convocatories.value = await ConvocatoriaService.getConvocatories();
-  if(idConvocatoria=='0'){
-    convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
-  } else {
-    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
-  }
 })
 
 onBeforeRouteLeave((to, from) => {
