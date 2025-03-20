@@ -524,7 +524,7 @@ async function selectGrup(grup:Grup){
 
   tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
   console.log(tutorsFCT.value);
-  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom, idConvocatoria.toString());
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom, convocatoria.value.id.toString());
   allDocumentsGrup.value = documentsAll;
 
   alumnesGrup.value = await getAlumnesAmbDocsFCT();
@@ -813,6 +813,13 @@ async function selectConvocatoria(convocatoria: Convocatoria) {
 }
 
 onMounted(async ()=>{
+  convocatories.value = await ConvocatoriaService.getConvocatories();
+  if(idConvocatoria=='0'){
+    convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
+  } else {
+    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+  }
+
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom));
 
@@ -824,7 +831,6 @@ onMounted(async ()=>{
   alumnesFiltered.value = await UsuariService.getAlumnes();
 
   isAuthorizedDeleteDocuments.value = JSON.parse(localStorage.getItem("rol")).some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
-
 
   //Grup
   columnsGrup.value.push({
@@ -886,13 +892,6 @@ onMounted(async ()=>{
     field: row => row,
     sortable: false
   });
-
-  convocatories.value = await ConvocatoriaService.getConvocatories();
-  if(idConvocatoria=='0'){
-    convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
-  } else {
-    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
-  }
 })
 </script>
 
