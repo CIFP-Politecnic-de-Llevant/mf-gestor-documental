@@ -63,7 +63,8 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="tipusDocument" :props="props" class="text-wrap">
-              {{ props.row.tipusDocument.nom }}
+              <a class="text-secondary" v-if="props.row.id_googleDrive" :href="`https://docs.google.com/document/d/${props.row.id_googleDrive}`" target="_blank"><q-icon name="open_in_new" size="xs"></q-icon> {{props.row.tipusDocument.nom}}</a>
+              <span v-if="!props.row.id_googleDrive">{{ props.row.tipusDocument.nom }}</span>
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
