@@ -820,6 +820,7 @@ async function selectConvocatoria(convocatoria: Convocatoria) {
 }
 
 onMounted(async ()=>{
+  $q.loading.show();
   convocatories.value = await ConvocatoriaService.getConvocatories();
   if(idConvocatoria=='0'){
     convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
@@ -829,6 +830,7 @@ onMounted(async ()=>{
 
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom));
+  $q.loading.hide();
 
   signatures.value = await SignaturaService.findAll();
 
