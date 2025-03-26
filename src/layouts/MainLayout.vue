@@ -25,20 +25,20 @@
       bordered
     >
       <q-list>
-        <q-item clickable to="/fct/generateDocumentation" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR)">
+        <q-item clickable to="/fempo/generateDocumentation" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR)">
           <q-item-section avatar>
             <q-icon name="add" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>FCT - Generar Documentació</q-item-label>
+            <q-item-label>Generar Documentació</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable :to="`/fct/manageDocumentation?convocatoria=${idconvocatoria}`" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable :to="`/fempo/manageDocumentation?convocatoria=${idconvocatoria}`" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="folder" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>FCT - Gestionar Documentació</q-item-label>
+            <q-item-label>Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
         <q-item clickable to="/fct/formulari/list" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT || rol===rols.PROFESSOR)">
@@ -49,28 +49,28 @@
             <q-item-label>FCT - Formulari</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable :to="`/fct/group?convocatoria=${idconvocatoria}`">
+        <q-item clickable :to="`/fempo/group?convocatoria=${idconvocatoria}`">
           <q-item-section avatar>
             <q-icon name="group" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>FCT - Grup</q-item-label>
+            <q-item-label>Grup/s</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/empresaConfiguration" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+        <q-item clickable to="/fempo/empresaConfiguration" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="store" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>FCT - Configuració Empresa</q-item-label>
+            <q-item-label>Configuració Empresa</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/fct/studentConfiguration" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR)">
+        <q-item clickable to="/fempo/studentConfiguration" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR)">
           <q-item-section avatar>
             <q-icon name="diversity_3" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>FCT - Configuració Alumnes</q-item-label>
+            <q-item-label>Configuració Alumnes</q-item-label>
           </q-item-section>
         </q-item>
         <!--q-item clickable to="/fct/programaFormatiu" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
