@@ -143,7 +143,7 @@ onMounted(async ()=>{
 
 <template>
   <q-page padding>
-    <q-btn class="q-mb-lg" icon="add" to="/fct/formulari/form" label="Nou formulari" color="primary"/>
+    <q-btn class="q-mb-lg" icon="add" to="/fempo/formulari/form" label="Nou formulari" color="primary"/>
     <q-table
       flat bordered
       title="Llistat d'alumnes en pràctiques"

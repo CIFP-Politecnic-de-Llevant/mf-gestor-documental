@@ -41,12 +41,22 @@
             <q-item-label>Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable to="/fempo/formulari/list" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT || rol===rols.PROFESSOR)">
+          <q-item-section avatar>
+            <q-icon name="description" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>FEMPO - Formulari</q-item-label>
+            <q-item-section><small class="text-negative">Opció NOVA per alumnat de primer curs.</small></q-item-section>
+          </q-item-section>
+        </q-item>
         <q-item clickable to="/fct/formulari/list" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT || rol===rols.PROFESSOR)">
           <q-item-section avatar>
             <q-icon name="description" />
           </q-item-section>
           <q-item-section>
             <q-item-label>FCT - Formulari</q-item-label>
+            <q-item-section><small class="text-negative">Alerta! El Formulari FCT despareixerà i serà substituit pel de FEMPO</small></q-item-section>
           </q-item-section>
         </q-item>
         <q-item clickable :to="`/fempo/group?convocatoria=${idconvocatoria}`">
