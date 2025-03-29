@@ -9,8 +9,10 @@ export interface DadesFormulari {
     anyCurs?:string;
     nomAlumne?:string;
     llinatgesAlumne?:string;
-    poblacio?:string;
-    dni?:string;
+    poblacioAlumne?:string;
+    dniAlumne?:string;
+    telefonAlumne?:string;
+    emailAlumne?:string;
     numeroExpedient?:string;
     menorEdat?:boolean;
     edat?:string;
@@ -30,6 +32,7 @@ export interface DadesFormulari {
     nomTutor?:string;
     llinatgesTutor?:string;
     telefonTutor?:string;
+    emailTutor?:string;
     empresaNova?:boolean;
     empresaAdministracioPublica?:boolean;
     numeroConveni?:string;
@@ -59,5 +62,9 @@ export interface DadesFormulari {
     diaSeguimentResponsableFct?:string;
     horaSeguimentResponsableFct?:string;
     flexibilitzacioModulFct?:boolean;
+    isMesuresEducatives?:boolean;
+    mesuresEducativesDescripcio?:string;
+    isAutoritzacioExtraordinaria?:boolean;
+    motiu?:string;
 
 }

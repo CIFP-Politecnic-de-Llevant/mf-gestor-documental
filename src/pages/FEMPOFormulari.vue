@@ -83,7 +83,37 @@
             outlined
             type="text"
             label="DNI/NIE"
-            v-model="formData.dni"
+            v-model="formData.dniAlumne"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Població"
+            v-model="formData.poblacioAlumne"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Telèfon"
+            v-model="formData.telefonAlumne"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+        <div class="col-md-3">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="E-mail"
+            v-model="formData.emailAlumne"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -130,7 +160,7 @@
       </div>
 
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-4 q-pa-md">
+        <div class="col-md-6 q-pa-md">
           <p class="text-h6">Data inici pràctiques</p>
           <q-date
             v-model="formData.dataInici"
@@ -139,18 +169,10 @@
             @update:model-value="ageCalculate(formData.dataInici)"
           />
         </div>
-        <div class="col-md-4 q-pa-md">
+        <div class="col-md-6 q-pa-md">
           <p class="text-h6">Data final pràctiques</p>
           <q-date
             v-model="formData.dataFi"
-            minimal
-            mask="YYYY-MM-DD"
-          />
-        </div>
-        <div class="col-md-4 q-pa-md">
-          <p class="text-h6">Data màxima acabament</p>
-          <q-date
-            v-model="formData.dataAcabament"
             minimal
             mask="YYYY-MM-DD"
           />
@@ -175,16 +197,6 @@
           <small>Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament</small>
         </div>
 
-        <div class="col-md-4">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            type="number"
-            label="Edat de l'alumne (només número)"
-            v-model="formData.edat"
-            hint="Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament"
-          />
-        </div>
       </div>
 
 
@@ -277,6 +289,16 @@
             type="text"
             label="Telèfon mòbil tutor"
             v-model="formData.telefonTutor"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Telèfon mòbil tutor"
+            v-model="formData.emailTutor"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -672,6 +694,55 @@
           </div>
         <div class="col-md-4"></div>
         <div class="col-md-4"></div>
+      </div>
+
+      <div class="bg-primary border-bot-top q-mt-md">
+        <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Mesures educatives</p>
+      </div>
+      <div class=" q-pl-sm">
+        <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Requereix mesures, suports o adaptacions per a persones amb necessitats específiques de suport.</p>
+        <div class="q-gutter-sm ">
+          <q-radio size="sm" v-model="formData.isMesuresEducatives" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+          <q-radio size="sm" v-model="formData.isMesuresEducatives" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
+        </div>
+        <div v-if="formData.isMesuresEducatives">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Especifica les mesures educatives"
+            v-model="formData.mesuresEducativesDescripcio"
+            :rules="[(val:any) => (formData.isMesuresEducatives && !!val) || 'El camp és obligatori']"
+          />
+        </div>
+      </div>
+
+      <div class="bg-primary border-bot-top q-mt-md">
+        <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Requereix autorització extraordinària</p>
+      </div>
+      <div class=" q-pl-sm">
+        <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Es considera</p>
+        <ul>
+          <li>Periode ordinari: El que correspon al calendari escolar</li>
+          <li>Horari ordinari: màxim de 8 hores diàries</li>
+          <li>Horari ordinari: entre les 7:00-22:00h</li>
+        </ul>
+        <p>Si l'alumne és menor d'edat en cap cas pot tenir un horari diferent de l'horari establert com a ordinari</p>
+        <div class="q-gutter-sm ">
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Requereix autorització extraordinària</p>
+          <q-radio size="sm" v-model="formData.isAutoritzacioExtraordinaria" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
+          <q-radio size="sm" v-model="formData.isAutoritzacioExtraordinaria" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
+        </div>
+        <div v-if="formData.isAutoritzacioExtraordinaria">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Especifica per quin motiu"
+            v-model="formData.motiu"
+            :rules="[(val:any) => (formData.isAutoritzacioExtraordinaria && !!val) || 'El camp és obligatori']"
+          />
+        </div>
       </div>
 
       <div class="bg-primary border-bot-top q-mt-md">
