@@ -197,6 +197,17 @@
           <small>Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament</small>
         </div>
 
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="number"
+            label="Edat de l'alumne (només número)"
+            v-model="formData.edat"
+            hint="Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament"
+          />
+        </div>
+
       </div>
 
 
