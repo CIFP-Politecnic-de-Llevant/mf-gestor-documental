@@ -49,13 +49,18 @@ export interface DadesFormulari {
     telefonLlocTreball?:string;
     activitatLlocTreball?:string;
     nomCompletRepresentantLegal?:string;
+    nomRepresentantLegal?:string;
+    llinatgesRepresentantLegal?:string;
     nifRepresentantLegal?:string;
     nomCompletTutorEmpresa?:string;
+    nomTutorEmpresa?:string;
+    llinatgesTutorEmpresa?:string;
     nifTutorEmpresa?:string;
     nacionalitatTutorEmpresa?:string;
     municipiTutorEmpresa?:string;
     carrecTutorEmpresa?:string;
     emailEmpresa?:string;
+    telefonTutorEmpresa?:string;
     emailTutorEmpresa?:string;
     diaSeguimentCentreEducatiu?:string;
     horaSeguimentCentreEducatiu?:string;

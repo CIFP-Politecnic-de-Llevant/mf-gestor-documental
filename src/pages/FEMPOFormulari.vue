@@ -46,7 +46,7 @@
       </div>
 
 
-      <div class="row flex justify-center q-mt-sm q-gutter-y-md">
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
         <div class="col-md-2">
           <q-input
             class="q-pa-sm"
@@ -160,22 +160,26 @@
       </div>
 
       <div class="row flex justify-center q-mt-sm q-gutter-y-md">
-        <div class="col-md-6 q-pa-md">
-          <p class="text-h6">Data inici pràctiques</p>
-          <q-date
-            v-model="formData.dataInici"
-            minimal
-            mask="YYYY-MM-DD"
-            @update:model-value="ageCalculate(formData.dataInici)"
-          />
+        <div class="col-md-6 q-pa-md flex justify-center">
+          <div>
+            <p class="text-h6">Data inici pràctiques</p>
+            <q-date
+              v-model="formData.dataInici"
+              minimal
+              mask="YYYY-MM-DD"
+              @update:model-value="ageCalculate(formData.dataInici)"
+            />
+          </div>
         </div>
-        <div class="col-md-6 q-pa-md">
-          <p class="text-h6">Data final pràctiques</p>
-          <q-date
-            v-model="formData.dataFi"
-            minimal
-            mask="YYYY-MM-DD"
-          />
+        <div class="col-md-6 q-pa-md flex justify-center">
+          <div>
+            <p class="text-h6">Data final pràctiques</p>
+            <q-date
+              v-model="formData.dataFi"
+              minimal
+              mask="YYYY-MM-DD"
+            />
+          </div>
         </div>
       </div>
 
@@ -235,17 +239,6 @@
           />
         </div>
 
-        <div class="col-md-2">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            type="number"
-            label="Km centre treball-població alumne"
-            v-model="formData.km"
-            hint="Només número"
-          />
-        </div>
-
         <div class="col-md-3">
           <q-select
             class="q-pa-sm"
@@ -272,7 +265,7 @@
       <div class="bg-primary border-bot-top q-mt-lg">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades del professor-tutor</p>
       </div>
-      <div class="row flex justify-center q-mt-sm q-gutter-y-md">
+      <div class="row flex justify-start q-mt-sm q-gutter-y-md">
         <div class="col-md-4">
           <q-input
             class="q-pa-sm"
@@ -308,7 +301,7 @@
             class="q-pa-sm"
             outlined
             type="text"
-            label="Telèfon mòbil tutor"
+            label="Correu electrònic tutor"
             v-model="formData.emailTutor"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
@@ -503,7 +496,18 @@
             bg-color="primary"
             type="text"
             label="Nom representant legal"
-            v-model="formData.nomCompletRepresentantLegal"
+            v-model="formData.nomRepresentantLegal"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            bg-color="primary"
+            type="text"
+            label="Llinatges representant legal"
+            v-model="formData.llinatgesRepresentantLegal"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -526,6 +530,17 @@
             type="text"
             label="Telèfon lloc de treball"
             v-model="formData.telefonLlocTreball"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="Telèfon tutor empresa"
+            v-model="formData.telefonTutorEmpresa"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -595,10 +610,22 @@
             outlined
             type="text"
             label="Nom tutor empresa"
-            v-model="formData.nomCompletTutorEmpresa"
+            v-model="formData.nomTutorEmpresa"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            type="text"
+            label="LLinatges tutor empresa"
+            v-model="formData.llinatgesTutorEmpresa"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+
 
         <div class="col-md-4">
           <q-input
@@ -646,7 +673,7 @@
       </div>
 
 
-      <div class="bg-primary border-bot-top q-mt-lg">
+      <!--div class="bg-primary border-bot-top q-mt-lg">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Altres informacions</p>
       </div>
 
@@ -689,10 +716,10 @@
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
-      </div>
+      </div-->
 
 
-      <div class="bg-primary border-bot-top q-mt-md">
+      <!--div class="bg-primary border-bot-top q-mt-md">
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Flexibilització en el mòdul FCT</p>
       </div>
       <div class="row flex justify-center q-my-sm q-gutter-y-md">
@@ -705,7 +732,7 @@
           </div>
         <div class="col-md-4"></div>
         <div class="col-md-4"></div>
-      </div>
+      </div-->
 
       <div class="bg-primary border-bot-top q-mt-md">
         <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Mesures educatives</p>
@@ -847,8 +874,8 @@ const formData: Ref<DadesFormulari> = ref({
   tipusJornada: 'Continuada', horari: '', nomTutor: '', llinatgesTutor: '', telefonTutor: '', empresaNova: false,
   empresaAdministracioPublica: false, numeroConveni: '', nomEmpresa: '', cif: '', adrecaEmpresa: '',
   cpempresa: '', poblacioEmpresa: '', telefonEmpresa: '', nomLlocTreball: '', adrecaLlocTreball: '', cpLlocTreball: '',
-  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomCompletRepresentantLegal: '',
-  nifRepresentantLegal: '', nomCompletTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
+  poblacioLlocTreball: '', telefonLlocTreball: '', activitatLlocTreball: '', nomRepresentantLegal: '', llinatgesRepresentantLegal: '',
+  nifRepresentantLegal: '', nomCompletTutorEmpresa: '', nomTutorEmpresa: '', llinatgesTutorEmpresa: '', nifTutorEmpresa: '', nacionalitatTutorEmpresa: '',
   municipiTutorEmpresa: '', carrecTutorEmpresa: '', emailEmpresa: '', emailTutorEmpresa:'', diaSeguimentCentreEducatiu: '', horaSeguimentCentreEducatiu: '',
   diaSeguimentResponsableFct: '', horaSeguimentResponsableFct: '', flexibilitzacioModulFct: false,
 });
