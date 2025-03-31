@@ -8,7 +8,7 @@ export interface Alumne{
   ensenyament?:string;
   estudis?:string;
   grup?:string;
-  numeroExpedient?:number;
+  numeroExpedient?:string;
   sexe?:string;
   dataNaixement?:Date;
   nacionalitat?:string;

@@ -42,6 +42,12 @@ export class UsuariService {
     return this.fromJSONUsuari(usuari);
   }
 
+  static async getByNumeroExpedient(id:string): Promise<Usuari> {
+    const responseUser = await axios.get(process.env.API + '/api/core/usuaris/findbynumexpedient/'+id);
+    const usuari:any = await responseUser.data;
+    return this.fromJSONUsuari(usuari);
+  }
+
   static async getById(id:string): Promise<Usuari> {
     const responseUser = await axios.get(process.env.API + '/api/core/usuaris/profile/'+id);
     const usuari:any = await responseUser.data;

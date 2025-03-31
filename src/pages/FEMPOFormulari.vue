@@ -858,7 +858,7 @@ const formData: Ref<DadesFormulari> = ref({
   nomAlumne: '',
   llinatgesAlumne: '',
   poblacio: '',
-  dni: '',
+  dniAlumne: '',
   numeroExpedient: '',
   menorEdat: false,
   edat: '',
@@ -883,16 +883,20 @@ const formData: Ref<DadesFormulari> = ref({
 
 
 
-function selectStudent(student:Alumne){
+async function selectStudent(student:Alumne){
+  console.log(student)
     studentSelect.value = student;
     formData.value.nomAlumne = student.nom;
     formData.value.llinatgesAlumne = student.cognom1 + " " + student.cognom2;
-    formData.value.poblacio = student.municipi;
-    formData.value.dni = student.dni;
+    formData.value.poblacioAlumne = student.municipi;
+    formData.value.dniAlumne = student.dni;
+    formData.value.telefonAlumne = student.telefon;
+
 
     if (student && typeof student.numeroExpedient !== 'undefined') {
-        formData.value.numeroExpedient = student.numeroExpedient.toString();
-      console.log(formData.value.numeroExpedient)
+      formData.value.numeroExpedient = student.numeroExpedient;
+      const alumneGestib = await UsuariService.getByNumeroExpedient(student.numeroExpedient);
+      formData.value.emailAlumne = alumneGestib.email;
     }
     formData.value.grup = allNomGrups.value.find(g=>g===( (student.estudis||'') + (student.grup || '') )) || allNomGrups.value[0];
 

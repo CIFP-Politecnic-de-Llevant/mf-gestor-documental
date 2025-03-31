@@ -778,8 +778,8 @@ function selectStudent(student:Alumne){
     studentSelect.value = student;
     formData.value.nomAlumne = student.nom;
     formData.value.llinatgesAlumne = student.cognom1 + " " + student.cognom2;
-    formData.value.poblacio = student.municipi;
-    formData.value.dni = student.dni;
+    formData.value.poblacioAlumne = student.municipi;
+    formData.value.dniAlumne = student.dni;
 
     if (student && typeof student.numeroExpedient !== 'undefined') {
         formData.value.numeroExpedient = student.numeroExpedient.toString();
