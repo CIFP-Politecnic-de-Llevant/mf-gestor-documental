@@ -266,7 +266,7 @@
           <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Dades del professor-tutor</p>
       </div>
       <div class="row flex justify-start q-mt-sm q-gutter-y-md">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <q-input
             class="q-pa-sm"
             outlined
@@ -276,7 +276,7 @@
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <q-input
             class="q-pa-sm"
             outlined
@@ -286,7 +286,7 @@
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <q-input
             class="q-pa-sm"
             outlined
@@ -296,7 +296,7 @@
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <q-input
             class="q-pa-sm"
             outlined
@@ -820,6 +820,7 @@ const selectedStudent:Ref<Alumne> = ref<Alumne>(null);  // Alumne seleccionat pe
 const studentSelect:Ref<Alumne> = ref({} as Alumne);          // Antic alumne seleccionat en el formulari
 const filteredStudentOptions:IStudentListItem[] = ref(studentSelectList)
 
+
 const allCompanies:Ref<Empresa[]> = ref([] as Empresa[]);
 let companySelectList:ICompanyListItem[] = []
 const selectedCompany:Ref<Empresa> = ref<Empresa>(null)
@@ -1091,8 +1092,6 @@ function confirmSave(){
     })
   })
 
-
-
 }
 
 async function saveForm(){
@@ -1121,6 +1120,7 @@ onMounted(async () =>{
 
   formData.value.nomTutor = tutorFCT.value.nom;
   formData.value.llinatgesTutor = tutorFCT.value.cognom1 + " " + tutorFCT.value.cognom2;
+  formData.value.emailTutor = tutorFCT.value.email;
 
 
   studentSelectList = allStudents.value.map(student => ({

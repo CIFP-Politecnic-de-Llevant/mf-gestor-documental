@@ -13,6 +13,7 @@ export class GrupService {
     const grups = await response.data;
 
     return Promise.all(grups.map((grup:any)=>{
+
       return this.fromJSONGrup(grup);
     }));
   }

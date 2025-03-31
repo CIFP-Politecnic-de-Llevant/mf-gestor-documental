@@ -9,4 +9,6 @@ export interface Grup {
   tutor3?: Usuari;
   curs: Curs;
   gestibCodi: string;
+  pathGoogleDrive?: string;
+  idGoogleSpreadSheet?: string;
 }
