@@ -654,7 +654,7 @@
             class="q-pa-sm"
             outlined
             type="text"
-            label="Municipi tutor empresa"
+            label="Municipi DNI tutor empresa"
             v-model="formData.municipiTutorEmpresa"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
