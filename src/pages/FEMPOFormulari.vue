@@ -851,7 +851,8 @@ const ciclesFormatius = [
   'CFGS Automoció',
   "CFGS Desenvolupament d'aplicacions web",
   'CFGS Gestió de Vendes i Espais Comercials',
-  'CFGS Màrketing i publicitat'
+  'CFGS Màrketing i publicitat',
+  'CFGS Sistemes electrotècnics i automàtics'
 ];
 
 const formData: Ref<DadesFormulari> = ref({
@@ -919,6 +920,7 @@ async function selectStudent(student:Alumne){
   12- "CFGS Desenvolupament d'aplicacions web", - IFC33
   13- 'CFGS Gestió de Vendes i Espais Comercials', - COM33
   14- 'CFGS Màrketing i publicitat' - COM31
+  15- 'CFGS Sistemes electrotècnics i automàtics' - ELE31
    */
   /*
     Mapeig de Cicles Formatius
@@ -968,6 +970,9 @@ async function selectStudent(student:Alumne){
     formData.value.estudis = 'CF Grau Superior';
   } else if(student.estudis === 'COM31') {
     formData.value.cicleFormatiu = ciclesFormatius[14];
+    formData.value.estudis = 'CF Grau Superior';
+  } else if(student.estudis === 'ELE31') {
+    formData.value.cicleFormatiu = ciclesFormatius[15];
     formData.value.estudis = 'CF Grau Superior';
   }
 }
