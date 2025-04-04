@@ -3,7 +3,7 @@
   <q-page padding>
     <div class="row flex">
       <div class="col-md-3">
-        <p class="text-h5 q-mt-lg">Formulari - Dades FCT</p>
+        <p class="text-h5 q-mt-lg">Formulari FEMPO</p>
       </div>
       <div class="row col-md-8 q-mt-xs">
         <p class="q-pt-lg q-mr-sm text-apartat">Curs Escolar: </p>
@@ -193,12 +193,12 @@
         </div>
 
         <div class=" q-pl-sm">
-          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Es menor d'edat en el moment de començar la FCT?</p>
+          <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none ">Es menor d'edat en el moment de començar la FEMPO?</p>
           <div class="q-gutter-sm ">
             <q-radio size="sm" v-model="formData.menorEdat" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="true" label="Si" />
             <q-radio size="sm" v-model="formData.menorEdat" checked-icon="task_alt" unchecked-icon="panorama_fish_eye" :val="false" label="No" />
           </div>
-          <small>Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament</small>
+          <small>Si s'emplena la data d'inici de la FEMPO aquest camps s'emplena automàticament</small>
         </div>
 
         <div class="col-md-4">
@@ -208,7 +208,7 @@
             type="number"
             label="Edat de l'alumne (només número)"
             v-model="formData.edat"
-            hint="Si s'emplena la data d'inici de la FCT aquest camps s'emplena automàticament"
+            hint="Si s'emplena la data d'inici de la FEMPO aquest camps s'emplena automàticament"
           />
         </div>
 
