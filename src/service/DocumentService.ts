@@ -214,6 +214,9 @@ export class DocumentService {
     }
   }
 
+  static async migrarDocumentsGenerals() {
+    const response = await axios.post(process.env.API + '/api/gestordocumental/document/migrarDocumentsGenerals');
+  }
 
   static async changeEstatDocument(document: Document, estat: string) {
     const response = await axios.post(process.env.API + '/api/gestordocumental/document/canviarEstatDocument', {
