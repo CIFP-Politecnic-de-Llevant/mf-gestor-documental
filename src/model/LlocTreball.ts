@@ -10,8 +10,12 @@ export interface LlocTreball {
     poblacio:string;
     activitat:string;
     nomCompletRepresentantLegal:string;
+    nomRepresentantLegal:string;
+    cognomsRepresentantLegal:string;
     dniRepresentantLegal:string;
     nomCompletTutorEmpresa:string;
+    nomTutorEmpresa:string;
+    cognomsTutorEmpresa:string;
     dniTutorEmpresa:string;
     carrecTutor:string;
     municipi:string;
