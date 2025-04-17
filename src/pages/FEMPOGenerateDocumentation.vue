@@ -56,6 +56,9 @@
       <h5>No hi ha cap document nou a traspassar</h5>
     </div>
 
+    <q-separator spaced="lg"/>
+
+    <q-btn label="Migrar documents generals" @click="migrar()"/>
 
   </q-page>
 </template>
@@ -141,6 +144,17 @@ function filterFn (val:string, update:Function, abort:Function) {
     const needle = val.toLowerCase()
     alumnesFiltered.value = alumnes.value.filter( (v:Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
   })
+}
+
+async function migrar(){
+  const dialog = $q.dialog({
+    message: 'Migrant documents generals. NO TANQUI LA FINESTRA',
+    progress: true, // we enable default settings
+    persistent: true, // we want the user to not be able to close it
+    ok: false // we want the user to not be able to close it
+  })
+  await DocumentService.migrarDocumentsGenerals()
+  dialog.hide();
 }
 
 onMounted(async ()=>{
