@@ -54,6 +54,7 @@ export class EmpresaService {
 
     static fromJsonEmpresa(json:any):Empresa{
 
+      console.log("jjjjsooonn",json)
         return {
             idEmpresa: json.idEmpresa,
             numeroConveni: json.numeroConveni,

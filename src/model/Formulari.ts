@@ -40,8 +40,12 @@ export interface Formulari {
   telefonLlocTreball:string;
   activitatLlocTreball:string;
   nomCompletRepresentantLegal:string;
+  nomRepresentantLegal:string;
+  cognomsRepresentantLegal:string;
   nifRepresentantLegal:string;
   nomCompletTutorEmpresa:string;
+  nomTutorEmpresa:string;
+  cognomsTutorEmpresa:string;
   nifTutorEmpresa:string;
   nacionalitatTutorEmpresa:string;
   municipiTutorEmpresa:string;

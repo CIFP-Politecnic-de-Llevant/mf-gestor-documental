@@ -50,11 +50,11 @@ export interface DadesFormulari {
     activitatLlocTreball?:string;
     nomCompletRepresentantLegal?:string;
     nomRepresentantLegal?:string;
-    llinatgesRepresentantLegal?:string;
+    cognomsRepresentantLegal?:string;
     nifRepresentantLegal?:string;
     nomCompletTutorEmpresa?:string;
     nomTutorEmpresa?:string;
-    llinatgesTutorEmpresa?:string;
+    cognomsTutorEmpresa?:string;
     nifTutorEmpresa?:string;
     nacionalitatTutorEmpresa?:string;
     municipiTutorEmpresa?:string;
