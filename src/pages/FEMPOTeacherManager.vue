@@ -537,21 +537,25 @@ async function selectGrup(grup:Grup){
   alumnesGrup.value = await getAlumnesAmbDocsFCT();
   alumnesGrup.value.sort((a: Usuari, b: Usuari) => {return a.cognom1!.localeCompare(b.cognom1!)});
 
-  documentsUsuari.value = documentsAll.filter(d=>d.usuari).sort((a:Document, b:Document)=>{
-    if(a.usuari && b.usuari && a.usuari.id!=b.usuari.id){
-      return a.usuari.nomComplet2.localeCompare(b.usuari.nomComplet2);
-    }
-    if(!a.tipusDocument){
-      return -1;
-    }
-    if(!b.tipusDocument){
-      return 1;
-    }
-    if(a.tipusDocument.descripcio === b.tipusDocument.descripcio){
-      return a.tipusDocument.descripcio.localeCompare(b.tipusDocument.descripcio);
-    }
-    return 0;
-  });
+  documentsUsuari.value = documentsAll
+    .filter(d => d.usuari)
+    .sort((a: Document, b: Document) => {
+      if (a.usuari && b.usuari) {
+        if (a.usuari.id !== b.usuari.id) {
+          return a.usuari.nomComplet2?.localeCompare(b.usuari.nomComplet2 || '') || 0;
+        }
+      }
+      if (!a.tipusDocument) {
+        return -1;
+      }
+      if (!b.tipusDocument) {
+        return 1;
+      }
+      if (a.tipusDocument.descripcio && b.tipusDocument.descripcio) {
+        return a.tipusDocument.descripcio.localeCompare(b.tipusDocument.descripcio);
+      }
+      return 0;
+    });
 
   documentsGrup.value = documentsAll.filter(d=>!d.usuari).sort((a:Document, b:Document)=>{
     if(!a.tipusDocument){
