@@ -1118,7 +1118,9 @@ async function saveForm(){
     localStorage.setItem('periode', formData.value.periode);
   }
   await DocumentService.saveFormFEMPO(formData.value,tutorFCT.value.email);
-  window.location.reload();
+  setTimeout(function(){
+    window.location.reload();
+  },4000);
 }
 
 onMounted(async () =>{
