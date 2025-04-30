@@ -17,6 +17,7 @@ export class TipusDocumentService {
     return {
       id: json.idTipusDocument,
       nom: json.nom,
+      descripcio: json.descripcio,
       propietari: json.propietari,
       signatures: json.signatures.map((signatura: any): any => {
         return SignaturaService.fromJSON(signatura)
