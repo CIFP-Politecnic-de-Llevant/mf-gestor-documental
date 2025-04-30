@@ -557,7 +557,8 @@ async function selectGrup(grup:Grup){
       return 0;
     });
 
-  documentsGrup.value = documentsAll.filter(d=>!d.usuari).sort((a:Document, b:Document)=>{
+  // Del grup només mostrem 1 document, el MD020675
+  documentsGrup.value = documentsAll.filter(d=>!d.usuari && (d.tipusDocument && d.tipusDocument.nom && d.tipusDocument.nom.startsWith('MD020675'))).sort((a:Document, b:Document)=>{
     if(!a.tipusDocument){
       return -1;
     }
