@@ -542,7 +542,7 @@ async function selectGrup(grup:Grup){
     .sort((a: Document, b: Document) => {
       if (a.usuari && b.usuari) {
         if (a.usuari.id !== b.usuari.id) {
-          return a.usuari.nomComplet2?.localeCompare(b.usuari.nomComplet2 || '') || 0;
+          return (a.usuari.nomComplet2 ?? '').localeCompare(b.usuari.nomComplet2 ?? '');
         }
       }
       if (!a.tipusDocument) {
@@ -564,7 +564,11 @@ async function selectGrup(grup:Grup){
     if(!b.tipusDocument){
       return 1;
     }
-    return  a.tipusDocument.descripcio.localeCompare(b.tipusDocument.descripcio)
+
+    if (a.tipusDocument.descripcio && b.tipusDocument.descripcio)
+      return  a.tipusDocument.descripcio.localeCompare(b.tipusDocument.descripcio)
+
+    return 0;
   });
 
   //Que es mostrin es visibles per defecte
