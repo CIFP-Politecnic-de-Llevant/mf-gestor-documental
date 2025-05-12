@@ -1090,6 +1090,12 @@ async function saveForm() {
 }
 
 onMounted(async () => {
+  const dialog = $q.dialog({
+    message: 'Carregant...',
+    progress: true, // we enable default settings
+    persistent: true, // we want the user to not be able to close it
+    ok: false // we want the user to not be able to close it
+  })
 
   allStudents.value = await UsuariService.allStudents();
   allCompanies.value = await EmpresaService.allCompanies();
@@ -1118,7 +1124,7 @@ onMounted(async () => {
     allNomGrups.value.push(nomGrup);
   }
   allNomGrups.value.sort((a, b) => a.localeCompare(b));
-
+  dialog.hide();
 })
 </script>
 <style scoped>
