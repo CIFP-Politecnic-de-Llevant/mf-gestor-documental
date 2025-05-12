@@ -83,7 +83,7 @@
               outlined
               type="text"
               label="DNI/NIE"
-              v-model="formData.dni"
+              v-model="formData.dniAlumne"
               :rules="[(val:any) => !!val || 'El camp és obligatori']"
             />
           </div>
