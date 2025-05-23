@@ -1072,6 +1072,36 @@ function errorForm(){
 
 function confirmSave(){
   console.log('confirm save form');
+
+  // Valiem mesures educatives
+  console.log("Mesures educatives", formData.value.isMesuresEducatives);
+  if(formData.value.isMesuresEducatives === undefined || formData.value.isMesuresEducatives === null){
+    $q.notify({
+      color: 'negative',
+      message: 'El camp de mesures educatives ha de tenir valor',
+      icon: 'report_problem'
+    });
+    return;
+  }
+
+  if(formData.value.isAutoritzacioExtraordinaria === undefined || formData.value.isAutoritzacioExtraordinaria === null){
+    $q.notify({
+      color: 'negative',
+      message: "El camp de d'autorització extraordinària ha de tenir valor",
+      icon: 'report_problem'
+    });
+    return;
+  }
+
+  if(!formulariAlumnes || !formulariAlumnes.value){
+    $q.notify({
+      color: 'negative',
+      message: 'Hi ha camps incorrectes',
+      icon: 'report_problem'
+    });
+    return;
+  }
+
   formulariAlumnes.value.validate().then(success => {
     if (success) {
       // yay, models are correct
