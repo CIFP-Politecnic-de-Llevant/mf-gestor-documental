@@ -56,7 +56,7 @@ const background= process.env.CENTRE_BACKGROUND;
 const handleLoginSuccess = async (responseCredential: CredentialResponse) => {
   const { credential } = responseCredential;
   console.log("Access Token", credential);
-  const response = await axios.post(process.env.API+'/api/core/auth/google/login', credential)
+  const response = await axios.post(process.env.API+'/api/oauth/auth/login', credential)
   console.log("response",response)
 
   if (response && response.data) {
@@ -154,7 +154,7 @@ const handleLoginError = () => {
             console.log("responseGoogle",responseGoogle)
             const token = responseGoogle.credential;
 
-            const response = await this.$axios.post(process.env.API+'/api/core/auth/google/login', token)
+            const response = await this.$axios.post(process.env.API+'/api/oauth/auth/login', token)
             console.log("response",response)
 
             if (response && response.data) {

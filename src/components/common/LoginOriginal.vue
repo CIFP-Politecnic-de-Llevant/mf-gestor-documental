@@ -91,7 +91,7 @@
             console.log("responseGoogle",responseGoogle)
             const token = responseGoogle.credential;
 
-            const response = await this.$axios.post(process.env.API+'/api/core/auth/google/login', token)
+            const response = await this.$axios.post(process.env.API+'/api/oauth/auth/login', token)
             console.log("response",response)
 
             if (response && response.data) {
