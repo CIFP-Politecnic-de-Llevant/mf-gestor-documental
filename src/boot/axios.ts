@@ -95,7 +95,7 @@ export default boot(({ app,router }) => {
 
       let url = new URL(window.location.href);
 
-      if(url.pathname != '/login' && (redirectToLogin || error.response.status == 401)){
+      if(url.pathname != '/login' && (redirectToLogin || error.response.status == 401 || error.response.status == 403)){
         router.push('/login');
       }
     } else {
