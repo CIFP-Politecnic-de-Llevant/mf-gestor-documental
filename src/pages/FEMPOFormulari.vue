@@ -340,7 +340,7 @@
             </template>
           </q-select>
 
-          <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Lloc de treball" v-if="companySelected">
+          <q-btn-dropdown v-if="companySelected" class="q-mt-md q-ml-sm" color="primary" label="Lloc de treball">
             <q-list>
               <q-item v-for="workspace in allCompanyWorkspace" clickable v-close-popup @click="selectWorkspace(workspace)">
                 <q-item-section>
@@ -349,6 +349,12 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
+
+          <q-btn v-if="companySelected" @click="addWorkplace=true" color="grey" icon="add">
+            <q-tooltip>
+              NOU LLOC DE TREBALL
+            </q-tooltip>
+          </q-btn>
         </div>
       </div>
 
@@ -793,6 +799,139 @@
     </q-form>
    </div>
 
+    <q-dialog v-model="addWorkplace" persistent>
+      <q-card style="max-width: 1000px;">
+        <q-card-section>
+          <q-form @submit="saveWorkplace"  class="q-gutter-md ">
+            <p class="text-h5 q-mt-lg">Crear Lloc de treball</p>
+            <div class="row flex justify-center q-my-sm">
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom"
+                  v-model="workplace.nom"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Adreça"
+                  v-model="workplace.adreca"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Codi Postal"
+                  v-model="workplace.codiPostal"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Telèfon"
+                  v-model="workplace.telefon"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Població"
+                  v-model="workplace.poblacio"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Activitat"
+                  v-model="workplace.activitat"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom Representant Legal"
+                  v-model="workplace.nomCompletRepresentantLegal"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="DNI Representant Legal"
+                  v-model="workplace.dniRepresentantLegal"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom Tutor/a Empresa"
+                  v-model="workplace.nomCompletTutorEmpresa"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="DNI Tutor/a Empresa"
+                  v-model="workplace.dniTutorEmpresa"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Municipi"
+                  v-model="workplace.municipi"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Carrec Tutor/a"
+                  v-model="workplace.carrecTutor"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="E-mail tutor empresa"
+                  v-model="workplace.emailTutorEmpresa"
+                  class="q-pa-sm "
+                />
+              </div>
+            </div>
+            <div class="flex justify-end q-gutter-sm">
+              <q-btn label="Guardar" type="submit" color="primary" v-close-popup/>
+              <q-btn label="Tancar" color="primary"  v-close-popup/>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 <script setup lang="ts">
@@ -827,6 +966,9 @@ const selectedCompany:Ref<Empresa> = ref<Empresa>(null)
 const filteredCompanyOptions:ICompanyListItem[] = ref(companySelectList)
 
 const companySelected:Ref<boolean> = ref(false);
+
+const addWorkplace = ref(false);
+const workplace:Ref<LlocTreball> = ref({} as LlocTreball)
 
 
 const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
@@ -1151,6 +1293,13 @@ async function saveForm(){
   setTimeout(function(){
     window.location.reload();
   },4000);
+}
+
+async function saveWorkplace(){
+  workplace.value.empresa = selectedCompany.value;
+  await EmpresaService.saveWorkspace(workplace.value);
+  selectedCompany.value = await EmpresaService.getCompanyById(selectedCompany.value.idEmpresa);
+  selectWorkspace(workplace.value);
 }
 
 onMounted(async () =>{
