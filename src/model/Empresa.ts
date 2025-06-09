@@ -1,9 +1,12 @@
 import {LlocTreball} from "src/model/LlocTreball";
+import {TutorEmpresa} from "src/model/TutorEmpresa";
 
 export interface Empresa {
-
     idEmpresa:number;
     numeroConveni?:string;
+    nomRepresentantLegal?:string;
+    cognomsRepresentantLegal?:string;
+    dniRepresentantLegal?:string;
     nom?:string;
     cif?:string;
     adreca?:string;
@@ -13,4 +16,5 @@ export interface Empresa {
     provincia?:string;
     telefon?:string;
     llocsTreball?:Array<LlocTreball>;
+    tutorsEmpresa?:Array<TutorEmpresa>;
 }
