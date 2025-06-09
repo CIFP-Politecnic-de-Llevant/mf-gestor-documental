@@ -1,7 +1,7 @@
 <template>
   <q-page padding>
     <div>
-      <p class="text-h5  q-mb-lg">Editar Empresa</p>
+      <p class="text-h4  q-mb-lg">Editar Empresa</p>
     </div>
     <q-form class="border">
       <div class="bg-primary q-ma-none border-bottom flex justify-between">
@@ -13,6 +13,7 @@
             dense
             class="q-my-sm border q-mr-sm"
             icon="save"
+            label="Desar Empresa"
         />
       </div>
       <div class="row flex justify-start q-my-sm">
@@ -99,6 +100,10 @@
         </div>
       </div>
     </q-form>
+
+    <div>
+      <p class="text-h5  q-mb-lg">Llocs de Treball</p>
+    </div>
     <div class="q-mb-lg q-mt-xl">
       <q-btn icon="add"  @click="addWorkplace = true" label="Lloc Treball" type="submit" class="q-mt-sm" color="primary"/>
     </div>
@@ -243,7 +248,13 @@
           />
         </div>
       </div>
+
+      <div>
+        <p class="text-h5  q-mb-lg">Tutors Empresa</p>
+      </div>
     </q-form>
+
+
     <q-dialog v-model="addWorkplace" persistent>
       <q-card style="max-width: 1000px;">
         <q-card-section>
