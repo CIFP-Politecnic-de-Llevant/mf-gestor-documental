@@ -5,7 +5,8 @@ export interface Empresa {
     idEmpresa:number;
     numeroConveni?:string;
     nomRepresentantLegal?:string;
-    cognomsRepresentantLegal?:string;
+    cognom1RepresentantLegal?:string;
+    cognom2RepresentantLegal?:string;
     dniRepresentantLegal?:string;
     nom?:string;
     cif?:string;

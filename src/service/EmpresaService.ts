@@ -2,9 +2,9 @@ import axios from "axios";
 import {Empresa} from "src/model/Empresa";
 import {LlocTreball} from "src/model/LlocTreball";
 import {DadesFormulari} from "src/model/DadesFormulari";
+import {TutorEmpresa} from "src/model/TutorEmpresa";
 
 export class EmpresaService {
-
 
   /* EMPRESA */
   static async allCompanies(): Promise<Array<Empresa>> {
@@ -78,7 +78,8 @@ export class EmpresaService {
       idEmpresa: json.idEmpresa,
       numeroConveni: json.numeroConveni,
       nomRepresentantLegal: json.nomRepresentantLegal,
-      cognomsRepresentantLegal: json.cognomsRepresentantLegal,
+      cognom1RepresentantLegal: json.cognom1RepresentantLegal,
+      cognom2RepresentantLegal: json.cognom2RepresentantLegal,
       dniRepresentantLegal: json.dniRepresentantLegal,
       emailEmpresa: json.emailEmpresa,
       nom: json.nom,
@@ -88,7 +89,64 @@ export class EmpresaService {
       poblacio: json.poblacio,
       provincia: json.provincia,
       telefon: json.telefon,
-      //llocsTreball: json.llocsTreball
+      llocsTreball: json.llocsTreball.map((lloc: any) => this.fromJsonLlocTreball(lloc)),
+      tutorsEmpresa: json.tutorsEmpresa.map((tutor: any) => this.fromJsonTutorEmpresa(tutor)),
+    }
+  }
+
+  static fromJsonLlocTreball(json: any): LlocTreball {
+    /*
+      idLlocTreball:number;
+      nom:string;
+      adreca:string;
+      codiPostal:string;
+      telefon:string;
+      poblacio:string;
+      activitat:string;
+      municipi:string;
+      validat:boolean;
+      emailCreator:string;
+      empresa:Empresa;
+     */
+    return {
+      idLlocTreball: json.idLlocTreball,
+      nom: json.nom,
+      adreca: json.adreca,
+      codiPostal: json.codiPostal,
+      telefon: json.telefon,
+      poblacio: json.poblacio,
+      activitat: json.activitat,
+      municipi: json.municipi,
+      validat: json.validat,
+      emailCreator: json.emailCreator,
+      empresa: this.fromJsonEmpresa(json.empresa)
+    }
+  }
+
+  static fromJsonTutorEmpresa(json: any): TutorEmpresa {
+    /*
+      idTutorEmpresa: number;
+      nom?: string;
+      cognom1?: string;
+      cognom2?: string;
+      nacionalitat?: string;
+      dni?: string;
+      telefon?: string;
+      email?: string;
+      carrec?: string;
+      empresa?: Empresa;
+     */
+    return {
+      idTutorEmpresa: json.idTutorEmpresa,
+      nom: json.nom,
+      cognom1: json.cognom1,
+      cognom2: json.cognom2,
+      nacionalitat: json.nacionalitat,
+      dni: json.dni,
+      telefon: json.telefon,
+      email: json.email,
+      carrec: json.carrec,
+      empresa: this.fromJsonEmpresa(json.empresa)
     }
   }
 
