@@ -44,6 +44,9 @@
           <q-td key="cif" :props="props" class="text-wrap-center">
             {{ props.row.cif }}
           </q-td>
+          <q-td key="numeroConveni" :props="props" class="text-wrap-center">
+            {{ props.row.numeroConveni }}
+          </q-td>
           <q-td class="text-wrap-center">
             <div>
                 <router-link :to="{ name: 'empresaForm', params: {id: props.row.idEmpresa}}">
@@ -257,6 +260,13 @@ onMounted(async () =>{
     name:'cif',
     label:'CIF',
     field: row => row.cif,
+    sortable: true
+
+  });
+  columns.value.push({
+    name:'numeroConveni',
+    label:'Número Conveni',
+    field: row => row.numeroConveni,
     sortable: true
 
   });
