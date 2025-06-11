@@ -55,6 +55,20 @@ export class EmpresaService {
     await axios.post(process.env.API + `/api/gestordocumental/empresa/lloc-treball/update-workspace`, llocTreball)
   }
 
+  // TUTORS D'EMPRESA
+  static async deleteTutorEmpresa(id: number) {
+
+    await axios.get(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/delete/${id}`)
+  }
+  static async saveTutorEmpresa(tutorEmpresa: TutorEmpresa) {
+
+    await axios.post(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/save-tutor`, tutorEmpresa)
+  }
+  static async updateTutorEmpresa(tutorEmpresa: TutorEmpresa) {
+
+    await axios.post(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/update-tutor`, tutorEmpresa)
+  }
+
 
   static fromJsonEmpresa(json: any): Empresa {
     /*

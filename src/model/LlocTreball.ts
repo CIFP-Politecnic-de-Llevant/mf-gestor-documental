@@ -7,8 +7,8 @@ export interface LlocTreball {
   codiPostal:string;
   telefon:string;
   poblacio:string;
-  activitat:string;
   municipi:string;
+  activitat:string;
   validat:boolean;
   emailCreator:string;
   empresa:Empresa;
