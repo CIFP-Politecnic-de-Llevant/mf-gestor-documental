@@ -138,7 +138,7 @@
     </q-form>
 
     <div>
-      <p class="text-h5  q-mb-lg">Llocs de Treball</p>
+      <p class="text-h5  q-my-lg">Llocs de Treball</p>
     </div>
     <div class="q-mb-lg q-mt-xl">
       <q-btn icon="add"  @click="addWorkplace = true" label="Lloc Treball" type="submit" class="q-mt-sm" color="primary"/>
@@ -154,6 +154,7 @@
               dense
               class="q-my-sm border q-mr-sm"
               icon="save"
+              label="Desar Lloc Treball"
           />
           <q-btn
               @click="deleteConfirmation(workspace.idLlocTreball, workspace.nom)"
@@ -162,10 +163,11 @@
               dense
               class="q-my-sm border q-mr-sm"
               icon="delete"
+              label="Esborrar Lloc Treball"
           />
         </div>
       </div>
-      <div class="row flex justify-center q-my-sm">
+      <div class="row flex justify-start items-start q-my-sm">
         <div class="col-md-4">
           <q-input
             filled
@@ -249,6 +251,7 @@
             dense
             class="q-my-sm border q-mr-sm"
             icon="save"
+            label="Desar Tutor Empresa"
           />
           <q-btn
             @click="deleteConfirmationTutorEmpresa(tutorEmpresa.idTutorEmpresa, `${tutorEmpresa.nom} ${tutorEmpresa.cognom1} ${tutorEmpresa.cognom2}`)"
@@ -257,10 +260,11 @@
             dense
             class="q-my-sm border q-mr-sm"
             icon="delete"
+            label="Esborrar Tutor Empresa"
           />
         </div>
       </div>
-      <div class="row flex justify-center q-my-sm">
+      <div class="row flex justify-start items-start q-my-sm">
         <div class="col-md-4">
           <q-input
             filled
@@ -344,7 +348,7 @@
         <q-card-section>
           <q-form @submit="saveWorkplace"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Lloc de treball</p>
-            <div class="row flex justify-center q-my-sm">
+            <div class="row flex justify-start items-start q-my-sm">
               <div class="col-md-4">
                 <q-input
                   filled
@@ -439,7 +443,7 @@
         <q-card-section>
           <q-form @submit="saveTutorEmpresa"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Tutor d'Empresa</p>
-            <div class="row flex justify-center q-my-sm">
+            <div class="row flex justify-start items-start q-my-sm">
               <div class="col-md-4">
                 <q-input
                   filled

@@ -78,7 +78,7 @@
         <q-card-section>
           <q-form @submit="saveCompany"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Empresa</p>
-            <div class="row flex justify-center q-my-sm">
+            <div class="row flex justify-start items-start q-my-sm">
               <div class="col-md-4">
                 <q-input
                   filled
@@ -157,6 +157,42 @@
                   type="text"
                   label="Telèfon"
                   v-model="company.telefon"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom Representant Legal"
+                  v-model="company.nomRepresentantLegal"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Cognom 1 Representant Legal"
+                  v-model="company.cognom1RepresentantLegal"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Cognom 2 Representant Legal"
+                  v-model="company.cognom2RepresentantLegal"
+                  class="q-pa-sm"
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="DNI Representant Legal"
+                  v-model="company.dniRepresentantLegal"
                   class="q-pa-sm"
                 />
               </div>
