@@ -96,7 +96,6 @@
                   @click="sendFile(props.row)"
                   :color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
                   :text-color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
-                  :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
                   round
                   dense
                   icon="send"
@@ -296,7 +295,6 @@
                   @click="sendFile(props.row)"
                   :color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
                   :text-color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
-                  :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
                   round
                   dense
                   icon="send"
@@ -449,11 +447,9 @@ import {onMounted, Ref, ref} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
-import {Signatura} from "src/model/Signatura";
 import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
-import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
@@ -471,7 +467,6 @@ const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
 const documentsGrup:Ref<Document[]> = ref([] as Document[]);
 const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
 const documentsUsuariFiltrats:Ref<Document[]> = ref([] as Document[]);
-const signatures:Ref<Signatura[]> = ref([] as Signatura[]);
 const addDocument = ref(false);
 
 const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
@@ -492,7 +487,7 @@ const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
 const alumnesSeleccionats:Ref<Usuari[]> = ref([] as Usuari[]);
 const visibilitatSeleccionada:Ref<boolean | null> = ref(null);
 const estatSeleccionat:Ref<string | null> = ref('TOTS');
-const documentEstats = ['TOTS', 'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'];
+const documentEstats = ['TOTS', 'PENDENT', 'ACCEPTAT', 'REBUTJAT'];
 
 // document
 const uploadDocument = ref(false);
@@ -586,11 +581,6 @@ async function selectGrup(grup:Grup){
   isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
 }
 
-function signDoc(document:Document, signatura:Signatura, signat:boolean, idConvocatoria:string){
-  console.log("Entra sign student")
-  DocumentService.signarDocument(document,signatura,signat, idConvocatoria);
-}
-
 async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
   uploadDocument.value = true;
   const documentSaved:Document= await DocumentService.saveDocumentExtra(document,grupSelected.value.curs.nom+grupSelected.value.nom,tipusDocument, idusuari);
@@ -625,11 +615,13 @@ async function sendFile(document:Document){
     const documentUsuari = documentsUsuari.value.find(d=>d.id===documentSaved.id);
 
     if(documentGrup){
-      documentsGrup.value.find(d=>d.id===documentSaved.id)!.fitxer = fitxer;
+      documentGrup!.fitxer = fitxer;
+      documentGrup!.documentEstat = documentSaved.documentEstat;
     }
 
     if(documentUsuari){
-      documentsUsuari.value.find(d=>d.id===documentSaved.id)!.fitxer = fitxer;
+      documentUsuari!.fitxer = fitxer;
+      documentUsuari!.documentEstat = documentSaved.documentEstat;
     }
   }
 }
@@ -841,8 +833,6 @@ onMounted(async ()=>{
   grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom));
   $q.loading.hide();
 
-  signatures.value = await SignaturaService.findAll();
-
   myUser.value = await UsuariService.getProfile();
 
   alumnes.value = await UsuariService.getAlumnes();
@@ -858,14 +848,6 @@ onMounted(async ()=>{
     sortable: true
   });
 
-  for(const signatura of signatures.value){
-    columnsGrup.value.push({
-      name: signatura.id,
-      label: signatura.nom,
-      field: signatura.id,
-      sortable: false
-    });
-  }
   columnsGrup.value.push({
     name: 'document',
     label: 'Document',
@@ -894,15 +876,6 @@ onMounted(async ()=>{
     field: row => row.estat,
     sortable: true
   });
-
-  for(const signatura of signatures.value){
-    columnsUsuari.value.push({
-      name: signatura.id,
-      label: signatura.nom,
-      field: signatura.id,
-      sortable: false
-    });
-  }
 
   columnsUsuari.value.push({
     name: 'document',

@@ -1,8 +1,5 @@
 import {axios}  from 'boot/axios'
-import {Curs} from "src/model/Curs";
 import {TipusDocument} from "src/model/TipusDocument";
-import {SignaturaService} from "src/service/SignaturaService";
-
 export class TipusDocumentService {
 
   static async findAllTipusDocument(): Promise<Array<TipusDocument>> {
@@ -18,10 +15,7 @@ export class TipusDocumentService {
       id: json.idTipusDocument,
       nom: json.nom,
       descripcio: json.descripcio,
-      propietari: json.propietari,
-      signatures: json.signatures.map((signatura: any): any => {
-        return SignaturaService.fromJSON(signatura)
-      }).sort((a: any, b: any) => a.nom.localeCompare(b.nom))
+      propietari: json.propietari
     }
   }
 }

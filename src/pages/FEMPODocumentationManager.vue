@@ -30,7 +30,7 @@
       class="bg-grey-2 text-black shadow-2">
 
       <q-tab name="TOTS" icon="timeline" label="Tots"  />
-      <q-tab name="PENDENT_SIGNATURES" icon="visibility" label="Pendents de validar" />
+      <q-tab name="PENDENT" icon="visibility" label="Pendents de validar" />
       <q-tab name="ACCEPTAT" icon="done" label="Acceptats" />
       <q-tab name="REBUTJAT" icon="deleted" label="Rebutjats" />
     </q-tabs>
@@ -81,7 +81,7 @@
                   <q-tr :props="props">
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
                       <q-select v-model="props.row.documentEstat" :options="[
-                  'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
+                  'PENDENT', 'ACCEPTAT', 'REBUTJAT'
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)"/>
                     </q-td>
                     <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
@@ -97,13 +97,6 @@
                     </q-td>
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
                       {{ props.row.tipusDocument.nom }}
-                    </q-td>
-                    <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-                      <q-checkbox
-                        v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
-                        v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                        @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
-                      />
                     </q-td>
                     <q-td>
                       <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
@@ -167,7 +160,7 @@
                   <q-tr :props="props">
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
                       <q-select v-model="props.row.documentEstat" :options="[
-                  'PENDENT_SIGNATURES', 'ACCEPTAT', 'REBUTJAT'
+                  'PENDENT', 'ACCEPTAT', 'REBUTJAT'
                 ]" label="Validat?" @update:model-value="changeEstatDocument(props.row,props.row.documentEstat)"/>
                     </q-td>
                     <q-td key="observacions" :props="props" class="text-wrap" style="width: 300px;">
@@ -185,13 +178,6 @@
                     </q-td>
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
                       {{ props.row.tipusDocument.nom }}
-                    </q-td>
-                    <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
-                      <q-checkbox
-                        v-if="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
-                        v-model="props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat"
-                        @update:model-value="signDoc(props.row,signatura,props.row.documentSignatures.find(s=>s.signatura.id===signatura.id).signat)"
-                      />
                     </q-td>
                     <q-td>
                       <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
@@ -259,11 +245,8 @@ import {computed, nextTick, onMounted, Ref, ref, toRaw} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {Document} from "src/model/Document";
-import {DocumentEstat} from "src/model/DocumentEstat";
-import {Signatura} from "src/model/Signatura";
 import {GrupService} from "src/service/GrupService";
 import {DocumentService} from "src/service/DocumentService";
-import {SignaturaService} from "src/service/SignaturaService";
 import {QTableColumn, useQuasar} from "quasar";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
@@ -275,8 +258,6 @@ const $q = useQuasar();
 const router = useRouter()
 const route = useRoute()
 
-const signatures: Ref<Signatura[]> = ref([] as Signatura[]);
-
 const filtre:Ref<string> = ref("TOTS")
 
 const filtreText = computed(() => {
@@ -285,7 +266,7 @@ const filtreText = computed(() => {
       return "ACCEPTATS";
     case "REBUTJAT":
       return "REBUTJATS";
-    case "PENDENT_SIGNATURES":
+    case "PENDENT":
       return "PENDENTS DE VALIDAR";
     default:
       return "...";
@@ -301,7 +282,7 @@ const tutorsGrupsFCT = ref(new Map<string, Usuari[]>);
 const showPdfDialog = ref(false);
 const pdf: Ref<FitxerBucket | null> = ref({} as FitxerBucket);
 
-const workersAll = [];
+const workersAll: Worker[] = [];
 
 const initialPagination = {
   sortBy: 'desc',
@@ -411,11 +392,6 @@ function setTutors(index: number) {
     worker.terminate();
   }
   workersAll.push(worker);
-}
-
-function signDoc(document: Document, signatura: Signatura, signat: boolean, idConvocatoria: string) {
-  //console.log("Entra sign student")
-  DocumentService.signarDocument(document, signatura, signat, idConvocatoria);
 }
 
 function changeEstatDocument(document: Document, estat: string) {
@@ -534,9 +510,6 @@ onMounted(async () => {
   }
   workersAll.push(worker);
 
-  signatures.value = await SignaturaService.findAll();
-  // grupsFiltered.value = grupsFCT.value;
-
   //Grup
   columnsGrup.value.push({
     name: 'validat',
@@ -558,15 +531,6 @@ onMounted(async () => {
     field: row => row.tipusDocument.nom,
     sortable: true
   });
-
-  for (const signatura of signatures.value) {
-    columnsGrup.value.push({
-      name: signatura.id,
-      label: signatura.nom,
-      field: signatura.id,
-      sortable: false
-    });
-  }
 
   columnsGrup.value.push({
     name: 'signants',
@@ -611,15 +575,6 @@ onMounted(async () => {
     sortable: true
   });
 
-  for (const signatura of signatures.value) {
-    columnsUsuari.value.push({
-      name: signatura.id,
-      label: signatura.nom,
-      field: signatura.id,
-      sortable: false
-    });
-  }
-
   columnsUsuari.value.push({
     name: 'signants',
     label: 'Signants',
@@ -636,7 +591,6 @@ onMounted(async () => {
 
   dialog.hide();
 
-  signatures.value = await SignaturaService.findAll();
 })
 
 onBeforeRouteLeave((to, from) => {

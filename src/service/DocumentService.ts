@@ -3,10 +3,7 @@ import {Document} from "../model/Document";
 import {Usuari} from "src/model/Usuari";
 import {UsuariService} from "./UsuariService";
 import {TipusDocumentService} from "src/service/TipusDocumentService";
-import {SignaturaService} from "src/service/SignaturaService";
-import {Signatura} from "src/model/Signatura";
 import {FitxerBucket} from "src/model/google/FitxerBucket";
-import {DocumentEstat} from "src/model/DocumentEstat";
 import {DadesFormulari} from "src/model/DadesFormulari";
 import {AbortControllerService} from "src/service/AbortControllerService";
 
@@ -264,14 +261,6 @@ export class DocumentService {
     });
   }
 
-  static async signarDocument(document: Document, signatura: Signatura, signat: boolean, idConvocatoria: string) {
-    const response = await axios.post(process.env.API + '/api/gestordocumental/document/signar?idConvocatoria='+idConvocatoria, {
-      idDocument: document.id,
-      idSignatura: signatura.id,
-      signat: signat
-    });
-  }
-
   static async saveDocumentExtra(document: Document, curs: string, tipusDocument: string, idusuari?: number): Promise<Document> {
     const response = await axios.post(process.env.API + '/api/gestordocumental/documents/saveDocumentExtra', {
       document: document,
@@ -352,15 +341,7 @@ export class DocumentService {
         documentEstat: json.estat,
         observacions: json.observacions,
         visibilitat: json.visibilitat,
-        tipusDocument: (json.tipusDocument) ? TipusDocumentService.fromJSON(json.tipusDocument) : undefined,
-        documentSignatures: (json.documentSignatures) ? json.documentSignatures.map((documentSignatura: any): any => {
-          //console.log(documentSignatura)
-          return {
-            document: documentSignatura.document,
-            signatura: SignaturaService.fromJSON(documentSignatura.signatura),
-            signat: documentSignatura.signat
-          }
-        }) : undefined
+        tipusDocument: (json.tipusDocument) ? TipusDocumentService.fromJSON(json.tipusDocument) : undefined
       }
 
       if (json.idFitxer) {
