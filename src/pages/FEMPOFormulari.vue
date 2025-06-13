@@ -440,6 +440,40 @@
             outlined
             bg-color="primary"
             type="text"
+            label="Nom representant legal"
+            v-model="formData.nomRepresentantLegal"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            bg-color="primary"
+            type="text"
+            label="Llinatges representant legal"
+            v-model="formData.cognomsRepresentantLegal"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            bg-color="primary"
+            type="text"
+            label="NIF representant legal"
+            v-model="formData.nifRepresentantLegal"
+            :rules="[(val:any) => !!val || 'El camp és obligatori']"
+          />
+        </div>
+
+        <div class="col-md-4">
+          <q-input
+            class="q-pa-sm"
+            outlined
+            bg-color="primary"
+            type="text"
             label="Adreça de l'empresa"
             v-model="formData.adrecaEmpresa"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
@@ -492,39 +526,6 @@
             type="text"
             label="Nom centre de treball"
             v-model="formData.nomLlocTreball"
-            :rules="[(val:any) => !!val || 'El camp és obligatori']"
-          />
-        </div>
-        <div class="col-md-4">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            bg-color="primary"
-            type="text"
-            label="Nom representant legal"
-            v-model="formData.nomRepresentantLegal"
-            :rules="[(val:any) => !!val || 'El camp és obligatori']"
-          />
-        </div>
-        <div class="col-md-4">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            bg-color="primary"
-            type="text"
-            label="Llinatges representant legal"
-            v-model="formData.cognomsRepresentantLegal"
-            :rules="[(val:any) => !!val || 'El camp és obligatori']"
-          />
-        </div>
-        <div class="col-md-4">
-          <q-input
-            class="q-pa-sm"
-            outlined
-            bg-color="primary"
-            type="text"
-            label="NIF representant legal"
-            v-model="formData.nifRepresentantLegal"
             :rules="[(val:any) => !!val || 'El camp és obligatori']"
           />
         </div>
@@ -804,7 +805,7 @@
         <q-card-section>
           <q-form @submit="saveWorkplace"  class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Lloc de treball</p>
-            <div class="row flex justify-center q-my-sm">
+            <div class="row flex justify-start items-start q-my-sm">
               <div class="col-md-4">
                 <q-input
                   filled
@@ -854,51 +855,6 @@
                 <q-input
                   filled
                   type="text"
-                  label="Activitat"
-                  v-model="workplace.activitat"
-                  class="q-pa-sm "
-                />
-              </div>
-              <div class="col-md-4">
-                <q-input
-                  filled
-                  type="text"
-                  label="Nom Representant Legal"
-                  v-model="workplace.nomCompletRepresentantLegal"
-                  class="q-pa-sm "
-                />
-              </div>
-              <div class="col-md-4">
-                <q-input
-                  filled
-                  type="text"
-                  label="DNI Representant Legal"
-                  v-model="workplace.dniRepresentantLegal"
-                  class="q-pa-sm "
-                />
-              </div>
-              <div class="col-md-4">
-                <q-input
-                  filled
-                  type="text"
-                  label="Nom Tutor/a Empresa"
-                  v-model="workplace.nomCompletTutorEmpresa"
-                  class="q-pa-sm "
-                />
-              </div>
-              <div class="col-md-4">
-                <q-input
-                  filled
-                  type="text"
-                  label="DNI Tutor/a Empresa"
-                  v-model="workplace.dniTutorEmpresa"
-                  class="q-pa-sm "
-                />
-              </div>
-              <div class="col-md-4">
-                <q-input
-                  filled
-                  type="text"
                   label="Municipi"
                   v-model="workplace.municipi"
                   class="q-pa-sm "
@@ -908,17 +864,8 @@
                 <q-input
                   filled
                   type="text"
-                  label="Carrec Tutor/a"
-                  v-model="workplace.carrecTutor"
-                  class="q-pa-sm "
-                />
-              </div>
-              <div class="col-md-4">
-                <q-input
-                  filled
-                  type="text"
-                  label="E-mail tutor empresa"
-                  v-model="workplace.emailTutorEmpresa"
+                  label="Activitat"
+                  v-model="workplace.activitat"
                   class="q-pa-sm "
                 />
               </div>
