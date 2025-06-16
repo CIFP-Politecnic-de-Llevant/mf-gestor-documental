@@ -767,12 +767,12 @@ const allStudents: Ref<Alumne[]> = ref([] as Alumne[]);        // Tots els alumn
 let studentSelectList: IStudentListItem[] = [];                // Llista d'opcions pel select amb filtre
 const selectedStudent: Ref<Alumne> = ref<Alumne>(null);  // Alumne seleccionat pel select amb filtre
 const studentSelect: Ref<Alumne> = ref({} as Alumne);          // Antic alumne seleccionat en el formulari
-const filteredStudentOptions: IStudentListItem[] = ref(studentSelectList)
+const filteredStudentOptions: Ref<IStudentListItem[]> = ref(studentSelectList)
 
 const allCompanies: Ref<Empresa[]> = ref([] as Empresa[]);
 let companySelectList: ICompanyListItem[] = []
 const selectedCompany: Ref<Empresa> = ref<Empresa>(null)
-const filteredCompanyOptions: ICompanyListItem[] = ref(companySelectList)
+const filteredCompanyOptions: Ref<ICompanyListItem[]> = ref(companySelectList)
 
 const companySelected: Ref<boolean> = ref(false);
 
@@ -780,7 +780,7 @@ const companySelected: Ref<boolean> = ref(false);
 const allCompanyWorkspace: Ref<LlocTreball[]> = ref([] as LlocTreball[]);
 const tutorFCT: Ref<Usuari> = ref({} as Usuari);
 
-const formulariAlumnes = ref(null)
+const formulariAlumnes: Ref<any | null> = ref(null)
 
 const allNomGrups = ref([] as string[]);
 
@@ -992,7 +992,7 @@ function selectCompany(company: Empresa) {
   }
 }
 
-function selectWorkspace(workspace: LlocTreball) {
+function selectWorkspace(workspace: any) {
 
   formData.value.nomLlocTreball = workspace.nom;
   formData.value.adrecaLlocTreball = workspace.adreca;
