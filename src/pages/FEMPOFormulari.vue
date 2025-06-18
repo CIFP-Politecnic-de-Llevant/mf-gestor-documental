@@ -626,6 +626,8 @@
         </div>
       </div>
 
+      <p class="text-apartat text-center col-md-12 q-pt-md text-wrap-center">Tutor d'empresa</p>
+
       <div class="row flex justify-start q-mt-sm q-gutter-y-md">
         <div class="col-md-4">
           <q-input
