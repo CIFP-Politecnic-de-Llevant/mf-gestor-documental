@@ -355,6 +355,22 @@
               NOU LLOC DE TREBALL
             </q-tooltip>
           </q-btn>
+
+          <q-btn-dropdown v-if="companySelected" class="q-mt-md q-ml-sm" color="primary" label="Tutor d'empresa">
+            <q-list>
+              <q-item v-for="tutorEmpresa in allCompanyTutorEmpresa" clickable v-close-popup @click="selectTutorEmpresa(tutorEmpresa)">
+                <q-item-section>
+                  <q-item-label>{{tutorEmpresa.nom}} {{tutorEmpresa.cognom1}} {{tutorEmpresa.cognoms2}} ({{tutorEmpresa.carrec}})</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+
+          <q-btn v-if="companySelected" @click="addTutorEmpresa=true" color="grey" icon="add">
+            <q-tooltip>
+              NOU TUTOR D'EMPRESA
+            </q-tooltip>
+          </q-btn>
         </div>
       </div>
 
@@ -879,6 +895,96 @@
       </q-card>
     </q-dialog>
 
+
+    <!-- TUTORS EMPRESA -->
+    <q-dialog v-model="addTutorEmpresa" persistent>
+      <q-card style="max-width: 1000px;">
+        <q-card-section>
+          <q-form @submit="saveTutorEmpresa"  class="q-gutter-md ">
+            <p class="text-h5 q-mt-lg">Crear Tutor d'Empresa</p>
+            <div class="row flex justify-start items-start q-my-sm">
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom"
+                  v-model="tutorEmpresa.nom"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Cognom 1"
+                  v-model="tutorEmpresa.cognom1"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Cognom 2"
+                  v-model="tutorEmpresa.cognom2"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="DNI/NIE"
+                  v-model="tutorEmpresa.dni"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nacionalitat"
+                  v-model="tutorEmpresa.nacionalitat"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Càrrec"
+                  v-model="tutorEmpresa.carrec"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Telèfon"
+                  v-model="tutorEmpresa.telefon"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Correu electrònic"
+                  v-model="tutorEmpresa.email"
+                  class="q-pa-sm "
+                />
+              </div>
+            </div>
+            <div class="flex justify-end q-gutter-sm">
+              <q-btn label="Guardar" type="submit" color="primary" v-close-popup/>
+              <q-btn label="Tancar" color="primary"  v-close-popup/>
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 <script setup lang="ts">
@@ -897,6 +1003,7 @@ import {DocumentService} from "src/service/DocumentService";
 import IStudentListItem from "src/Interfaces/IStudentListItem";
 import ICompanyListItem from "src/Interfaces/ICompanyListItem";
 import {GrupService} from "src/service/GrupService";
+import {TutorEmpresa} from "src/model/TutorEmpresa";
 
 const $q = useQuasar();
 
@@ -917,8 +1024,12 @@ const companySelected:Ref<boolean> = ref(false);
 const addWorkplace = ref(false);
 const workplace:Ref<LlocTreball> = ref({} as LlocTreball)
 
+const addTutorEmpresa = ref(false);
+const tutorEmpresa:Ref<TutorEmpresa> = ref({} as TutorEmpresa)
+
 
 const allCompanyWorkspace:Ref<LlocTreball[]> = ref([] as LlocTreball[]);
+const allCompanyTutorEmpresa:Ref<TutorEmpresa[]> = ref([] as TutorEmpresa[]);
 const tutorFCT:Ref<Usuari> = ref({} as Usuari);
 
 const formulariAlumnes = ref(null)
@@ -1103,6 +1214,10 @@ function selectCompany(company:Empresa){
   formData.value.cpempresa = company.codiPostal;
   formData.value.telefonEmpresa = company.telefon;
   formData.value.poblacioEmpresa = company.poblacio;
+  formData.value.nomCompletRepresentantLegal = company.nomRepresentantLegal + " " + company.cognom1RepresentantLegal + " " + company.cognom2RepresentantLegal;
+  formData.value.nomRepresentantLegal = company.nomRepresentantLegal;
+  formData.value.cognomsRepresentantLegal = company.cognom1RepresentantLegal + " " + company.cognom2RepresentantLegal;
+  formData.value.nifRepresentantLegal = company.dniRepresentantLegal;
 
     console.log(company.llocsTreball);
   if(company.llocsTreball !== undefined){
@@ -1119,18 +1234,20 @@ function selectWorkspace(workspace:LlocTreball){
     formData.value.poblacioLlocTreball = workspace.poblacio;
     formData.value.telefonLlocTreball = workspace.telefon;
     formData.value.activitatLlocTreball = workspace.activitat;
-    formData.value.nomCompletRepresentantLegal = workspace.nomCompletRepresentantLegal;
-    formData.value.nomRepresentantLegal = workspace.nomRepresentantLegal;
-    formData.value.cognomsRepresentantLegal = workspace.cognomsRepresentantLegal;
-    formData.value.nifRepresentantLegal = workspace.dniRepresentantLegal;
-    formData.value.nomCompletTutorEmpresa = workspace.nomCompletTutorEmpresa;
-    formData.value.nomTutorEmpresa = workspace.nomTutorEmpresa;
-    formData.value.cognomsTutorEmpresa = workspace.cognomsTutorEmpresa;
-    formData.value.nifTutorEmpresa = workspace.dniTutorEmpresa;
     formData.value.municipiTutorEmpresa = workspace.municipi;
-    formData.value.carrecTutorEmpresa = workspace.carrecTutor;
-    formData.value.emailTutorEmpresa = workspace.emailTutorEmpresa;
 }
+
+function selectTutorEmpresa(tutorEmpresa:TutorEmpresa){
+    formData.value.nomCompletTutorEmpresa = tutorEmpresa.nom + " " + tutorEmpresa.cognom1 + " " + tutorEmpresa.cognom2;
+    formData.value.nomTutorEmpresa = tutorEmpresa.nom;
+    formData.value.cognomsTutorEmpresa = tutorEmpresa.cognom1 + " " + tutorEmpresa.cognom2;
+    formData.value.nifTutorEmpresa = tutorEmpresa.dni;
+    formData.value.nacionalitatTutorEmpresa = tutorEmpresa.nacionalitat;
+    formData.value.carrecTutorEmpresa = tutorEmpresa.carrec;
+    formData.value.telefonTutorEmpresa = tutorEmpresa.telefon;
+    formData.value.emailTutorEmpresa = tutorEmpresa.email;
+}
+
 function ageCalculate(date:Date){
 
     if(studentSelect.value.dataNaixement !== undefined){
