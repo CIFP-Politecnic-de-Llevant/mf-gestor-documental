@@ -1366,6 +1366,13 @@ async function saveWorkplace(){
   selectWorkspace(workplace.value);
 }
 
+async function saveTutorEmpresa(){
+  tutorEmpresa.value.empresa = selectedCompany.value;
+  await EmpresaService.saveTutorEmpresa(tutorEmpresa.value);
+  selectedCompany.value = await EmpresaService.getCompanyById(selectedCompany.value.idEmpresa);
+  selectTutorEmpresa(tutorEmpresa.value);
+}
+
 onMounted(async () =>{
 
   const dialog = $q.dialog({
