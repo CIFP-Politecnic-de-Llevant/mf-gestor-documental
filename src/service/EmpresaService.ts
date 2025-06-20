@@ -8,25 +8,31 @@ export class EmpresaService {
 
   /* EMPRESA */
   static async allCompanies(): Promise<Array<Empresa>> {
-
     const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/all-companies`);
     const data = response.data;
-    return data.map((empresa: any): Empresa => {
-      return this.fromJsonEmpresa(empresa)
+    const companies = await data.map(async (empresa: any):Promise<Empresa> => {
+      const e = this.fromJsonEmpresa(empresa)
+      this.allWorkspacesByIdEmpresa(e.idEmpresa).then((llocsTreball: Array<LlocTreball>) => {
+        e.llocsTreball = llocsTreball;
+      });
+      this.allTutorsByIdEmpresa(e.idEmpresa).then((tutorsEmpresa: Array<TutorEmpresa>) => {
+        e.tutorsEmpresa = tutorsEmpresa;
+      });
+      return e;
     }).sort();
-
+    return await Promise.all(companies);
   }
 
   static async getCompanyById(id: number) {
-
     const response = await axios.post(process.env.API + `/api/gestordocumental/empresa/company/${id}`)
     const empresa = response.data;
+    empresa.llocsTreball = await this.allWorkspacesByIdEmpresa(empresa.idEmpresa);
+    empresa.tutorsEmpresa = await this.allTutorsByIdEmpresa(empresa.idEmpresa);
 
     return this.fromJsonEmpresa(empresa);
   }
 
   static async deleteCompany(id: number) {
-
     await axios.get(process.env.API + `/api/gestordocumental/empresa/delete-company/${id}`)
   }
 
@@ -40,32 +46,56 @@ export class EmpresaService {
 
 
   // LLOCS DE TREBALL
-  static async deleteWorkspace(id: number) {
+  static async allWorkspacesByIdEmpresa(idEmpresa: number): Promise<Array<LlocTreball>> {
+    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/lloc-treball/all-workspaces/${idEmpresa}`);
+    const data = response.data;
 
+    if(!data) {
+      return [];
+    }
+
+    return data.map((llocTreball: any): LlocTreball | undefined=> {
+      if (llocTreball) {
+        return this.fromJsonLlocTreball(llocTreball)
+      }
+    }).sort();
+  }
+
+  static async deleteWorkspace(id: number) {
     await axios.get(process.env.API + `/api/gestordocumental/empresa/lloc-treball/delete/${id}`)
   }
 
   static async saveWorkspace(llocTreball: LlocTreball) {
-
     await axios.post(process.env.API + `/api/gestordocumental/empresa/lloc-treball/save-workspace`, llocTreball)
   }
 
   static async updateWorkspace(llocTreball: LlocTreball) {
-
     await axios.post(process.env.API + `/api/gestordocumental/empresa/lloc-treball/update-workspace`, llocTreball)
   }
 
   // TUTORS D'EMPRESA
-  static async deleteTutorEmpresa(id: number) {
+  static async allTutorsByIdEmpresa(idEmpresa: number): Promise<Array<TutorEmpresa>> {
+    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/all-tutors/${idEmpresa}`);
+    const data = response.data;
 
+    if(!data) {
+      return [];
+    }
+
+    return data.map((tutorEmpresa: any): TutorEmpresa|undefined => {
+      if(tutorEmpresa) {
+        return this.fromJsonTutorEmpresa(tutorEmpresa);
+      }
+    }).sort();
+  }
+
+  static async deleteTutorEmpresa(id: number) {
     await axios.get(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/delete/${id}`)
   }
   static async saveTutorEmpresa(tutorEmpresa: TutorEmpresa) {
-
     await axios.post(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/save-tutor`, tutorEmpresa)
   }
   static async updateTutorEmpresa(tutorEmpresa: TutorEmpresa) {
-
     await axios.post(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/update-tutor`, tutorEmpresa)
   }
 
@@ -88,7 +118,7 @@ export class EmpresaService {
       llocsTreball?:Array<LlocTreball>;
       tutorsEmpresa?:Array<TutorEmpresa>;
      */
-    return {
+    const empresa:Empresa = {
       idEmpresa: json.idEmpresa,
       numeroConveni: json.numeroConveni,
       nomRepresentantLegal: json.nomRepresentantLegal,
@@ -103,9 +133,18 @@ export class EmpresaService {
       poblacio: json.poblacio,
       provincia: json.provincia,
       telefon: json.telefon,
-      llocsTreball: json.llocsTreball.map((lloc: any) => this.fromJsonLlocTreball(lloc)),
-      tutorsEmpresa: json.tutorsEmpresa.map((tutor: any) => this.fromJsonTutorEmpresa(tutor)),
     }
+    if (json.llocsTreball) {
+      empresa.llocsTreball = json.llocsTreball.map((lloc: any) => this.fromJsonLlocTreball(lloc));
+    } else {
+      empresa.llocsTreball = [];
+    }
+    if (json.tutorsEmpresa) {
+      empresa.tutorsEmpresa = json.tutorsEmpresa.map((tutor: any) => this.fromJsonTutorEmpresa(tutor));
+    } else {
+      empresa.tutorsEmpresa = [];
+    }
+    return empresa;
   }
 
   static fromJsonLlocTreball(json: any): LlocTreball {

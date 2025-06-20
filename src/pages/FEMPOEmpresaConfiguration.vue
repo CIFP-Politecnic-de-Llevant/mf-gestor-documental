@@ -283,6 +283,8 @@ onMounted(async () =>{
 
   companiesData.value = await EmpresaService.allCompanies();
 
+  console.log("Empreses carregades: ", companiesData.value);
+
   company.value;
 
   columns.value.push({
@@ -309,7 +311,7 @@ onMounted(async () =>{
   columns.value.push({
     name:'accions',
     label:'Accions',
-    field: 'accions',
+    field: row => row
   });
 
 })
