@@ -8,28 +8,19 @@ export class EmpresaService {
 
   /* EMPRESA */
   static async allCompanies(): Promise<Array<Empresa>> {
-    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/all-companies`);
-    const data = response.data;
-    const companies = await data.map(async (empresa: any):Promise<Empresa> => {
-      const e = this.fromJsonEmpresa(empresa)
-      this.allWorkspacesByIdEmpresa(e.idEmpresa).then((llocsTreball: Array<LlocTreball>) => {
-        e.llocsTreball = llocsTreball;
-      });
-      this.allTutorsByIdEmpresa(e.idEmpresa).then((tutorsEmpresa: Array<TutorEmpresa>) => {
-        e.tutorsEmpresa = tutorsEmpresa;
-      });
-      return e;
-    }).sort();
-    return await Promise.all(companies);
+    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/all-companies`)
+    const companies = response.data;
+
+    console.log(companies);
+    return companies.sort();
   }
 
   static async getCompanyById(id: number) {
     const response = await axios.post(process.env.API + `/api/gestordocumental/empresa/company/${id}`)
     const empresa = response.data;
-    empresa.llocsTreball = await this.allWorkspacesByIdEmpresa(empresa.idEmpresa);
-    empresa.tutorsEmpresa = await this.allTutorsByIdEmpresa(empresa.idEmpresa);
 
-    return this.fromJsonEmpresa(empresa);
+    return empresa;
+    // return this.fromJsonEmpresa(empresa);
   }
 
   static async deleteCompany(id: number) {
@@ -44,23 +35,6 @@ export class EmpresaService {
     await axios.post(process.env.API + `/api/gestordocumental/empresa/update-company`, empresa)
   }
 
-
-  // LLOCS DE TREBALL
-  static async allWorkspacesByIdEmpresa(idEmpresa: number): Promise<Array<LlocTreball>> {
-    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/lloc-treball/all-workspaces/${idEmpresa}`);
-    const data = response.data;
-
-    if(!data) {
-      return [];
-    }
-
-    return data.map((llocTreball: any): LlocTreball | undefined=> {
-      if (llocTreball) {
-        return this.fromJsonLlocTreball(llocTreball)
-      }
-    }).sort();
-  }
-
   static async deleteWorkspace(id: number) {
     await axios.get(process.env.API + `/api/gestordocumental/empresa/lloc-treball/delete/${id}`)
   }
@@ -71,22 +45,6 @@ export class EmpresaService {
 
   static async updateWorkspace(llocTreball: LlocTreball) {
     await axios.post(process.env.API + `/api/gestordocumental/empresa/lloc-treball/update-workspace`, llocTreball)
-  }
-
-  // TUTORS D'EMPRESA
-  static async allTutorsByIdEmpresa(idEmpresa: number): Promise<Array<TutorEmpresa>> {
-    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/all-tutors/${idEmpresa}`);
-    const data = response.data;
-
-    if(!data) {
-      return [];
-    }
-
-    return data.map((tutorEmpresa: any): TutorEmpresa|undefined => {
-      if(tutorEmpresa) {
-        return this.fromJsonTutorEmpresa(tutorEmpresa);
-      }
-    }).sort();
   }
 
   static async deleteTutorEmpresa(id: number) {
@@ -135,19 +93,19 @@ export class EmpresaService {
       telefon: json.telefon,
     }
     if (json.llocsTreball) {
-      empresa.llocsTreball = json.llocsTreball.map((lloc: any) => this.fromJsonLlocTreball(lloc));
+      empresa.llocsTreball = json.llocsTreball.map((lloc: any) => this.fromJsonLlocTreball(lloc, empresa));
     } else {
       empresa.llocsTreball = [];
     }
     if (json.tutorsEmpresa) {
-      empresa.tutorsEmpresa = json.tutorsEmpresa.map((tutor: any) => this.fromJsonTutorEmpresa(tutor));
+      empresa.tutorsEmpresa = json.tutorsEmpresa.map((tutor: any) => this.fromJsonTutorEmpresa(tutor, empresa));
     } else {
       empresa.tutorsEmpresa = [];
     }
     return empresa;
   }
 
-  static fromJsonLlocTreball(json: any): LlocTreball {
+  static fromJsonLlocTreball(json: any, empresa: Empresa): LlocTreball {
     /*
       idLlocTreball:number;
       nom:string;
@@ -172,11 +130,11 @@ export class EmpresaService {
       municipi: json.municipi,
       validat: json.validat,
       emailCreator: json.emailCreator,
-      empresa: this.fromJsonEmpresa(json.empresa)
+      empresa: empresa
     }
   }
 
-  static fromJsonTutorEmpresa(json: any): TutorEmpresa {
+  static fromJsonTutorEmpresa(json: any, empresa: Empresa): TutorEmpresa {
     /*
       idTutorEmpresa: number;
       nom?: string;
@@ -199,7 +157,7 @@ export class EmpresaService {
       telefon: json.telefon,
       email: json.email,
       carrec: json.carrec,
-      empresa: this.fromJsonEmpresa(json.empresa)
+      empresa: empresa
     }
   }
 

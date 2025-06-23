@@ -141,7 +141,7 @@
       <p class="text-h5  q-my-lg">Llocs de Treball</p>
     </div>
     <div class="q-mb-lg q-mt-xl">
-      <q-btn icon="add"  @click="addWorkplace = true" label="Lloc Treball" type="submit" class="q-mt-sm" color="primary"/>
+      <q-btn icon="add" @click="addWorkspace = true" label="Lloc Treball" type="submit" class="q-mt-sm" color="primary"/>
     </div>
     <q-form v-for="workspace in companyData.llocsTreball" class="border q-mb-lg">
       <div class="bg-primary q-ma-none border-bottom flex justify-between">
@@ -343,10 +343,10 @@
 
 
     <!-- LLOC DE TREBALL -->
-    <q-dialog v-model="addWorkplace" persistent>
+    <q-dialog v-model="addWorkspace" persistent>
       <q-card style="max-width: 1000px;">
         <q-card-section>
-          <q-form @submit="saveWorkplace"  class="q-gutter-md ">
+          <q-form @submit="saveWorkspace" class="q-gutter-md ">
             <p class="text-h5 q-mt-lg">Crear Lloc de treball</p>
             <div class="row flex justify-start items-start q-my-sm">
               <div class="col-md-4">
@@ -354,7 +354,7 @@
                   filled
                   type="text"
                   label="Nom"
-                  v-model="workplace.nom"
+                  v-model="workspace.nom"
                   class="q-pa-sm "
                 />
               </div>
@@ -363,7 +363,7 @@
                   filled
                   type="text"
                   label="Adreça"
-                  v-model="workplace.adreca"
+                  v-model="workspace.adreca"
                   class="q-pa-sm "
                 />
               </div>
@@ -372,7 +372,7 @@
                   filled
                   type="text"
                   label="Codi Postal"
-                  v-model="workplace.codiPostal"
+                  v-model="workspace.codiPostal"
                   class="q-pa-sm "
                 />
               </div>
@@ -381,7 +381,7 @@
                   filled
                   type="text"
                   label="Telèfon"
-                  v-model="workplace.telefon"
+                  v-model="workspace.telefon"
                   class="q-pa-sm "
                 />
               </div>
@@ -390,7 +390,7 @@
                   filled
                   type="text"
                   label="Població"
-                  v-model="workplace.poblacio"
+                  v-model="workspace.poblacio"
                   class="q-pa-sm "
                 />
               </div>
@@ -399,7 +399,7 @@
                   filled
                   type="text"
                   label="Municipi"
-                  v-model="workplace.municipi"
+                  v-model="workspace.municipi"
                   class="q-pa-sm "
                 />
               </div>
@@ -408,7 +408,7 @@
                   filled
                   type="text"
                   label="Activitat"
-                  v-model="workplace.activitat"
+                  v-model="workspace.activitat"
                   class="q-pa-sm "
                 />
               </div>
@@ -551,7 +551,7 @@ import {EmpresaService} from "src/service/EmpresaService";
 import {LlocTreball} from "src/model/LlocTreball";
 import {TutorEmpresa} from "src/model/TutorEmpresa";
 
-const addWorkplace = ref(false);
+const addWorkspace = ref(false);
 const confirmation = ref(false);
 const addTutorEmpresa = ref(false);
 const confirmationTutorEmpresa = ref(false);
@@ -561,12 +561,12 @@ const idWorkspaceSelected = ref(0);
 const nameTutorEmpresaSelected = ref('');
 const idTutorEmpresaSelected = ref(0);
 const companyData:Ref<Empresa> = ref({} as Empresa);
-const workplace:Ref<LlocTreball> = ref({} as LlocTreball)
+const workspace:Ref<LlocTreball> = ref({} as LlocTreball)
 const tutorEmpresa:Ref<TutorEmpresa> = ref({} as TutorEmpresa);
 
-async function saveWorkplace(){
-  workplace.value.empresa = companyData.value;
-  await EmpresaService.saveWorkspace(workplace.value);
+async function saveWorkspace(){
+  workspace.value.empresa = companyData.value;
+  await EmpresaService.saveWorkspace(workspace.value);
   companyData.value = await EmpresaService.getCompanyById(idCompany.value);
 }
 
