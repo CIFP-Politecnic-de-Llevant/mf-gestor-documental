@@ -580,12 +580,14 @@ async function updateCompany(){
   await EmpresaService.updateCompany(companyData.value);
 }
 
-async function updateWorkspace(workspace: LlocTreball){
-    await EmpresaService.updateWorkspace(workspace);
+async function updateWorkspace(workspace: LlocTreball) {
+  const workspaceToSend:LlocTreball = { ...workspace, empresa: companyData.value };
+  await EmpresaService.updateWorkspace(workspaceToSend);
 }
 
 async function updateTutorEmpresa(tutorEmpresa: TutorEmpresa){
-    await EmpresaService.updateTutorEmpresa(tutorEmpresa);
+    const tutorToSend:TutorEmpresa = { ...tutorEmpresa, empresa: companyData.value };
+    await EmpresaService.updateTutorEmpresa(tutorToSend);
 }
 
 function deleteConfirmation(id:number,nom:string){
