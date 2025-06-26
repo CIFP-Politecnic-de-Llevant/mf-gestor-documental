@@ -231,6 +231,15 @@
             class="q-pa-sm "
           />
         </div>
+        <div class="col-md-4">
+          <q-toggle
+            v-model="workspace.validat"
+            label="Validat"
+            color="primary"
+            class="q-pa-sm"
+            @update:model-value="updateWorkspace(workspace)"
+          />
+        </div>
       </div>
     </q-form>
 
@@ -335,6 +344,15 @@
             label="Correu electrònic"
             v-model="tutorEmpresa.email"
             class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-toggle
+            v-model="tutorEmpresa.validat"
+            label="Validat"
+            color="primary"
+            class="q-pa-sm"
+            @update:model-value="updateTutorEmpresa(tutorEmpresa)"
           />
         </div>
       </div>

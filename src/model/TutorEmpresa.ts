@@ -10,5 +10,6 @@ export interface TutorEmpresa {
     telefon?: string;
     email?: string;
     carrec?: string;
+    validat:boolean;
     empresa?: Empresa;
 }

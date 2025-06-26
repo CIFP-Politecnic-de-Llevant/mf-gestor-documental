@@ -1,7 +1,6 @@
 import axios from "axios";
 import {Empresa} from "src/model/Empresa";
 import {LlocTreball} from "src/model/LlocTreball";
-import {DadesFormulari} from "src/model/DadesFormulari";
 import {TutorEmpresa} from "src/model/TutorEmpresa";
 
 export class EmpresaService {
@@ -157,6 +156,7 @@ export class EmpresaService {
       telefon: json.telefon,
       email: json.email,
       carrec: json.carrec,
+      validat: json.validat,
       empresa: empresa
     }
   }
