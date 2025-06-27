@@ -4,6 +4,8 @@
     <div>
       <p class="text-h5 q-mt-lg q-mb-lg">Llistat d'Empreses</p>
       <q-btn icon="add" @click="addCompany = true" label="Empresa" type="submit" color="primary"/>
+      <q-btn icon="domain" to="/fempo/workspaces-novalid" label="Llocs de Treball no validats" type="submit" color="primary" class="q-ml-sm"/>
+      <q-btn icon="supervisor_account" to="/fempo/tutorempresa-novalid" label="Tutors d'empresa no validats" type="submit" color="primary" class="q-ml-sm"/>
     </div>
 
     <q-table

@@ -46,6 +46,14 @@ export class EmpresaService {
     await axios.post(process.env.API + `/api/gestordocumental/empresa/lloc-treball/update-workspace`, llocTreball)
   }
 
+  static async allWorkspacesNotValidated(): Promise<Array<LlocTreball>> {
+    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/lloc-treball/all-workspaces-not-validated`)
+    const workspaces = response.data;
+
+    console.log(workspaces);
+    return workspaces.sort();
+  }
+
   static async deleteTutorEmpresa(id: number) {
     await axios.get(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/delete/${id}`)
   }
