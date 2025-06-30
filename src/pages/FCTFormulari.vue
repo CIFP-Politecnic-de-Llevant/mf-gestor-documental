@@ -495,7 +495,7 @@
               bg-color="primary"
               type="text"
               label="Llinatges representant legal"
-              v-model="formData.llinatgesRepresentantLegal"
+              v-model="formData.cognomsRepresentantLegal"
               :rules="[(val:any) => !!val || 'El camp és obligatori']"
             />
           </div>
@@ -608,7 +608,7 @@
               outlined
               type="text"
               label="Llinatges tutor empresa"
-              v-model="formData.llinatgesTutorEmpresa"
+              v-model="formData.cognomsTutorEmpresa"
               :rules="[(val:any) => !!val || 'El camp és obligatori']"
             />
           </div>
@@ -765,14 +765,14 @@ const $q = useQuasar();
 
 const allStudents: Ref<Alumne[]> = ref([] as Alumne[]);        // Tots els alumnes
 let studentSelectList: IStudentListItem[] = [];                // Llista d'opcions pel select amb filtre
-const selectedStudent: Ref<Alumne> = ref<Alumne>(null);  // Alumne seleccionat pel select amb filtre
+const selectedStudent: Ref<Alumne | null> = ref<Alumne | null>(null);  // Alumne seleccionat pel select amb filtre
 const studentSelect: Ref<Alumne> = ref({} as Alumne);          // Antic alumne seleccionat en el formulari
-const filteredStudentOptions: IStudentListItem[] = ref(studentSelectList)
+const filteredStudentOptions: Ref<IStudentListItem[]> = ref(studentSelectList)
 
 const allCompanies: Ref<Empresa[]> = ref([] as Empresa[]);
 let companySelectList: ICompanyListItem[] = []
-const selectedCompany: Ref<Empresa> = ref<Empresa>(null)
-const filteredCompanyOptions: ICompanyListItem[] = ref(companySelectList)
+const selectedCompany: Ref<Empresa | null> = ref<Empresa | null>(null)
+const filteredCompanyOptions: Ref<ICompanyListItem[]> = ref(companySelectList)
 
 const companySelected: Ref<boolean> = ref(false);
 
@@ -780,7 +780,7 @@ const companySelected: Ref<boolean> = ref(false);
 const allCompanyWorkspace: Ref<LlocTreball[]> = ref([] as LlocTreball[]);
 const tutorFCT: Ref<Usuari> = ref({} as Usuari);
 
-const formulariAlumnes = ref(null)
+const formulariAlumnes: Ref<any> = ref(null)
 
 const allNomGrups = ref([] as string[]);
 
@@ -843,11 +843,11 @@ const formData: Ref<DadesFormulari> = ref({
   telefonLlocTreball: '',
   activitatLlocTreball: '',
   nomRepresentantLegal: '',
-  llinatgesRepresentantLegal: '',
+  cognomsRepresentantLegal: '',
   nomCompletRepresentantLegal: '',
   nifRepresentantLegal: '',
   nomTutorEmpresa:'',
-  llinatgesTutorEmpresa:'',
+  cognomsTutorEmpresa:'',
   nomCompletTutorEmpresa: '',
   nifTutorEmpresa: '',
   nacionalitatTutorEmpresa: '',
@@ -992,7 +992,7 @@ function selectCompany(company: Empresa) {
   }
 }
 
-function selectWorkspace(workspace: LlocTreball) {
+function selectWorkspace(workspace: any) {
 
   formData.value.nomLlocTreball = workspace.nom;
   formData.value.adrecaLlocTreball = workspace.adreca;
