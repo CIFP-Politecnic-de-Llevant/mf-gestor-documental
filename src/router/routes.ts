@@ -18,6 +18,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'fempo/studentConfiguration', component: () => import('pages/FEMPOStudentConfiguration.vue') },
       { path: 'fempo/programaFormatiu', component: () => import('pages/FEMPOProgramaFormatiu.vue') },
       { path: 'fempo/workspaces-novalid', component: () => import('pages/FEMPOLlocTreballNoValid.vue') },
+      { path: 'fempo/tutorempresa-novalid', component: () => import('pages/FEMPOTutorEmpresaNoValid.vue') },
       { path: 'login', component: () => import('components/common/Login.vue'), props: { urlRedirect: "/fempo/group" } },
       { path: 'logout', component: () => import('components/common/Logout.vue') },
     ],

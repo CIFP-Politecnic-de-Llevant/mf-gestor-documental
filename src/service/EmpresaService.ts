@@ -54,6 +54,14 @@ export class EmpresaService {
     return workspaces.sort();
   }
 
+  static async allTutorsEmpresaNotValidated(): Promise<Array<TutorEmpresa>> {
+    const response = await axios.get(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/all-tutors-empresa-not-validated`)
+    const tutorsEmpresa = response.data;
+
+    console.log(tutorsEmpresa);
+    return tutorsEmpresa.sort();
+  }
+
   static async deleteTutorEmpresa(id: number) {
     await axios.get(process.env.API + `/api/gestordocumental/empresa/tutor-empresa/delete/${id}`)
   }
