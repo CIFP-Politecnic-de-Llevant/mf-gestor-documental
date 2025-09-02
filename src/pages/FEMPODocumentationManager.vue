@@ -96,7 +96,7 @@
                       </q-input>
                     </q-td>
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
-                      {{ props.row.tipusDocument.nom }}
+                      {{ props.row.tipusDocument.descripcio }}
                     </q-td>
                     <q-td>
                       <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
@@ -177,7 +177,7 @@
                       {{ props.row.usuari.nomComplet2 }}
                     </q-td>
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
-                      {{ props.row.tipusDocument.nom }}
+                      {{ props.row.tipusDocument.descripcio }}
                     </q-td>
                     <q-td>
                       <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
