@@ -200,7 +200,7 @@
       <q-table v-if="showAlumnes"
         flat
         bordered
-        title="Documents de l'usuari"
+        title="Alumnes del grup"
         :rows="alumnesGrup"
         :columns="columnsUsuari"
         row-key="name"
