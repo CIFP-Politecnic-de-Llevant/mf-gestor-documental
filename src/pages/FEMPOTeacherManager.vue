@@ -748,8 +748,14 @@ async function deleteAllDocumentsAlumneId(id:number) {
     documentIds.push(doc.id_googleDrive);
   }
 
-  await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email, convocatoria.value.id.toString());
-  alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
+  $q.loading.show({ message: "Borrant documents d'alumne..." });
+  try {
+    await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email, convocatoria.value.id.toString());
+    alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
+  } finally {
+    $q.loading.hide();
+  }
+
 }
 
 function canviarVisibilitat(id:number,visibilitat:boolean){

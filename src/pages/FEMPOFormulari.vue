@@ -6,7 +6,7 @@
       </div>
       <div class="row col-md-8 q-mt-xs">
         <p class="q-pt-lg q-mr-sm text-apartat">Curs Escolar: </p>
-        <q-input placeholder="23/24" dense class="q-pt-sm q-mt-xs" color="primary" v-model="formData.anyCurs"
+        <q-input placeholder="25/26" dense class="q-pt-sm q-mt-xs" color="primary" v-model="formData.anyCurs"
                  label="      "/>
       </div>
     </div>
@@ -1081,7 +1081,7 @@ const ciclesFormatius = [
 ];
 
 const formData: Ref<DadesFormulari> = ref({
-  anyCurs: '2024/25',
+  anyCurs: '2025/26',
   nomAlumne: '',
   llinatgesAlumne: '',
   poblacio: '',
@@ -1413,7 +1413,14 @@ async function saveForm() {
   if (formData.value.periode) {
     localStorage.setItem('periode', formData.value.periode);
   }
-  await DocumentService.saveFormFEMPO(formData.value, tutorFCT.value.email);
+
+  $q.loading.show({ message: 'Guardant Formulai...' });
+  try {
+    await DocumentService.saveFormFEMPO(formData.value, tutorFCT.value.email);
+  } finally {
+    $q.loading.hide();
+  }
+
   setTimeout(function () {
     window.location.reload();
   }, 4000);
