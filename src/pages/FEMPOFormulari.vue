@@ -1270,9 +1270,9 @@ function selectCompany(company: Empresa) {
   formData.value.cpempresa = company.codiPostal;
   formData.value.telefonEmpresa = company.telefon;
   formData.value.poblacioEmpresa = company.poblacio;
-  formData.value.nomCompletRepresentantLegal = company.nomRepresentantLegal + " " + company.cognom1RepresentantLegal + " " + company.cognom2RepresentantLegal;
+  formData.value.nomCompletRepresentantLegal = company.nomRepresentantLegal ?? "" + " " + company.cognom1RepresentantLegal ?? "" + " " + company.cognom2RepresentantLegal ?? "";
   formData.value.nomRepresentantLegal = company.nomRepresentantLegal;
-  formData.value.cognomsRepresentantLegal = company.cognom1RepresentantLegal + " " + company.cognom2RepresentantLegal;
+  formData.value.cognomsRepresentantLegal = company.cognom1RepresentantLegal ?? "" + " " + company.cognom2RepresentantLegal ?? "";
   formData.value.nifRepresentantLegal = company.dniRepresentantLegal;
 
   if (company.llocsTreball !== undefined) {
@@ -1298,9 +1298,9 @@ function selectWorkspace(workspace: LlocTreball) {
 }
 
 function selectTutorEmpresa(tutorEmpresa: TutorEmpresa) {
-  formData.value.nomCompletTutorEmpresa = tutorEmpresa.nom + " " + tutorEmpresa.cognom1 + " " + tutorEmpresa.cognom2;
+  formData.value.nomCompletTutorEmpresa = tutorEmpresa.nom ?? "" + " " + tutorEmpresa.cognom1 ?? "" + " " + tutorEmpresa.cognom2 ?? "";
   formData.value.nomTutorEmpresa = tutorEmpresa.nom;
-  formData.value.cognomsTutorEmpresa = tutorEmpresa.cognom1 + " " + tutorEmpresa.cognom2;
+  formData.value.cognomsTutorEmpresa = tutorEmpresa.cognom1 ?? "" + " " + tutorEmpresa.cognom2 ?? "";
   formData.value.nifTutorEmpresa = tutorEmpresa.dni;
   formData.value.nacionalitatTutorEmpresa = tutorEmpresa.nacionalitat;
   formData.value.carrecTutorEmpresa = tutorEmpresa.carrec;
