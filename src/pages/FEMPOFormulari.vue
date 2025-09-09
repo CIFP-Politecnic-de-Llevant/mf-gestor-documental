@@ -1414,7 +1414,7 @@ async function saveForm() {
     localStorage.setItem('periode', formData.value.periode);
   }
 
-  $q.loading.show({ message: 'Guardant Formulai...' });
+  $q.loading.show({ message: 'Guardant Formulari...' });
   try {
     await DocumentService.saveFormFEMPO(formData.value, tutorFCT.value.email);
   } finally {
