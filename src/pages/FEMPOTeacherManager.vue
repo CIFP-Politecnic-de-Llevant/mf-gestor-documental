@@ -1,12 +1,13 @@
 <template>
   <q-page padding>
-    <p class="text-h3">Convocatòria {{convocatoria.nom}}</p>
+    <p class="text-h3">Convocatòria {{ convocatoria.nom }}</p>
     <div class="q-mb-lg">
       <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
         <q-list>
-          <q-item v-for="convocatoria in convocatories" clickable v-close-popup @click="selectConvocatoria(convocatoria)">
+          <q-item v-for="convocatoria in convocatories" clickable v-close-popup
+                  @click="selectConvocatoria(convocatoria)">
             <q-item-section>
-              <q-item-label>{{convocatoria.nom}}</q-item-label>
+              <q-item-label>{{ convocatoria.nom }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -18,7 +19,7 @@
         <q-list>
           <q-item v-for="grup in grups" clickable v-close-popup @click="selectGrup(grup)">
             <q-item-section>
-              <q-item-label>{{grup.curs.nom}}{{grup.nom}}</q-item-label>
+              <q-item-label>{{ grup.curs.nom }}{{ grup.nom }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
@@ -32,10 +33,11 @@
       <h2>Usuari no autoritzat</h2>
     </div>
     <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
-      <p class="text-h5 q-mt-lg">Grup:  {{grupSelected.curs.nom}}{{grupSelected.nom}}</p>
-      <p>Tutor FCT: {{tutorsFCT.map(t=>t.label).join(", ")}}</p>
+      <p class="text-h5 q-mt-lg">Grup: {{ grupSelected.curs.nom }}{{ grupSelected.nom }}</p>
+      <p>Tutor FCT: {{ tutorsFCT.map(t => t.label).join(", ") }}</p>
 
-      <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg" icon="post_add" />
+      <q-btn @click="addDocument = true" label="Afegir documentació" color="primary" class="q-mt-md q-mb-lg"
+             icon="post_add"/>
 
 
       <q-table
@@ -88,7 +90,7 @@
                   class="q-mr-xs"
                 >
                   <template v-slot:prepend>
-                    <q-icon name="attach_file" />
+                    <q-icon name="attach_file"/>
                   </template>
                 </q-file>
 
@@ -139,9 +141,10 @@
         </template>
       </q-table>
 
-      <q-btn-group  class="q-mt-md q-mb-lg q-mr-lg">
-        <q-btn @click="showAlumnes = false" label="Documents" :color="(!showAlumnes)?'primary':'grey'" icon="description" />
-        <q-btn @click="showAlumnes = true" label="Alumnes" :color="(showAlumnes)?'primary':'grey'" icon="person" />
+      <q-btn-group class="q-mt-md q-mb-lg q-mr-lg">
+        <q-btn @click="showAlumnes = false" label="Documents" :color="(!showAlumnes)?'primary':'grey'"
+               icon="description"/>
+        <q-btn @click="showAlumnes = true" label="Alumnes" :color="(showAlumnes)?'primary':'grey'" icon="person"/>
       </q-btn-group>
 
       <div v-if="!showAlumnes">
@@ -162,7 +165,7 @@
             @update:model-value="filterDocuments"
           >
             <template v-slot:prepend>
-              <q-icon name="group" color="accent" />
+              <q-icon name="group" color="accent"/>
             </template>
           </q-select>
         </q-btn-group>
@@ -198,15 +201,15 @@
       </div>
 
       <q-table v-if="showAlumnes"
-        flat
-        bordered
-        title="Alumnes del grup"
-        :rows="alumnesGrup"
-        :columns="columnsUsuari"
-        row-key="name"
-        binary-state-sort
-        :pagination="initialPagination"
-        class="sticky-header-table"
+               flat
+               bordered
+               title="Alumnes del grup"
+               :rows="alumnesGrup"
+               :columns="columnsUsuari"
+               row-key="name"
+               binary-state-sort
+               :pagination="initialPagination"
+               class="sticky-header-table"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -224,22 +227,22 @@
               {{ props.row.nomComplet2 }}
             </q-td>
             <q-td class="text-wrap-center" v-if="isAuthorizedDeleteDocuments">
-              <q-btn :props="props" @click="confirmDelete(props.row.id)" label="" icon="delete" color="primary" />
+              <q-btn :props="props" @click="confirmDelete(props.row.id)" label="" icon="delete" color="primary"/>
             </q-td>
           </q-tr>
         </template>
       </q-table>
 
       <q-table v-else
-        flat
-        bordered
-        title="Documents de l'usuari"
-        :rows="documentsUsuariFiltrats"
-        :columns="columnsUsuari"
-        row-key="name"
-        binary-state-sort
-        :pagination="initialPagination"
-        class="sticky-header-table"
+               flat
+               bordered
+               title="Documents de l'usuari"
+               :rows="documentsUsuariFiltrats"
+               :columns="columnsUsuari"
+               row-key="name"
+               binary-state-sort
+               :pagination="initialPagination"
+               class="sticky-header-table"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -287,7 +290,7 @@
                   class="q-mr-xs"
                 >
                   <template v-slot:prepend>
-                    <q-icon name="attach_file" />
+                    <q-icon name="attach_file"/>
                   </template>
                 </q-file>
 
@@ -333,19 +336,19 @@
                   icon="delete"
                 />
 
-               <!-- <q-btn
-                  @click="canviarVisibilitat(props.row.id,props.row.visibilitat? false : true)"
-                  :color="'primary'"
-                  :text-color="'white'"
-                  round
-                  dense
-                  class="q-ml-xs"
-                  :icon="props.row.visibilitat ? 'visibility_off' : 'visibility'"
-                >
-                  <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">
-                    <strong>Posar el document com a {{props.row.visibilitat?'no visible':'visible'}}</strong>
-                  </q-tooltip>
-                </q-btn>-->
+                <!-- <q-btn
+                   @click="canviarVisibilitat(props.row.id,props.row.visibilitat? false : true)"
+                   :color="'primary'"
+                   :text-color="'white'"
+                   round
+                   dense
+                   class="q-ml-xs"
+                   :icon="props.row.visibilitat ? 'visibility_off' : 'visibility'"
+                 >
+                   <q-tooltip anchor="center right" self="center left" :offset="[10, 10]">
+                     <strong>Posar el document com a {{props.row.visibilitat?'no visible':'visible'}}</strong>
+                   </q-tooltip>
+                 </q-btn>-->
               </div>
             </q-td>
             <q-td>
@@ -363,7 +366,7 @@
             <div class="text-h6">Afegir documentació</div>
           </q-card-section>
 
-          <q-separator />
+          <q-separator/>
 
           <q-card-section>
             <q-select
@@ -394,7 +397,7 @@
               hint="Annex 4, Justificant del metge..."
             />
 
-            <q-select v-if="tipusDocumentExtra==='Alumnat'" v-model="documentExtra.usuari"
+            <q-select v-if="tipusDocumentExtra==='Alumnat'" v-model="alumneInGroup"
                       :options="alumnesFiltered"
                       option-value="id"
                       option-label="nomComplet2"
@@ -404,7 +407,24 @@
                       fill-input
                       clearable
                       @filter="filterFn"
+                      @update:model-value="toggleAlumne(true)"
             />
+
+            <q-select
+              v-if="tipusDocumentExtra==='Alumnat'"
+              v-model="alumneOutOfGroup"
+              :options="alumnesOutOfGroup"
+              option-value="id"
+              option-label="nomComplet2"
+              label="Alumne fora del grup"
+              use-input
+              hide-selected
+              fill-input
+              clearable
+              @filter="filterAlumnesOutOfGroup"
+              @update:model-value="toggleAlumne(false)"
+            />
+
 
             <q-file
               v-model="documentExtra.file"
@@ -416,14 +436,15 @@
               class="q-mt-lg"
             >
               <template v-slot:prepend>
-                <q-icon name="attach_file" />
+                <q-icon name="attach_file"/>
               </template>
             </q-file>
 
             <q-btn color="primary" class="q-mt-lg"
                    @click="saveDocumentExtra(documentExtra,tipusDocumentExtra,optionsDocumentExtraSelected,documentExtra.usuari?.id)"
                    :disable="uploadDocument"
-            >Enviar document</q-btn>
+            >Enviar document
+            </q-btn>
             <q-btn color="primary" class="q-ml-md q-mt-lg" @click="addDocument=false">Tancar</q-btn>
           </q-card-section>
         </q-card-section>
@@ -435,7 +456,7 @@
           <q-btn @click="showPdfDialog = false" color="white" flat icon="close"></q-btn>
         </q-bar>
         <div class="fit">
-          <q-pdfviewer :src="pdf.url" />
+          <q-pdfviewer :src="pdf.url"/>
         </div>
       </q-card>
     </q-dialog>
@@ -457,53 +478,57 @@ import {useRoute, useRouter} from "vue-router";
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
 import {Convocatoria} from "src/model/Convocatoria";
 
-const myUser:Ref<Usuari> = ref({} as Usuari);
-const isSearching:Ref<boolean> = ref(false);
-const isAuthorized:Ref<boolean> = ref(false);
-const isAuthorizedDeleteDocuments:Ref<boolean> = ref(false);
-const grups:Ref<Grup[]> = ref([] as Grup[]);
-const grupSelected:Ref<Grup> = ref({} as Grup);
-const tutorsFCT:Ref<Usuari[]> = ref([] as Usuari[]);
-const documentsGrup:Ref<Document[]> = ref([] as Document[]);
-const documentsUsuari:Ref<Document[]> = ref([] as Document[]);
-const documentsUsuariFiltrats:Ref<Document[]> = ref([] as Document[]);
+const myUser: Ref<Usuari> = ref({} as Usuari);
+const isSearching: Ref<boolean> = ref(false);
+const isAuthorized: Ref<boolean> = ref(false);
+const isAuthorizedDeleteDocuments: Ref<boolean> = ref(false);
+const grups: Ref<Grup[]> = ref([] as Grup[]);
+const grupSelected: Ref<Grup> = ref({} as Grup);
+const tutorsFCT: Ref<Usuari[]> = ref([] as Usuari[]);
+const documentsGrup: Ref<Document[]> = ref([] as Document[]);
+const documentsUsuari: Ref<Document[]> = ref([] as Document[]);
+const documentsUsuariFiltrats: Ref<Document[]> = ref([] as Document[]);
 const addDocument = ref(false);
 
-const columnsGrup:Ref<QTableColumn[]> = ref([] as QTableColumn[])
-const columnsUsuari:Ref<QTableColumn[]> = ref([] as QTableColumn[])
+const columnsGrup: Ref<QTableColumn[]> = ref([] as QTableColumn[])
+const columnsUsuari: Ref<QTableColumn[]> = ref([] as QTableColumn[])
 
-const documentExtra:Ref<Document> = ref({} as Document);
-const tipusDocumentExtra:Ref<string> = ref("");
-const alumnes:Ref<Usuari[]> = ref([] as Usuari[]);
-const alumnesFiltered:Ref<Usuari[]> = ref([] as Usuari[]);
-const optionsDocumentExtraSelected:Ref<string> = ref('');
-const optionsDocumentExtra:Ref<string[]> = ref([]);
+const documentExtra: Ref<Document> = ref({} as Document);
+const tipusDocumentExtra: Ref<string> = ref("");
+const alumnes: Ref<Usuari[]> = ref([] as Usuari[]);
+const alumnesFiltered: Ref<Usuari[]> = ref([] as Usuari[]);
+const alumnesOutOfGroup: Ref<Usuari[]> = ref([] as Usuari[]);
+const optionsDocumentExtraSelected: Ref<string> = ref('');
+const optionsDocumentExtra: Ref<string[]> = ref([]);
 
 const showAlumnes = ref(false);
-const alumnesGrup:Ref<Usuari[]> = ref([] as Usuari[]);
-const allDocumentsGrup:Ref<Document[]> = ref([] as Document[]);
+const alumnesGrup: Ref<Usuari[]> = ref([] as Usuari[]);
+const allDocumentsGrup: Ref<Document[]> = ref([] as Document[]);
+
+const alumneInGroup: Ref<Usuari | undefined> = ref(undefined);
+const alumneOutOfGroup: Ref<Usuari | undefined> = ref(undefined);
 
 // filters
-const alumnesSeleccionats:Ref<Usuari[]> = ref([] as Usuari[]);
-const visibilitatSeleccionada:Ref<boolean | null> = ref(null);
-const estatSeleccionat:Ref<string | null> = ref('TOTS');
+const alumnesSeleccionats: Ref<Usuari[]> = ref([] as Usuari[]);
+const visibilitatSeleccionada: Ref<boolean | null> = ref(null);
+const estatSeleccionat: Ref<string | null> = ref('TOTS');
 const documentEstats = ['TOTS', 'PENDENT', 'ACCEPTAT', 'REBUTJAT'];
 
 // document
 const uploadDocument = ref(false);
 const showPdfDialog = ref(false);
-const pdf:Ref<FitxerBucket | null> = ref({} as FitxerBucket);
+const pdf: Ref<FitxerBucket | null> = ref({} as FitxerBucket);
 
 const $q = useQuasar();
 const router = useRouter()
 const route = useRoute()
 
 //Get query params
-const idConvocatoria:string = route.query?.convocatoria?.toString() || '0';
-console.log("Parameter: idConvocatoria",idConvocatoria, route.query?.convocatoria);
+const idConvocatoria: string = route.query?.convocatoria?.toString() || '0';
+console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
 
-const convocatories:Ref<Convocatoria[]> = ref([] as Convocatoria[]);
-const convocatoria:Ref<Convocatoria> = ref({} as Convocatoria);
+const convocatories: Ref<Convocatoria[]> = ref([] as Convocatoria[]);
+const convocatoria: Ref<Convocatoria> = ref({} as Convocatoria);
 
 const initialPagination = {
   sortBy: 'desc',
@@ -512,25 +537,33 @@ const initialPagination = {
   rowsPerPage: 0
 }
 
-async function selectGrup(grup:Grup){
+async function selectGrup(grup: Grup) {
   isSearching.value = true;
   grupSelected.value = grup;
 
   console.log("Entra filtre")
   alumnesFiltered.value = [];
-  alumnesFiltered.value = alumnes.value.filter(a=>{
-    return (a.grup && parseInt(a.grup))===grup.id ||
-      (a.grup2 && parseInt(a.grup2))===grup.id ||
-      (a.grup3 && parseInt(a.grup3))===grup.id;
+  alumnesFiltered.value = alumnes.value.filter(a => {
+    return (a.grup && parseInt(a.grup)) === grup.id ||
+      (a.grup2 && parseInt(a.grup2)) === grup.id ||
+      (a.grup3 && parseInt(a.grup3)) === grup.id;
   });
 
-  tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom+grupSelected.value.nom);
+  //alumnes que no son del grup
+  alumnesOutOfGroup.value = [];
+  alumnesOutOfGroup.value = alumnes.value.filter(
+    alumne => !alumnesFiltered.value.some(filtered => filtered.id === alumne.id)
+  );
+
+  tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom + grupSelected.value.nom);
   console.log(tutorsFCT.value);
-  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom+grupSelected.value.nom, convocatoria.value.id.toString());
+  const documentsAll = await DocumentService.getDocumentsByGrupCodi(grupSelected.value.curs.nom + grupSelected.value.nom, convocatoria.value.id.toString());
   allDocumentsGrup.value = documentsAll;
 
   alumnesGrup.value = await getAlumnesAmbDocsFCT();
-  alumnesGrup.value.sort((a: Usuari, b: Usuari) => {return a.cognom1!.localeCompare(b.cognom1!)});
+  alumnesGrup.value.sort((a: Usuari, b: Usuari) => {
+    return a.cognom1!.localeCompare(b.cognom1!)
+  });
 
   documentsUsuari.value = documentsAll
     .filter(d => d.usuari)
@@ -553,16 +586,16 @@ async function selectGrup(grup:Grup){
     });
 
   // Del grup només mostrem 1 document, el MD020675
-  documentsGrup.value = documentsAll.filter(d=>!d.usuari && (d.tipusDocument && d.tipusDocument.nom && d.tipusDocument.nom.startsWith('MD020675'))).sort((a:Document, b:Document)=>{
-    if(!a.tipusDocument){
+  documentsGrup.value = documentsAll.filter(d => !d.usuari && (d.tipusDocument && d.tipusDocument.nom && d.tipusDocument.nom.startsWith('MD020675'))).sort((a: Document, b: Document) => {
+    if (!a.tipusDocument) {
       return -1;
     }
-    if(!b.tipusDocument){
+    if (!b.tipusDocument) {
       return 1;
     }
 
     if (a.tipusDocument.descripcio && b.tipusDocument.descripcio)
-      return  a.tipusDocument.descripcio.localeCompare(b.tipusDocument.descripcio)
+      return a.tipusDocument.descripcio.localeCompare(b.tipusDocument.descripcio)
 
     return 0;
   });
@@ -577,25 +610,25 @@ async function selectGrup(grup:Grup){
   console.log(documentsGrup.value)
   isSearching.value = false;
 
-  const rolsUser = JSON.parse(localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
-  isAuthorized.value=!!tutorsFCT.value.find(u=>u.email===myUser.value.email) || rolsUser.some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
+  const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
+  isAuthorized.value = !!tutorsFCT.value.find(u => u.email === myUser.value.email) || rolsUser.some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
 }
 
-async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:string, idusuari?:number){
+async function saveDocumentExtra(document: Document, tipus: string, tipusDocument: string, idusuari?: number) {
   uploadDocument.value = true;
-  const documentSaved:Document= await DocumentService.saveDocumentExtra(document,grupSelected.value.curs.nom+grupSelected.value.nom,tipusDocument, idusuari);
+  const documentSaved: Document = await DocumentService.saveDocumentExtra(document, grupSelected.value.curs.nom + grupSelected.value.nom, tipusDocument, idusuari);
 
   documentSaved.file = document.file;
   await sendFile(documentSaved);
 
-  const documentFitxer:Document = await DocumentService.getDocumentById(documentSaved.id, convocatoria.value.id.toString());
+  const documentFitxer: Document = await DocumentService.getDocumentById(documentSaved.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentFitxer);
 
-  if(fitxer){
+  if (fitxer) {
     documentSaved.fitxer = fitxer;
   }
 
-  if(tipus==='Grup'){
+  if (tipus === 'Grup') {
     documentsGrup.value.push(documentSaved);
   } else {
     documentsUsuari.value.push(documentSaved);
@@ -605,39 +638,39 @@ async function saveDocumentExtra(document:Document,tipus:string,tipusDocument:st
   uploadDocument.value = false;
 }
 
-async function sendFile(document:Document){
+async function sendFile(document: Document) {
   console.log("Entra send file")
   await DocumentService.uploadDocument(document, convocatoria.value.id.toString());
-  const documentSaved:Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
+  const documentSaved: Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
-  if(fitxer) {
-    const documentGrup = documentsGrup.value.find(d=>d.id===documentSaved.id);
-    const documentUsuari = documentsUsuari.value.find(d=>d.id===documentSaved.id);
+  if (fitxer) {
+    const documentGrup = documentsGrup.value.find(d => d.id === documentSaved.id);
+    const documentUsuari = documentsUsuari.value.find(d => d.id === documentSaved.id);
 
-    if(documentGrup){
+    if (documentGrup) {
       documentGrup!.fitxer = fitxer;
       documentGrup!.documentEstat = documentSaved.documentEstat;
     }
 
-    if(documentUsuari){
+    if (documentUsuari) {
       documentUsuari!.fitxer = fitxer;
       documentUsuari!.documentEstat = documentSaved.documentEstat;
     }
   }
 }
 
-async function getURL(document:Document){
-  const documentSaved:Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
+async function getURL(document: Document) {
+  const documentSaved: Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
-  if(fitxer) {
+  if (fitxer) {
     window.open(fitxer.url, '_blank');
   }
 }
 
 async function viewPdf(document: Document) {
-  const documentSaved:Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
+  const documentSaved: Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved, false);
-  if(fitxer) {
+  if (fitxer) {
     showPdfDialog.value = true;
     pdf.value = fitxer;
   }
@@ -651,12 +684,12 @@ function checkDeletePermission(document: Document) {
 }
 
 function deleteDocument(document: Document) {
-  $q.dialog( {
+  $q.dialog({
     title: "Està segur que vol eliminar el document?",
     message: "Aquesta acció no es pot desfer",
     cancel: true
   }).onOk(async () => {
-    await DocumentService.deleteDocument(document,convocatoria.value.id.toString());
+    await DocumentService.deleteDocument(document, convocatoria.value.id.toString());
     if (documentsUsuari.value.indexOf(document) > -1)
       documentsUsuari.value.splice(documentsUsuari.value.indexOf(document), 1);
 
@@ -668,26 +701,37 @@ function deleteDocument(document: Document) {
 }
 
 
-function filterFn (val:string, update:Function, abort:Function) {
+function filterFn(val: string, update: Function, abort: Function) {
   console.log("Entra filtre")
-  console.log('grup selected',grupSelected.value)
-  console.log('alumnes',alumnes.value)
+  console.log('grup selected', grupSelected.value)
+  console.log('alumnes', alumnes.value)
   update(() => {
     const needle = val.toLowerCase()
     alumnesFiltered.value = alumnes.value
-      .filter(a=>{
-          return (a.grup && a.grup)===grupSelected.value.gestibCodi ||
-            (a.grup2 && a.grup2)===grupSelected.value.gestibCodi ||
-            (a.grup3 && a.grup3)===grupSelected.value.gestibCodi;
-        })
-      .filter( (v:Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
+      .filter(a => {
+        return (a.grup && a.grup) === grupSelected.value.gestibCodi ||
+          (a.grup2 && a.grup2) === grupSelected.value.gestibCodi ||
+          (a.grup3 && a.grup3) === grupSelected.value.gestibCodi;
+      })
+      .filter((v: Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
   })
 }
 
-function updateDocuments(){
+function filterAlumnesOutOfGroup(val: string, update: Function, abort: Function) {
+  update(() => {
+    const needle = val.toLowerCase()
+    alumnesOutOfGroup.value = alumnes.value
+      .filter(
+        alumne => !alumnesFiltered.value.some(filtered => filtered.id === alumne.id)
+      )
+      .filter((v: Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
+  })
+}
+
+function updateDocuments() {
   optionsDocumentExtra.value = [];
 
-  if(tipusDocumentExtra.value==='Alumnat'){
+  if (tipusDocumentExtra.value === 'Alumnat') {
     optionsDocumentExtra.value.push("Annex 4");
     optionsDocumentExtra.value.push("Altra documentació alumne");
   } else {
@@ -696,12 +740,12 @@ function updateDocuments(){
 
 }
 
-function updateNomOriginal(v:string){
+function updateNomOriginal(v: string) {
   documentExtra.value.nomOriginal = v;
 }
 
-function confirmDelete(id:number) {
-  $q.dialog( {
+function confirmDelete(id: number) {
+  $q.dialog({
     title: "Està segur que vol eliminar l'alumne?",
     message: "Aquesta acció no es pot desfer",
     cancel: true
@@ -727,13 +771,13 @@ async function getAlumnesAmbDocsFCT() {
     alumnesPromise.push(UsuariService.getById(String(id)));
   }
 
-  const alumnesFCT:Usuari[] = await Promise.all(alumnesPromise)
+  const alumnesFCT: Usuari[] = await Promise.all(alumnesPromise)
 
   return alumnesFCT;
 }
 
-async function deleteAllDocumentsAlumneId(id:number) {
-  const token = localStorage.getItem("token")||"";
+async function deleteAllDocumentsAlumneId(id: number) {
+  const token = localStorage.getItem("token") || "";
   const payload = token.split(".")[1];
   const email = JSON.parse(atob(payload)).email;
 
@@ -748,7 +792,7 @@ async function deleteAllDocumentsAlumneId(id:number) {
     documentIds.push(doc.id_googleDrive);
   }
 
-  $q.loading.show({ message: "Borrant documents d'alumne..." });
+  $q.loading.show({message: "Borrant documents d'alumne..."});
   try {
     await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email, convocatoria.value.id.toString());
     alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
@@ -758,33 +802,34 @@ async function deleteAllDocumentsAlumneId(id:number) {
 
 }
 
-function canviarVisibilitat(id:number,visibilitat:boolean){
+function canviarVisibilitat(id: number, visibilitat: boolean) {
 
-  DocumentService.changeVisibilitatDocument(id,visibilitat);
+  DocumentService.changeVisibilitatDocument(id, visibilitat);
 
   documentsUsuari.value = documentsUsuari.value.map(d => {
 
-    if(d.id == id.toString()){
+    if (d.id == id.toString()) {
       console.log("Entra dedins id")
-      return { ...d, visibilitat };
+      return {...d, visibilitat};
     }
     return d;
   })
   //Actualitza la pàgina sense tornar a fer la petició axios
-  if(visibilitat){
+  if (visibilitat) {
     documentsNoVisibles();
-  }else {
+  } else {
     documentsVisibles();
   }
 }
 
-function documentsVisibles(){
+function documentsVisibles() {
 
   documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
     return d.visibilitat;
   });
 }
-function documentsNoVisibles(){
+
+function documentsNoVisibles() {
 
   documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
     return !d.visibilitat;
@@ -826,25 +871,38 @@ async function selectConvocatoria(convocatoria: Convocatoria) {
   window.location.reload();
 }
 
-onMounted(async ()=>{
+function toggleAlumne(inGroup: boolean) {
+  console.log(inGroup);
+  console.log(alumneInGroup.value);
+  console.log(alumneOutOfGroup.value);
+  if (inGroup) {
+    alumneOutOfGroup.value = undefined;
+    documentExtra.value.usuari = alumneInGroup.value;
+  } else {
+    alumneInGroup.value = undefined;
+    documentExtra.value.usuari = alumneOutOfGroup.value;
+  }
+}
+
+onMounted(async () => {
   $q.loading.show();
   convocatories.value = await ConvocatoriaService.getConvocatories();
-  if(idConvocatoria=='0'){
-    convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
+  if (idConvocatoria == '0') {
+    convocatoria.value = convocatories.value.find(c => c.actual) || convocatories.value[0];
   } else {
     convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
   }
 
   grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a:Grup, b:Grup)=>(a.curs.nom+a.nom).localeCompare(b.curs.nom+b.nom));
+  grups.value.sort((a: Grup, b: Grup) => (a.curs.nom + a.nom).localeCompare(b.curs.nom + b.nom));
   $q.loading.hide();
 
   myUser.value = await UsuariService.getProfile();
 
   alumnes.value = await UsuariService.getAlumnes();
-  alumnesFiltered.value = await UsuariService.getAlumnes();
+  alumnesFiltered.value = [...alumnes.value];
 
-  isAuthorizedDeleteDocuments.value = JSON.parse(localStorage.getItem("rol")).some((r:string)=>r===Rol.ADMINISTRADOR || r===Rol.ADMINISTRADOR_FCT);
+  isAuthorizedDeleteDocuments.value = JSON.parse(<string>localStorage.getItem("rol")).some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
 
   //Grup
   columnsGrup.value.push({
@@ -900,11 +958,12 @@ onMounted(async ()=>{
 </script>
 
 <style scoped>
-.text-wrap-center{
+.text-wrap-center {
   text-wrap: wrap;
   text-align: center;
 }
-.text-wrap{
+
+.text-wrap {
   text-wrap: wrap;
   text-align: left;
 }
@@ -930,12 +989,14 @@ onMounted(async ()=>{
   }
 
   /* this is when the loading indicator appears */
+
   &.q-table--loading thead tr:last-child th {
     /* height of all previous header rows */
     top: 48px;
   }
 
   /* prevent scrolling behind sticky top row on focus */
+
   tbody {
     /* height of all previous header rows */
     scroll-margin-top: 48px;
