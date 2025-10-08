@@ -139,10 +139,10 @@ import {Rol} from "src/model/Rol";
       router.go(-1);
     }
 
-    onMounted(async () => {
-      //Find convocatoria with max id
-      const convocatories = await ConvocatoriaService.getConvocatories();
-      idconvocatoria.value  = convocatories.find(c=>c.actual)?.id || 0;
-      console.log("Convocatoria", idconvocatoria.value, convocatories)
-    })
+    // onMounted(async () => {
+    //   //Find convocatoria with max id
+    //   const convocatories = await ConvocatoriaService.getConvocatories();
+    //   idconvocatoria.value  = convocatories.find(c=>c.actual)?.id || 0;
+    //   console.log("Convocatoria", idconvocatoria.value, convocatories)
+    // })
 </script>
