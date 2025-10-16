@@ -121,19 +121,6 @@ export class EmpresaService {
   }
 
   static fromJsonLlocTreball(json: any, empresa: Empresa): LlocTreball {
-    /*
-      idLlocTreball:number;
-      nom:string;
-      adreca:string;
-      codiPostal:string;
-      telefon:string;
-      poblacio:string;
-      activitat:string;
-      municipi:string;
-      validat:boolean;
-      emailCreator:string;
-      empresa:Empresa;
-     */
     return {
       idLlocTreball: json.idLlocTreball,
       nom: json.nom,
@@ -145,23 +132,16 @@ export class EmpresaService {
       municipi: json.municipi,
       validat: json.validat,
       emailCreator: json.emailCreator,
-      empresa: empresa
+      empresa: empresa,
+      nomContacte: json.nomContacte,
+      cognom1Contacte: json.cognom1Contacte,
+      cognom2Contacte: json.cognom2Contacte,
+      telefonContacte: json.telefonContacte,
+      emailContacte: json.emailContacte
     }
   }
 
   static fromJsonTutorEmpresa(json: any, empresa: Empresa): TutorEmpresa {
-    /*
-      idTutorEmpresa: number;
-      nom?: string;
-      cognom1?: string;
-      cognom2?: string;
-      nacionalitat?: string;
-      dni?: string;
-      telefon?: string;
-      email?: string;
-      carrec?: string;
-      empresa?: Empresa;
-     */
     return {
       idTutorEmpresa: json.idTutorEmpresa,
       nom: json.nom,

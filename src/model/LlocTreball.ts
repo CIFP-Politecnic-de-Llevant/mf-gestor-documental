@@ -12,4 +12,12 @@ export interface LlocTreball {
   validat:boolean;
   emailCreator:string;
   empresa:Empresa;
+
+  // Dades Contacte Lloc de Treball
+  nomContacte?:string;
+  cognom1Contacte?:string;
+  cognom2Contacte?:string;
+  telefonContacte?:string;
+  emailContacte?:string;
+  ////////
 }

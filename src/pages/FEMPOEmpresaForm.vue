@@ -231,6 +231,53 @@
             class="q-pa-sm "
           />
         </div>
+        <!--   Dades contacte lloc de treball    -->
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Nom Contacte"
+            v-model="workspace.nomContacte"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Cognom 1 Contacte"
+            v-model="workspace.cognom1Contacte"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Cognom 2 Contacte"
+            v-model="workspace.cognom2Contacte"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Telèfon Contacte"
+            v-model="workspace.telefonContacte"
+            class="q-pa-sm "
+          />
+        </div>
+        <div class="col-md-4">
+          <q-input
+            filled
+            type="text"
+            label="Correu Electrònic Contacte"
+            v-model="workspace.emailContacte"
+            class="q-pa-sm "
+          />
+        </div>
+        <!----------------------------------------->
         <div class="col-md-4">
           <q-toggle
             v-model="workspace.validat"
@@ -430,6 +477,53 @@
                   class="q-pa-sm "
                 />
               </div>
+              <!--   Dades contacte lloc de treball    -->
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Nom Contacte"
+                  v-model="workspace.nomContacte"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Cognom 1 Contacte"
+                  v-model="workspace.cognom1Contacte"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Cognom 2 Contacte"
+                  v-model="workspace.cognom2Contacte"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Telèfon Contacte"
+                  v-model="workspace.telefonContacte"
+                  class="q-pa-sm "
+                />
+              </div>
+              <div class="col-md-4">
+                <q-input
+                  filled
+                  type="text"
+                  label="Correu Electrònic Contacte"
+                  v-model="workspace.emailContacte"
+                  class="q-pa-sm "
+                />
+              </div>
+              <!----------------------------------------->
             </div>
             <div class="flex justify-end q-gutter-sm">
               <q-btn label="Guardar" type="submit" color="primary" v-close-popup/>
