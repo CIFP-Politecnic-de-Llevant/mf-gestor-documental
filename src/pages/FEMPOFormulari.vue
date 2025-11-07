@@ -578,28 +578,6 @@
               class="q-pa-sm"
               outlined
               type="text"
-              label="Telèfon tutor empresa"
-              v-model="formData.telefonTutorEmpresa"
-              :rules="[(val:any) => !!val || 'El camp és obligatori']"
-            />
-          </div>
-
-          <div class="col-md-4">
-            <q-input
-              class="q-pa-sm"
-              outlined
-              type="text"
-              label="Correu electrònic tutor empresa"
-              v-model="formData.emailTutorEmpresa"
-              :rules="[(val:any) => !!val || 'El camp és obligatori']"
-            />
-          </div>
-
-          <div class="col-md-4">
-            <q-input
-              class="q-pa-sm"
-              outlined
-              type="text"
               label="Activitat centre de treball"
               v-model="formData.activitatLlocTreball"
               :rules="[(val:any) => !!val || 'El camp és obligatori']"
@@ -686,6 +664,28 @@
               type="text"
               label="Nacionalitat tutor empresa"
               v-model="formData.nacionalitatTutorEmpresa"
+              :rules="[(val:any) => !!val || 'El camp és obligatori']"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <q-input
+              class="q-pa-sm"
+              outlined
+              type="text"
+              label="Telèfon tutor empresa"
+              v-model="formData.telefonTutorEmpresa"
+              :rules="[(val:any) => !!val || 'El camp és obligatori']"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <q-input
+              class="q-pa-sm"
+              outlined
+              type="text"
+              label="Correu electrònic tutor empresa"
+              v-model="formData.emailTutorEmpresa"
               :rules="[(val:any) => !!val || 'El camp és obligatori']"
             />
           </div>
