@@ -477,6 +477,10 @@ onMounted(async () => {
   })
 
   convocatories.value = await ConvocatoriaService.getConvocatories();
+  if (!convocatories.value.length) {
+    dialog.hide();
+    return;
+  }
   if(idConvocatoria=='0'){
     convocatoria.value = convocatories.value.find(c=>c.actual) || convocatories.value[0];
   } else {

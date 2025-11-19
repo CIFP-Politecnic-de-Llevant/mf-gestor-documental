@@ -13,6 +13,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'fempo/formulari/list', component: () => import('pages/FEMPOFormulariList.vue') },
       { path: 'fempo/formulari/form', component: () => import('pages/FEMPOFormulari.vue') },
       { path: 'fempo/group', component: () => import('pages/FEMPOTeacherManager.vue') },
+      { path: 'associarGrups', component: () => import('pages/AssociarGrups.vue') },
       { path: 'fempo/empresaConfiguration', component: () => import('pages/FEMPOEmpresaConfiguration.vue') },
       { path: 'fempo/empresaForm/:id', name:'empresaForm', component: () => import('pages/FEMPOEmpresaForm.vue'), props: true },
       { path: 'fempo/studentConfiguration', component: () => import('pages/FEMPOStudentConfiguration.vue') },

@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p class="text-h3">Convocatòria {{ convocatoria.nom }}</p>
+    <p class="text-h3">AssociarGrups</p>
     <div class="q-mb-lg">
       <q-btn-dropdown class="q-mt-md q-mr-md q-ml-sm" color="primary" label="Convocatòria" menu-self="top middle">
         <q-list>
@@ -887,14 +887,12 @@ function toggleAlumne(inGroup: boolean) {
 onMounted(async () => {
   $q.loading.show();
   convocatories.value = await ConvocatoriaService.getConvocatories();
-  if (!convocatories.value.length) {
-    $q.loading.hide();
-    return;
-  }
-  if (idConvocatoria == '0') {
-    convocatoria.value = convocatories.value.find(c => c.actual) || convocatories.value[0];
-  } else {
-    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+  if (convocatories.value.length > 0) {
+    if (idConvocatoria == '0') {
+      convocatoria.value = convocatories.value.find(c => c.actual) || convocatories.value[0];
+    } else {
+      convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+    }
   }
 
   grups.value = await GrupService.findAllGrups();

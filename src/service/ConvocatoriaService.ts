@@ -7,7 +7,7 @@ export class ConvocatoriaService {
   static async getConvocatories(): Promise<Array<Convocatoria>> {
     try {
       const response = await axios.get(process.env.API + '/api/gestordocumental/convocatories');
-      const data = response.data || [];
+      const data = await response.data;
       return data.map((convocatoria:any):Convocatoria=>{
         return this.fromJSON(convocatoria);
       });
