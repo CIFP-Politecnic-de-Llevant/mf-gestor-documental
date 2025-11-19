@@ -887,10 +887,12 @@ function toggleAlumne(inGroup: boolean) {
 onMounted(async () => {
   $q.loading.show();
   convocatories.value = await ConvocatoriaService.getConvocatories();
-  if (idConvocatoria == '0') {
-    convocatoria.value = convocatories.value.find(c => c.actual) || convocatories.value[0];
-  } else {
-    convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+  if (convocatories.value.length > 0) {
+    if (idConvocatoria == '0') {
+      convocatoria.value = convocatories.value.find(c => c.actual) || convocatories.value[0];
+    } else {
+      convocatoria.value = convocatories.value.find(c => c.id === parseInt(idConvocatoria)) || convocatories.value[0];
+    }
   }
 
   grups.value = await GrupService.findAllGrups();
