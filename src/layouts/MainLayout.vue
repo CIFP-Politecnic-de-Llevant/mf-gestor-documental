@@ -67,7 +67,7 @@
             <q-item-label>Grup/s</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/associarGrups">
+        <q-item clickable to="/associarGrups" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="mediation" />
           </q-item-section>
