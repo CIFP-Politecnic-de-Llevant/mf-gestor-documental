@@ -4,15 +4,24 @@
     <p class="text-h5">Grups que compartiran permisos en les carpetes FEMPO/FCT del drive</p>
 
     <div>
-      <q-btn-dropdown color="primary" label="Grups">
-        <q-list>
-          <q-item v-for="grup in grups" clickable v-close-popup @click="selectGrup(grup)">
-            <q-item-section>
-              <q-item-label>{{ grup.curs.nom }}{{ grup.nom }}</q-item-label>
+      <q-select
+        label="Grup principal a associar"
+        v-model="grupSelected"
+        :options="grupsFiltered"
+        :option-label="(grup:Grup) => grup ? grup.curs.nom + grup.nom : ''"
+        use-input
+        @filter="filterFn"
+        clearable
+        style="width: 300px"
+      >
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey">
+              No s'han trobat resultats
             </q-item-section>
           </q-item>
-        </q-list>
-      </q-btn-dropdown>
+        </template>
+      </q-select>
     </div>
 
     <div v-if="isSearching">
@@ -26,11 +35,37 @@
       <p>Tutor FCT: {{ tutorsFCT.map((t: Usuari) => t.label).join(", ") }}</p>
     </div>
 
+    <q-list v-if="grupsWithTutors.length > 0" bordered separator class="q-mt-md">
+      <q-item-label header>
+        <span v-if="grupSelected && isAuthorized">Selecciona els grups a associar</span>
+        <span v-else>Selecciona un grup principal per poder associar-hi altres grups</span>
+      </q-item-label>
+      <q-item v-for="item in grupsWithTutors" :key="item.grup.id" tag="label" v-ripple
+              :class="{'bg-grey-2': item.grup.id === grupSelected?.id}">
+        <q-item-section avatar>
+          <q-checkbox v-model="associatedGrups" :val="item.grup"
+                      :disable="!grupSelected || !isAuthorized || item.grup.id === grupSelected.id"/>
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ item.grup.curs.nom }}{{ item.grup.nom }}</q-item-label>
+          <q-item-label caption>
+              <span v-if="item.loadingTutors">
+                <q-spinner-dots color="primary" size="1em" class="q-mr-sm"/>
+                Carregant tutors...
+              </span>
+            <span v-else>
+                {{ item.tutors.map((t:Usuari) => t.label).join(', ') || 'Sense tutors FCT assignats' }}
+              </span>
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+
   </q-page>
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref} from "vue";
+import {onMounted, Ref, ref, watch} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {UsuariService} from "src/service/UsuariService";
@@ -39,13 +74,22 @@ import {useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 import {useRoute} from "vue-router";
 
+// Interface for holding group with its tutors and loading state
+interface GrupWithTutors {
+  grup: Grup;
+  tutors: Usuari[];
+  loadingTutors: boolean;
+}
+
 const myUser: Ref<Usuari> = ref({} as Usuari);
 const isSearching: Ref<boolean> = ref(false);
 const isAuthorized: Ref<boolean> = ref(false);
 const grups: Ref<Grup[]> = ref([] as Grup[]);
-const grupSelected: Ref<Grup> = ref({} as Grup);
+const grupsFiltered: Ref<Grup[]> = ref([] as Grup[]);
+const grupSelected: Ref<Grup | null> = ref(null);
 const tutorsFCT: Ref<Usuari[]> = ref([] as Usuari[]);
-
+const associatedGrups: Ref<Grup[]> = ref([]);
+const grupsWithTutors: Ref<GrupWithTutors[]> = ref([]);
 
 const $q = useQuasar();
 const route = useRoute()
@@ -55,28 +99,70 @@ const idConvocatoria: string = route.query?.convocatoria?.toString() || '0';
 console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
 
 
-async function selectGrup(grup: Grup) {
-  isSearching.value = true;
-  grupSelected.value = grup;
+watch(grupSelected, async (newGrup) => {
+  // Reset state when selection changes or is cleared
+  isAuthorized.value = false;
+  tutorsFCT.value = [];
+  associatedGrups.value = [];
 
-  tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(grupSelected.value.curs.nom + grupSelected.value.nom);
-  console.log(tutorsFCT.value);
+  if (newGrup && newGrup.id) {
+    isSearching.value = true;
 
-  isSearching.value = false;
+    tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(newGrup.curs.nom + newGrup.nom);
 
-  const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
-  isAuthorized.value = !!tutorsFCT.value.find(u => u.email === myUser.value.email) || rolsUser.some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
+    const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || [];
+    isAuthorized.value = !!tutorsFCT.value.find(u => u.email === myUser.value.email) || rolsUser.some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
+
+    isSearching.value = false;
+  }
+});
+
+function fetchAllTutors() {
+  // Asynchronously fetch tutors for each group and update its entry
+  grupsWithTutors.value.forEach(async (item) => {
+    try {
+      item.tutors = await UsuariService.getTutorsFCTByCodiGrup(item.grup.curs.nom + item.grup.nom);
+    } catch (error) {
+      console.error(`Error fetching tutors for group ${item.grup.curs.nom}${item.grup.nom}:`, error);
+      item.tutors = []; // Ensure tutors is an array on error
+    } finally {
+      item.loadingTutors = false;
+    }
+  });
+}
+
+function filterFn(val: string, update: (arg0: () => void) => void) {
+  if (val === '') {
+    update(() => {
+      grupsFiltered.value = grups.value
+    })
+    return
+  }
+
+  update(() => {
+    const needle = val.toLowerCase()
+    grupsFiltered.value = grups.value.filter(v => (v.curs.nom + v.nom).toLowerCase().indexOf(needle) > -1)
+  })
 }
 
 
 onMounted(async () => {
   $q.loading.show();
 
+  myUser.value = await UsuariService.getProfile();
   grups.value = await GrupService.findAllGrups();
   grups.value.sort((a: Grup, b: Grup) => (a.curs.nom + a.nom).localeCompare(b.curs.nom + b.nom));
+  grupsFiltered.value = grups.value;
+
+  // Immediately populate the list with a loading state for tutors
+  grupsWithTutors.value = grups.value.map(grup => ({
+    grup,
+    tutors: [],
+    loadingTutors: true,
+  }));
+
+  fetchAllTutors();
+
   $q.loading.hide();
-
-  myUser.value = await UsuariService.getProfile();
-
 })
 </script>
