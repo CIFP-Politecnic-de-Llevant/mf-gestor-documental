@@ -1,5 +1,4 @@
 import {axios}  from 'boot/axios'
-import {Document} from "../model/Document";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {UsuariService} from "src/service/UsuariService";
@@ -26,6 +25,22 @@ export class GrupService {
 
       return this.fromJSONGrupGestorDocumental(grup);
     }));
+  }
+
+  static async getRelacions(id: number): Promise<Grup[]> {
+    const response = await axios.get(`${process.env.API}/api/gestordocumental/grup/${id}/relacions`);
+    const grups = response.data;
+    if (grups) {
+      return Promise.all(grups.map((grup: any) => this.fromJSONGrupGestorDocumental(grup)));
+    } else {
+      return [];
+    }
+  }
+
+  static async actualitzarRelacions(id: number, grupsRelacionats: number[]): Promise<Grup[]> {
+    const response = await axios.post(`${process.env.API}/api/gestordocumental/grup/${id}/relacions`, grupsRelacionats);
+    const grups = response.data;
+    return Promise.all(grups.map((grup: any) => this.fromJSONGrupGestorDocumental(grup)));
   }
 
   static async findGrupsAssociats():Promise<Array<Grup>> {

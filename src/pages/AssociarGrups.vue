@@ -25,25 +25,34 @@
     </div>
 
     <div v-if="isSearching">
-      <h3>Cercant tutors FEMPO/FCT...</h3>
+      <p class="text-h5 q-mt-lg">Grup: {{ grupSelected.nom }}</p>
+      <h5>Cercant tutors FEMPO/FCT...</h5>
     </div>
     <div v-if="grupSelected && grupSelected.id && !isAuthorized && !isSearching">
       <h2>Usuari no autoritzat</h2>
     </div>
     <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
       <p class="text-h5 q-mt-lg">Grup: {{ grupSelected.nom }}</p>
-      <p>Tutor FCT: {{ tutorsFCT.map((t: Usuari) => t.label).join(", ") }}</p>
+      <p>Tutor FCT: {{ tutorsFCT.map((t: Usuari) => t.label).join(", ") || 'Sense tutors FCT assignats' }}</p>
     </div>
 
     <q-list v-if="grupsWithTutors.length > 0" bordered separator class="q-mt-md">
-      <q-item-label header>
+      <q-item-label header class="row items-center justify-between">
         <span v-if="grupSelected && isAuthorized">Selecciona els grups a associar</span>
         <span v-else>Selecciona un grup principal per poder associar-hi altres grups</span>
+        <span>
+          <q-btn
+            label="Guardar Associació"
+            color="primary"
+            @click="associar"
+            :disable="!grupSelected || !isAuthorized"
+          />
+        </span>
       </q-item-label>
       <q-item v-for="item in grupsWithTutors" :key="item.grup.id" tag="label" v-ripple
               :class="{'bg-grey-2': item.grup.id === grupSelected?.id}">
         <q-item-section avatar>
-          <q-checkbox v-model="associatedGrups" :val="item.grup"
+          <q-checkbox v-model="associatedGrups" :val="item.grup.id"
                       :disable="!grupSelected || !isAuthorized || item.grup.id === grupSelected.id"/>
         </q-item-section>
         <q-item-section>
@@ -61,6 +70,15 @@
       </q-item>
     </q-list>
 
+    <div class="q-mt-md">
+      <q-btn
+        label="Guardar Associació"
+        color="primary"
+        @click="associar"
+        :disable="!grupSelected || !isAuthorized"
+      />
+    </div>
+
   </q-page>
 </template>
 
@@ -72,7 +90,6 @@ import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
-import {useRoute} from "vue-router";
 
 // Interfície per a contenir un grup amb els seus tutors i l'estat de càrrega
 interface GrupWithTutors {
@@ -88,7 +105,7 @@ const grups: Ref<Grup[]> = ref([] as Grup[]);
 const grupsFiltered: Ref<Grup[]> = ref([] as Grup[]);
 const grupSelected: Ref<Grup | null> = ref(null);
 const tutorsFCT: Ref<Usuari[]> = ref([] as Usuari[]);
-const associatedGrups: Ref<Grup[]> = ref([]);
+const associatedGrups: Ref<number[]> = ref([]);
 const grupsWithTutors: Ref<GrupWithTutors[]> = ref([]);
 
 const $q = useQuasar();
@@ -102,14 +119,49 @@ watch(grupSelected, async (newGrup) => {
   if (newGrup && newGrup.id) {
     isSearching.value = true;
 
-    tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(newGrup.nom);
-
     const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || [];
-    isAuthorized.value = !!tutorsFCT.value.find(u => u.email === myUser.value.email) || rolsUser.some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
+    isAuthorized.value = rolsUser.some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
+
+    if (isAuthorized.value) {
+      try {
+        const relacions = await GrupService.getRelacions(newGrup.id);
+        associatedGrups.value = relacions.map(g => g.id);
+      } catch (e) {
+        // No content
+        associatedGrups.value = [];
+      }
+    }
+
+    tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(newGrup.nom);
 
     isSearching.value = false;
   }
 });
+
+async function associar() {
+  if (!grupSelected.value || !grupSelected.value.id) {
+    return;
+  }
+
+  $q.loading.show({
+    message: 'Guardant associacions...'
+  });
+
+  try {
+    await GrupService.actualitzarRelacions(grupSelected.value.id, associatedGrups.value);
+    $q.notify({
+      color: 'positive',
+      message: 'Associacions guardades correctament'
+    });
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: 'Error en guardar les associacions'
+    });
+  } finally {
+    $q.loading.hide();
+  }
+}
 
 function fetchAllTutors() {
   // Càrrega asíncrona dels tutors per a cada grup i actualització de la seva entrada
