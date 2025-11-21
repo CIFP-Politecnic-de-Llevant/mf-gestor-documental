@@ -18,6 +18,26 @@ export class GrupService {
     }));
   }
 
+  static async findAllGrupsGestorDocumental(): Promise<Array<Grup>> {
+    const response = await axios.get(process.env.API + '/api/gestordocumental/grup');
+    const grups = await response.data;
+
+    return Promise.all(grups.map((grup:any)=>{
+
+      return this.fromJSONGrupGestorDocumental(grup);
+    }));
+  }
+
+  static async findGrupsAssociats():Promise<Array<Grup>> {
+    const response = await axios.get(process.env.API + '/api/gestordocumental/grup');
+    const grups = await response.data;
+
+    return Promise.all(grups.map((grup:any)=>{
+
+      return this.fromJSONGrup(grup);
+    }));
+  }
+
   static async findGrupsAmbDocumentsFct(idConvocatoria:string): Promise<Array<Grup>> {
     let url = process.env.API + '/api/gestordocumental/grups-amb-documentsfct';
     if(idConvocatoria){
@@ -60,5 +80,15 @@ export class GrupService {
         }
       });
     });
+  }
+
+  static fromJSONGrupGestorDocumental(json:any):Grup{
+
+        return {
+          id: json.idgrup,
+          coreId: json.coreIdGrup,
+          nom: json.cursGrup,
+          gestibCodi: json.gestibIdentificador,
+        }
   }
 }

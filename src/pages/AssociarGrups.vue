@@ -8,7 +8,7 @@
         label="Grup principal a associar"
         v-model="grupSelected"
         :options="grupsFiltered"
-        :option-label="(grup:Grup) => grup ? grup.curs.nom + grup.nom : ''"
+        :option-label="(grup:Grup) => grup ? grup.nom : ''"
         use-input
         @filter="filterFn"
         clearable
@@ -25,13 +25,13 @@
     </div>
 
     <div v-if="isSearching">
-      <h2>Cercant...</h2>
+      <h3>Cercant tutors FEMPO/FCT...</h3>
     </div>
     <div v-if="grupSelected && grupSelected.id && !isAuthorized && !isSearching">
       <h2>Usuari no autoritzat</h2>
     </div>
     <div v-if="grupSelected && grupSelected.id && isAuthorized && !isSearching">
-      <p class="text-h5 q-mt-lg">Grup: {{ grupSelected.curs.nom }}{{ grupSelected.nom }}</p>
+      <p class="text-h5 q-mt-lg">Grup: {{ grupSelected.nom }}</p>
       <p>Tutor FCT: {{ tutorsFCT.map((t: Usuari) => t.label).join(", ") }}</p>
     </div>
 
@@ -47,7 +47,7 @@
                       :disable="!grupSelected || !isAuthorized || item.grup.id === grupSelected.id"/>
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ item.grup.curs.nom }}{{ item.grup.nom }}</q-item-label>
+          <q-item-label>{{ item.grup.nom }}</q-item-label>
           <q-item-label caption>
               <span v-if="item.loadingTutors">
                 <q-spinner-dots color="primary" size="1em" class="q-mr-sm"/>
@@ -74,7 +74,7 @@ import {useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 import {useRoute} from "vue-router";
 
-// Interface for holding group with its tutors and loading state
+// Interfície per a contenir un grup amb els seus tutors i l'estat de càrrega
 interface GrupWithTutors {
   grup: Grup;
   tutors: Usuari[];
@@ -92,15 +92,9 @@ const associatedGrups: Ref<Grup[]> = ref([]);
 const grupsWithTutors: Ref<GrupWithTutors[]> = ref([]);
 
 const $q = useQuasar();
-const route = useRoute()
-
-//Get query params
-const idConvocatoria: string = route.query?.convocatoria?.toString() || '0';
-console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
-
 
 watch(grupSelected, async (newGrup) => {
-  // Reset state when selection changes or is cleared
+  // Reiniciar l'estat quan la selecció canvia o s'esborra
   isAuthorized.value = false;
   tutorsFCT.value = [];
   associatedGrups.value = [];
@@ -108,7 +102,7 @@ watch(grupSelected, async (newGrup) => {
   if (newGrup && newGrup.id) {
     isSearching.value = true;
 
-    tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(newGrup.curs.nom + newGrup.nom);
+    tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(newGrup.nom);
 
     const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || [];
     isAuthorized.value = !!tutorsFCT.value.find(u => u.email === myUser.value.email) || rolsUser.some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
@@ -118,12 +112,12 @@ watch(grupSelected, async (newGrup) => {
 });
 
 function fetchAllTutors() {
-  // Asynchronously fetch tutors for each group and update its entry
+  // Càrrega asíncrona dels tutors per a cada grup i actualització de la seva entrada
   grupsWithTutors.value.forEach(async (item) => {
     try {
-      item.tutors = await UsuariService.getTutorsFCTByCodiGrup(item.grup.curs.nom + item.grup.nom);
+      item.tutors = await UsuariService.getTutorsFCTByCodiGrup(item.grup.nom);
     } catch (error) {
-      console.error(`Error fetching tutors for group ${item.grup.curs.nom}${item.grup.nom}:`, error);
+      console.error(`Error fetching tutors for group ${item.grup.nom}:`, error);
       item.tutors = []; // Ensure tutors is an array on error
     } finally {
       item.loadingTutors = false;
@@ -141,7 +135,7 @@ function filterFn(val: string, update: (arg0: () => void) => void) {
 
   update(() => {
     const needle = val.toLowerCase()
-    grupsFiltered.value = grups.value.filter(v => (v.curs.nom + v.nom).toLowerCase().indexOf(needle) > -1)
+    grupsFiltered.value = grups.value.filter(v => (v.nom).toLowerCase().indexOf(needle) > -1)
   })
 }
 
@@ -150,11 +144,11 @@ onMounted(async () => {
   $q.loading.show();
 
   myUser.value = await UsuariService.getProfile();
-  grups.value = await GrupService.findAllGrups();
-  grups.value.sort((a: Grup, b: Grup) => (a.curs.nom + a.nom).localeCompare(b.curs.nom + b.nom));
+  grups.value = await GrupService.findAllGrupsGestorDocumental();
+  grups.value.sort((a: Grup, b: Grup) => (a.nom).localeCompare(b.nom));
   grupsFiltered.value = grups.value;
 
-  // Immediately populate the list with a loading state for tutors
+  // Omplir immediatament la llista amb un estat de càrrega per als tutors
   grupsWithTutors.value = grups.value.map(grup => ({
     grup,
     tutors: [],
