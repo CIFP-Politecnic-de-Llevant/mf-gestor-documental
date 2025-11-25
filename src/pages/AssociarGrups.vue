@@ -26,7 +26,7 @@
 
     <div v-if="isSearching">
       <p class="text-h5 q-mt-lg">Grup: {{ grupSelected.nom }}</p>
-      <h5>Cercant tutors FEMPO/FCT...</h5>
+      <p>Cercant tutors FEMPO/FCT...</p>
     </div>
     <div v-if="grupSelected && grupSelected.id && !isAuthorized && !isSearching">
       <h2>Usuari no autoritzat</h2>
@@ -83,13 +83,14 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref, watch} from "vue";
+import {onMounted, onUnmounted, Ref, ref, watch} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Grup} from "src/model/Grup";
 import {UsuariService} from "src/service/UsuariService";
 import {GrupService} from "src/service/GrupService";
 import {useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
+import GrupTutorsWorker from 'src/worker/GrupTutorsWorker?worker';
 
 // Interfície per a contenir un grup amb els seus tutors i l'estat de càrrega
 interface GrupWithTutors {
@@ -109,6 +110,26 @@ const associatedGrups: Ref<number[]> = ref([]);
 const grupsWithTutors: Ref<GrupWithTutors[]> = ref([]);
 
 const $q = useQuasar();
+const worker = new GrupTutorsWorker();
+let backgroundLoadTimeout: number | undefined;
+
+
+worker.onmessage = (event) => {
+  const { grup, tutors } = event.data;
+
+  // Actualitzar tutors per al grup principal seleccionat
+  if (grup.id === grupSelected.value?.id) {
+    tutorsFCT.value = tutors;
+    isSearching.value = false;
+  }
+
+  // Actualitzar tutors a la llista
+  const grupIndex = grupsWithTutors.value.findIndex(item => item.grup.id === grup.id);
+  if (grupIndex !== -1) {
+    grupsWithTutors.value[grupIndex].tutors = tutors;
+    grupsWithTutors.value[grupIndex].loadingTutors = false;
+  }
+};
 
 watch(grupSelected, async (newGrup) => {
   // Reiniciar l'estat quan la selecció canvia o s'esborra
@@ -123,18 +144,25 @@ watch(grupSelected, async (newGrup) => {
     isAuthorized.value = rolsUser.some((r: string) => r === Rol.ADMINISTRADOR || r === Rol.ADMINISTRADOR_FCT);
 
     if (isAuthorized.value) {
+      $q.loading.show({
+        message: 'Carregant grups associats...'
+      });
       try {
+        // Aquesta és una crida d'alta prioritat i no s'ha de bloquejar
         const relacions = await GrupService.getRelacions(newGrup.id);
         associatedGrups.value = relacions.map(g => g.id);
       } catch (e) {
-        // No content
+        // Sense contingut
         associatedGrups.value = [];
+      } finally {
+        $q.loading.hide();
       }
     }
 
-    tutorsFCT.value = await UsuariService.getTutorsFCTByCodiGrup(newGrup.nom);
-
-    isSearching.value = false;
+    // Obtenir tutors per al grup seleccionat (alta prioritat)
+    const token = localStorage.getItem("token");
+    const plainGrup = JSON.parse(JSON.stringify(newGrup));
+    worker.postMessage({ grup: plainGrup, token, apiUrl: process.env.API });
   }
 });
 
@@ -163,20 +191,6 @@ async function associar() {
   }
 }
 
-function fetchAllTutors() {
-  // Càrrega asíncrona dels tutors per a cada grup i actualització de la seva entrada
-  grupsWithTutors.value.forEach(async (item) => {
-    try {
-      item.tutors = await UsuariService.getTutorsFCTByCodiGrup(item.grup.nom);
-    } catch (error) {
-      console.error(`Error fetching tutors for group ${item.grup.nom}:`, error);
-      item.tutors = []; // Ensure tutors is an array on error
-    } finally {
-      item.loadingTutors = false;
-    }
-  });
-}
-
 function filterFn(val: string, update: (arg0: () => void) => void) {
   if (val === '') {
     update(() => {
@@ -200,15 +214,41 @@ onMounted(async () => {
   grups.value.sort((a: Grup, b: Grup) => (a.nom).localeCompare(b.nom));
   grupsFiltered.value = grups.value;
 
-  // Omplir immediatament la llista amb un estat de càrrega per als tutors
   grupsWithTutors.value = grups.value.map(grup => ({
     grup,
     tutors: [],
     loadingTutors: true,
   }));
 
-  fetchAllTutors();
-
   $q.loading.hide();
-})
+
+  // Iniciar la càrrega en segon pla de tots els tutors en lots petits per evitar la saturació de la xarxa
+  const token = localStorage.getItem("token");
+  const groupsToLoad = [...grups.value];
+
+  const loadNextBatch = () => {
+    const batchSize = 3; // Processar 5 grups a la vegada
+    const batch = groupsToLoad.splice(0, batchSize);
+
+    if (batch.length > 0) {
+      batch.forEach(grup => {
+        const plainGrup = JSON.parse(JSON.stringify(grup));
+        worker.postMessage({ grup: plainGrup, token, apiUrl: process.env.API });
+      });
+
+      // Programar el següent lot
+      backgroundLoadTimeout = window.setTimeout(loadNextBatch, 400); // 400ms de retard entre lots
+    }
+  };
+
+  // Iniciar el procés després d'un breu retard inicial
+  backgroundLoadTimeout = window.setTimeout(loadNextBatch, 200);
+});
+
+onUnmounted(() => {
+  worker.terminate();
+  if (backgroundLoadTimeout) {
+    clearTimeout(backgroundLoadTimeout);
+  }
+});
 </script>
