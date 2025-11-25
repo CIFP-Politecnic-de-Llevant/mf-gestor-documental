@@ -1,6 +1,7 @@
 // The worker is a self-contained environment.
 // We cannot import services that have dependencies on the main thread's context (like axios instances or the window object).
 // Therefore, we replicate the necessary logic here, using the standard fetch API.
+export {};
 
 interface Usuari {
   id: number;
