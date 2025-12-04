@@ -164,6 +164,74 @@
           </div>
         </div>
 
+        <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+          <div class="q-pl-sm">
+            <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Curs d'estada</p>
+            <div class="q-gutter-sm">
+              <q-radio size="sm" v-model="formData.cursEstada" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
+                       val="1r" label="1r"/>
+              <q-radio size="sm" v-model="formData.cursEstada" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
+                       val="2n" label="2n"/>
+            </div>
+          </div>
+
+          <div class="q-pl-sm">
+            <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Ocasió</p>
+            <div class="q-gutter-sm">
+              <q-radio size="sm" v-model="formData.ocasio" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
+                       val="1a" label="1a"/>
+              <q-radio size="sm" v-model="formData.ocasio" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
+                       val="2a" label="2a"/>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <div class="q-pl-sm q-pt-md">
+              <q-toggle v-model="formData.acumulaEstadesPrimer" label="Acumula estades de primer"/>
+            </div>
+          </div>
+
+          <div class="col-md-2">
+            <q-input
+              class="q-pa-sm"
+              outlined
+              type="number"
+              label="Hores de primer que es fan a segón"
+              v-model.number="formData.horesPrimerASegon"
+              :rules="[(val:any) => (val !== null && val !== undefined && Number(val) >= 0) || 'Ha de ser un enter positiu o zero']"
+            />
+          </div>
+        </div>
+
+        <div class="row flex justify-start q-mt-sm q-gutter-y-md">
+          <div class="col-md-2">
+            <div class="q-pl-sm q-pt-md">
+              <q-toggle v-model="formData.mobilitat" label="Mobilitat"/>
+            </div>
+          </div>
+
+          <div class="col-md-2" v-if="formData.mobilitat">
+            <q-select
+              class="q-pa-sm"
+              outlined
+              v-model="formData.zonaMobilitat"
+              :options="['Illes Balears', 'Altres comunitats', 'Altres països']"
+              label="Zona"
+              :clearable="false"
+            />
+          </div>
+
+          <div class="col-md-3" v-if="formData.mobilitat">
+            <q-input
+              class="q-pa-sm"
+              outlined
+              type="text"
+              label="Característiques"
+              v-model="formData.caracteristiquesMobilitat"
+            />
+          </div>
+        </div>
+
         <div class="row flex justify-center q-mt-sm q-gutter-y-md">
           <div class="col-md-6 q-pa-md flex justify-center">
             <div>
@@ -1138,6 +1206,13 @@ const formData: Ref<DadesFormulari> = ref({
   cicleFormatiu: localStorage.getItem('cicleformatiu') || ciclesFormatius[0],
   grup: '',
   duradaCicle: localStorage.getItem('duradacicle') || '2 anys',
+  cursEstada: '1r',
+  ocasio: '1a',
+  acumulaEstadesPrimer: false,
+  horesPrimerASegon: 0,
+  mobilitat: false,
+  zonaMobilitat: 'Illes Balears',
+  caracteristiquesMobilitat: '',
   totalHoresProposadesFct: '',
   horesDiaries: '',
   km: '',
@@ -1383,6 +1458,33 @@ function errorForm() {
 
 function confirmSave() {
   console.log('confirm save form');
+
+  if (!formData.value.cursEstada) {
+    $q.notify({
+      color: 'negative',
+      message: "El camp 'Curs d'estada' és obligatori",
+      icon: 'report_problem'
+    });
+    return;
+  }
+
+  if (!formData.value.ocasio) {
+    $q.notify({
+      color: 'negative',
+      message: "El camp 'Ocasió' és obligatori",
+      icon: 'report_problem'
+    });
+    return;
+  }
+
+  if (formData.value.mobilitat && !formData.value.zonaMobilitat) {
+    $q.notify({
+      color: 'negative',
+      message: "El camp 'Zona' és obligatori si hi ha mobilitat",
+      icon: 'report_problem'
+    });
+    return;
+  }
 
   // Valiem mesures educatives
   console.log("Mesures educatives", formData.value.isMesuresEducatives);

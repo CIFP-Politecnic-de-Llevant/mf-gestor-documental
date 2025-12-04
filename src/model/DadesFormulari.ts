@@ -62,6 +62,13 @@ export interface DadesFormulari {
     emailEmpresa?:string;
     telefonTutorEmpresa?:string;
     emailTutorEmpresa?:string;
+    cursEstada?:string;
+    ocasio?:string;
+    acumulaEstadesPrimer?:boolean;
+    horesPrimerASegon?:number;
+    mobilitat?:boolean;
+    zonaMobilitat?:string;
+    caracteristiquesMobilitat?:string;
     diaSeguimentCentreEducatiu?:string;
     horaSeguimentCentreEducatiu?:string;
     diaSeguimentResponsableFct?:string;
