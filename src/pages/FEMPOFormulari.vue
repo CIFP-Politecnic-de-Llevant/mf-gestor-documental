@@ -164,8 +164,8 @@
           </div>
         </div>
 
-        <div class="row flex justify-start q-mt-sm q-gutter-y-md">
-          <div class="q-pl-sm">
+        <div class="row flex justify-start q-mt-sm q-gutter-md q-gutter-y-md">
+          <div class="col-12 col-md-2 q-pl-sm">
             <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Curs d'estada</p>
             <div class="q-gutter-sm">
               <q-radio size="sm" v-model="formData.cursEstada" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
@@ -175,7 +175,7 @@
             </div>
           </div>
 
-          <div class="q-pl-sm">
+          <div class="col-12 col-md-2 q-pl-sm">
             <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Ocasió</p>
             <div class="q-gutter-sm">
               <q-radio size="sm" v-model="formData.ocasio" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
@@ -185,13 +185,13 @@
             </div>
           </div>
 
-          <div class="col-md-2">
+          <div class="col-12 col-md-3">
             <div class="q-pl-sm q-pt-md">
               <q-toggle v-model="formData.acumulaEstadesPrimer" label="Acumula estades de primer"/>
             </div>
           </div>
 
-          <div class="col-md-2">
+          <div class="col-12 col-md-3">
             <q-input
               class="q-pa-sm"
               outlined
@@ -203,14 +203,14 @@
           </div>
         </div>
 
-        <div class="row flex justify-start q-mt-sm q-gutter-y-md">
-          <div class="col-md-2">
+        <div class="row flex justify-start q-mt-sm q-gutter-md q-gutter-y-md">
+          <div class="col-12 col-md-2">
             <div class="q-pl-sm q-pt-md">
               <q-toggle v-model="formData.mobilitat" label="Mobilitat"/>
             </div>
           </div>
 
-          <div class="col-md-2" v-if="formData.mobilitat">
+          <div class="col-12 col-md-3" v-if="formData.mobilitat">
             <q-select
               class="q-pa-sm"
               outlined
@@ -221,7 +221,7 @@
             />
           </div>
 
-          <div class="col-md-3" v-if="formData.mobilitat">
+          <div class="col-12 col-md-6" v-if="formData.mobilitat">
             <q-input
               class="q-pa-sm"
               outlined
