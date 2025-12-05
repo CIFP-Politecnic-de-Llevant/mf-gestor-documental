@@ -1128,13 +1128,12 @@
 <script setup lang="ts">
 
 import {useQuasar} from "quasar";
-import {computed, onMounted, ref, Ref, watch} from "vue";
+import {onMounted, ref, Ref, watch} from "vue";
 import {Alumne} from "src/model/Alumne";
 import {Empresa} from "src/model/Empresa";
 import {UsuariService} from "src/service/UsuariService";
 import {EmpresaService} from "src/service/EmpresaService";
 import {DadesFormulari} from "src/model/DadesFormulari";
-import {Grup} from "src/model/Grup";
 import {LlocTreball} from "src/model/LlocTreball";
 import {Usuari} from "src/model/Usuari";
 import {DocumentService} from "src/service/DocumentService";
@@ -1147,15 +1146,15 @@ const $q = useQuasar();
 
 const allStudents: Ref<Alumne[]> = ref([] as Alumne[]);        // Tots els alumnes
 let studentSelectList: IStudentListItem[] = [];                // Llista d'opcions pel select amb filtre
-const selectedStudent: Ref<Alumne> = ref<Alumne>(null);  // Alumne seleccionat pel select amb filtre
+const selectedStudent: Ref<Alumne | null> = ref<Alumne | null>(null);  // Alumne seleccionat pel select amb filtre
 const studentSelect: Ref<Alumne> = ref({} as Alumne);          // Antic alumne seleccionat en el formulari
-const filteredStudentOptions: IStudentListItem[] = ref(studentSelectList)
+const filteredStudentOptions = ref<IStudentListItem[]>([])
 
 
 const allCompanies: Ref<Empresa[]> = ref([] as Empresa[]);
 let companySelectList: ICompanyListItem[] = []
-const selectedCompany: Ref<Empresa> = ref<Empresa>(null)
-const filteredCompanyOptions: ICompanyListItem[] = ref(companySelectList)
+const selectedCompany: Ref<Empresa | null> = ref<Empresa | null>(null)
+const filteredCompanyOptions = ref<ICompanyListItem[]>([])
 
 const companySelected: Ref<boolean> = ref(false);
 
@@ -1197,8 +1196,10 @@ const formData: Ref<DadesFormulari> = ref({
   anyCurs: '2025/26',
   nomAlumne: '',
   llinatgesAlumne: '',
-  poblacio: '',
+  poblacioAlumne: '',
   dniAlumne: '',
+  telefonAlumne: '',
+  emailAlumne: '',
   numeroExpedient: '',
   menorEdat: false,
   edat: '',
@@ -1240,6 +1241,7 @@ const formData: Ref<DadesFormulari> = ref({
   poblacioLlocTreball: '',
   telefonLlocTreball: '',
   activitatLlocTreball: '',
+  nomCompletRepresentantLegal: '',
   nomRepresentantLegal: '',
   cognomsRepresentantLegal: '',
   nifRepresentantLegal: '',
@@ -1250,6 +1252,7 @@ const formData: Ref<DadesFormulari> = ref({
   nacionalitatTutorEmpresa: '',
   municipiTutorEmpresa: '',
   carrecTutorEmpresa: '',
+  telefonTutorEmpresa: '',
   emailEmpresa: '',
   emailTutorEmpresa: '',
   diaSeguimentCentreEducatiu: '',
@@ -1354,14 +1357,14 @@ async function selectStudent(student: Alumne) {
 
 const filterStudentsFn = (val, update, abort) => {
   update(() => {
-    const needle = val.toLowerCase()
+    const needle = (val || '').toLowerCase()
     filteredStudentOptions.value = studentSelectList.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
   })
 }
 
 const filterCompaniesFn = (val, update, abort) => {
   update(() => {
-    const needle = val.toLowerCase()
+    const needle = (val || '').toLowerCase()
     filteredCompanyOptions.value = companySelectList.filter(v => v.label.toLowerCase().indexOf(needle) > -1)
   })
 }
@@ -1390,9 +1393,9 @@ function selectCompany(company: Empresa) {
   formData.value.cpempresa = company.codiPostal;
   formData.value.telefonEmpresa = company.telefon;
   formData.value.poblacioEmpresa = company.poblacio;
-  formData.value.nomCompletRepresentantLegal = company.nomRepresentantLegal ?? "" + " " + company.cognom1RepresentantLegal ?? "" + " " + company.cognom2RepresentantLegal ?? "";
+  formData.value.nomCompletRepresentantLegal = `${company.nomRepresentantLegal ?? ''} ${company.cognom1RepresentantLegal ?? ''} ${company.cognom2RepresentantLegal ?? ''}`.trim();
   formData.value.nomRepresentantLegal = company.nomRepresentantLegal;
-  formData.value.cognomsRepresentantLegal = company.cognom1RepresentantLegal ?? "" + " " + company.cognom2RepresentantLegal ?? "";
+  formData.value.cognomsRepresentantLegal = `${company.cognom1RepresentantLegal ?? ''} ${company.cognom2RepresentantLegal ?? ''}`.trim();
   formData.value.nifRepresentantLegal = company.dniRepresentantLegal;
 
   if (company.llocsTreball !== undefined) {
@@ -1418,9 +1421,9 @@ function selectWorkspace(workspace: LlocTreball) {
 }
 
 function selectTutorEmpresa(tutorEmpresa: TutorEmpresa) {
-  formData.value.nomCompletTutorEmpresa = tutorEmpresa.nom ?? "" + " " + tutorEmpresa.cognom1 ?? "" + " " + tutorEmpresa.cognom2 ?? "";
+  formData.value.nomCompletTutorEmpresa = `${tutorEmpresa.nom ?? ''} ${tutorEmpresa.cognom1 ?? ''} ${tutorEmpresa.cognom2 ?? ''}`.trim();
   formData.value.nomTutorEmpresa = tutorEmpresa.nom;
-  formData.value.cognomsTutorEmpresa = tutorEmpresa.cognom1 ?? "" + " " + tutorEmpresa.cognom2 ?? "";
+  formData.value.cognomsTutorEmpresa = `${tutorEmpresa.cognom1 ?? ''} ${tutorEmpresa.cognom2 ?? ''}`.trim();
   formData.value.nifTutorEmpresa = tutorEmpresa.dni;
   formData.value.nacionalitatTutorEmpresa = tutorEmpresa.nacionalitat;
   formData.value.carrecTutorEmpresa = tutorEmpresa.carrec;
@@ -1428,7 +1431,11 @@ function selectTutorEmpresa(tutorEmpresa: TutorEmpresa) {
   formData.value.emailTutorEmpresa = tutorEmpresa.email;
 }
 
-function ageCalculate(date: Date) {
+function ageCalculate(date: string) {
+
+  if (!date || !studentSelect.value || !studentSelect.value.dataNaixement) {
+    return;
+  }
 
   if (studentSelect.value.dataNaixement !== undefined) {
     const fechaNaixement = studentSelect.value.dataNaixement.toString().split("-");
@@ -1581,6 +1588,10 @@ async function saveForm() {
 // }
 
 async function saveWorkspace() {
+  if (!selectedCompany.value) {
+    return;
+  }
+
   workspace.value.empresa = selectedCompany.value; // Use the Empresa object
   await EmpresaService.saveWorkspace(workspace.value);
 
@@ -1590,6 +1601,10 @@ async function saveWorkspace() {
 }
 
 async function saveTutorEmpresa() {
+  if (!selectedCompany.value) {
+    return;
+  }
+
   tutorEmpresa.value.empresa = selectedCompany.value;
   await EmpresaService.saveTutorEmpresa(tutorEmpresa.value);
 
@@ -1599,6 +1614,10 @@ async function saveTutorEmpresa() {
 }
 
 async function updateCompanySelector() {
+
+  if (!selectedCompany.value) {
+    return;
+  }
 
   const updatedEmpresa = await EmpresaService.getCompanyById(selectedCompany.value.idEmpresa);
 
@@ -1646,6 +1665,9 @@ onMounted(async () => {
       value: company
     }))
     .sort((a, b) => a.label.localeCompare(b.label));
+
+  filteredStudentOptions.value = studentSelectList;
+  filteredCompanyOptions.value = companySelectList;
 
 
   const allGrups = await GrupService.findAllGrups();
