@@ -167,28 +167,35 @@
         <div class="row flex justify-start q-mt-sm q-gutter-md q-gutter-y-md">
           <div class="col-12 col-md-2 q-pl-sm">
             <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Curs d'estada</p>
-            <div class="q-gutter-sm">
-              <q-radio size="sm" v-model="formData.cursEstada" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
-                       val="1r" label="1r"/>
-              <q-radio size="sm" v-model="formData.cursEstada" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
-                       val="2n" label="2n"/>
-            </div>
+            <q-option-group
+              v-model="formData.cursEstada"
+              type="radio"
+              inline
+              :options="[{ label: '1r', value: '1r' }, { label: '2n', value: '2n' }]"
+              :rules="[(val:any) => !!val || 'El camp és obligatori']"
+            />
           </div>
 
           <div class="col-12 col-md-2 q-pl-sm">
             <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Ocasió</p>
-            <div class="q-gutter-sm">
-              <q-radio size="sm" v-model="formData.ocasio" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
-                       val="1a" label="1a"/>
-              <q-radio size="sm" v-model="formData.ocasio" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
-                       val="2a" label="2a"/>
-            </div>
+            <q-option-group
+              v-model="formData.ocasio"
+              type="radio"
+              inline
+              :options="[{ label: '1a', value: '1a' }, { label: '2a', value: '2a' }]"
+              :rules="[(val:any) => !!val || 'El camp és obligatori']"
+            />
           </div>
 
           <div class="col-12 col-md-3">
-            <div class="q-pl-sm q-pt-md">
-              <q-toggle v-model="formData.acumulaEstadesPrimer" label="Acumula estades de primer"/>
-            </div>
+            <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Acumula estades de primer</p>
+            <q-option-group
+              v-model="formData.acumulaEstadesPrimer"
+              type="radio"
+              inline
+              :options="[{ label: 'Si', value: true }, { label: 'No', value: false }]"
+              :rules="[(val:any) => val === true || val === false || 'El camp és obligatori']"
+            />
           </div>
 
           <div class="col-12 col-md-3">
@@ -198,16 +205,21 @@
               type="number"
               label="Hores de primer que es fan a segón"
               v-model.number="formData.horesPrimerASegon"
-              :rules="[(val:any) => (val !== null && val !== undefined && Number(val) >= 0) || 'Ha de ser un enter positiu o zero']"
+              :rules="[(val:any) => (val !== null && val !== undefined && val !== '') || 'El camp és obligatori', (val:any) => (val !== null && val !== undefined && Number(val) >= 0) || 'Ha de ser un enter positiu o zero']"
             />
           </div>
         </div>
 
         <div class="row flex justify-start q-mt-sm q-gutter-md q-gutter-y-md">
           <div class="col-12 col-md-2">
-            <div class="q-pl-sm q-pt-md">
-              <q-toggle v-model="formData.mobilitat" label="Mobilitat"/>
-            </div>
+            <p class="q-pt-sm q-pr-sm q-pl-sm q-mb-none">Mobilitat</p>
+            <q-option-group
+              v-model="formData.mobilitat"
+              type="radio"
+              inline
+              :options="[{ label: 'Si', value: true }, { label: 'No', value: false }]"
+              :rules="[(val:any) => val === true || val === false || 'El camp és obligatori']"
+            />
           </div>
 
           <div class="col-12 col-md-3" v-if="formData.mobilitat">
@@ -218,6 +230,7 @@
               :options="['Illes Balears', 'Altres comunitats', 'Altres països']"
               label="Zona"
               :clearable="false"
+              :rules="[(val:any) => !!val || 'El camp és obligatori']"
             />
           </div>
 
@@ -1207,11 +1220,11 @@ const formData: Ref<DadesFormulari> = ref({
   cicleFormatiu: localStorage.getItem('cicleformatiu') || ciclesFormatius[0],
   grup: '',
   duradaCicle: localStorage.getItem('duradacicle') || '2 anys',
-  cursEstada: '1r',
-  ocasio: '1a',
-  acumulaEstadesPrimer: false,
-  horesPrimerASegon: 0,
-  mobilitat: false,
+  cursEstada: undefined,
+  ocasio: undefined,
+  acumulaEstadesPrimer: undefined,
+  horesPrimerASegon: undefined,
+  mobilitat: undefined,
   zonaMobilitat: 'Illes Balears',
   caracteristiquesMobilitat: '',
   totalHoresProposadesFct: '',
@@ -1479,6 +1492,24 @@ function confirmSave() {
     $q.notify({
       color: 'negative',
       message: "El camp 'Ocasió' és obligatori",
+      icon: 'report_problem'
+    });
+    return;
+  }
+
+  if (formData.value.acumulaEstadesPrimer === undefined || formData.value.acumulaEstadesPrimer === null) {
+    $q.notify({
+      color: 'negative',
+      message: "El camp 'Acumula estades de primer' és obligatori",
+      icon: 'report_problem'
+    });
+    return;
+  }
+
+  if (formData.value.mobilitat === undefined || formData.value.mobilitat === null) {
+    $q.notify({
+      color: 'negative',
+      message: "El camp 'Mobilitat' és obligatori",
       icon: 'report_problem'
     });
     return;
