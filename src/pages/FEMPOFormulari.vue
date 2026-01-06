@@ -1188,8 +1188,7 @@ const formulariAlumnes = ref(null)
 
 const allNomGrups = ref([] as string[]);
 
-const idConvocatoria:string = route.query?.convocatoria?.toString() || '0';
-console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
+const idConvocatoria:string = route.query?.convocatoria?.toString() || '';
 
 const ciclesFormatius = [
   'FP Bàsica Manteniment de vehicles',
