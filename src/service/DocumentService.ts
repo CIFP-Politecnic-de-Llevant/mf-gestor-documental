@@ -327,8 +327,8 @@ export class DocumentService {
     await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari?email=${email}`, form)
   }
 
-  static async saveFormFEMPO(form: DadesFormulari, email: string) {
-    await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari-fempo?email=${email}`, form)
+  static async saveFormFEMPO(form: DadesFormulari, email: string, idConvocatoria: string) {
+    await axios.post(process.env.API + `/api/gestordocumental/formulari/save-formulari-fempo?email=${email}&idConvocatoria=${idConvocatoria}`, form)
   }
 
   static fromJSONDocument(json: any): Promise<Document> {

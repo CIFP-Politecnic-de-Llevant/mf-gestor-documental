@@ -1154,8 +1154,10 @@ import IStudentListItem from "src/Interfaces/IStudentListItem";
 import ICompanyListItem from "src/Interfaces/ICompanyListItem";
 import {GrupService} from "src/service/GrupService";
 import {TutorEmpresa} from "src/model/TutorEmpresa";
+import {useRoute} from "vue-router";
 
 const $q = useQuasar();
+const route = useRoute()
 
 const allStudents: Ref<Alumne[]> = ref([] as Alumne[]);        // Tots els alumnes
 let studentSelectList: IStudentListItem[] = [];                // Llista d'opcions pel select amb filtre
@@ -1185,6 +1187,9 @@ const tutorFCT: Ref<Usuari> = ref({} as Usuari);
 const formulariAlumnes = ref(null)
 
 const allNomGrups = ref([] as string[]);
+
+const idConvocatoria:string = route.query?.convocatoria?.toString() || '0';
+console.log("Parameter: idConvocatoria", idConvocatoria, route.query?.convocatoria);
 
 const ciclesFormatius = [
   'FP Bàsica Manteniment de vehicles',
@@ -1601,7 +1606,7 @@ async function saveForm() {
 
   $q.loading.show({ message: 'Guardant Formulari...' });
   try {
-    await DocumentService.saveFormFEMPO(formData.value, tutorFCT.value.email);
+    await DocumentService.saveFormFEMPO(formData.value, tutorFCT.value.email, idConvocatoria);
   } finally {
     $q.loading.hide();
   }
