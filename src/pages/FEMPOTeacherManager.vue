@@ -796,6 +796,7 @@ async function deleteAllDocumentsAlumneId(id: number) {
   try {
     await DocumentService.deleteDocumentByGoogleDriveId(documentIds, nomComplet, cicle, email, convocatoria.value.id.toString());
     alumnesGrup.value.splice(alumnesGrup.value.findIndex(alumne => alumne.id === id), 1);
+    await selectGrup(grupSelected.value);
   } finally {
     $q.loading.hide();
   }
