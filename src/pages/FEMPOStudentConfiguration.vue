@@ -3,6 +3,20 @@
     <div>
       <p class="text-h5 q-mt-lg">Alumnes</p>
     </div>
+    <q-banner class="bg-orange-2 text-dark q-mb-md" rounded>
+      <div class="text-weight-bold q-mb-xs">Avís important</div>
+      <div>
+        Per obtenir el fitxer XML a carregar:
+        <br>
+        1. Anar a Gestib -> Llistes -> Alumnat -> Dades personals.
+        <br>
+        2. En aquesta pantalla, seleccionar el nivell d'ensenyament amb l'opció "Tots" marcada.
+        <br>
+        3. Pitjar el botó "Tots" per seleccionar totes les dades.
+        <br>
+        4. Seleccionar el tipus de fitxer XML i fer clic al botó "Mostrar".
+      </div>
+    </q-banner>
     <q-form @submit="saveFile" class="q-gutter-md q-mt-md" style="display: flex">
       <q-file
         v-model="file"
