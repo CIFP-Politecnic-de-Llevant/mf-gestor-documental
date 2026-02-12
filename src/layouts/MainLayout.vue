@@ -41,6 +41,14 @@
             <q-item-label>Gestionar Documentació</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable to="/fempo/documentGeneral" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
+          <q-item-section avatar>
+            <q-icon name="collections_bookmark" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Documents Generals</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item clickable to="/fempo/formulari/list" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT || rol===rols.PROFESSOR)">
           <q-item-section avatar>
             <q-icon name="description" />

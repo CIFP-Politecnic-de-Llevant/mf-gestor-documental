@@ -8,6 +8,7 @@ const routes: RouteRecordRaw[] = [
       { path: '', component: () => import('pages/FEMPOTeacherManager.vue') },
       { path: 'fempo/generateDocumentation', component: () => import('pages/FEMPOGenerateDocumentation.vue') },
       { path: 'fempo/manageDocumentation', component: () => import('pages/FEMPODocumentationManager.vue') },
+      { path: 'fempo/documentGeneral', component: () => import('pages/FEMPODocumentGeneralMaintenance.vue') },
       { path: 'fct/formulari/list', component: () => import('pages/FCTFormulariList.vue') },
       { path: 'fct/formulari/form', component: () => import('pages/FCTFormulari.vue') },
       { path: 'fempo/formulari/list', component: () => import('pages/FEMPOFormulariList.vue') },
@@ -24,14 +25,6 @@ const routes: RouteRecordRaw[] = [
       { path: 'logout', component: () => import('components/common/Logout.vue') },
     ],
   },
-  {
-    path: '/mobile',
-    component: () => import('layouts/MobileLayout.vue'),
-    children:[
-      { path: 'fempo/picture', component: () => import('pages/FEMPOPicture.vue') }
-    ]
-  },
-
   // Always leave this as last one,
   // but you can also remove it
   {
