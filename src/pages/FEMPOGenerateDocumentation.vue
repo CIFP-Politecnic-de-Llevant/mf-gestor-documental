@@ -56,10 +56,6 @@
       <h5>No hi ha cap document nou a traspassar</h5>
     </div>
 
-    <q-separator spaced="lg"/>
-
-    <q-btn label="Migrar documents generals" @click="migrar()"/>
-
   </q-page>
 </template>
 
@@ -69,7 +65,6 @@ import {onMounted, Ref, ref} from "vue";
 import {Usuari} from "src/model/Usuari";
 import {Document} from "src/model/Document";
 import {DocumentService} from "src/service/DocumentService";
-import {useRoute} from "vue-router";
 import {useQuasar} from "quasar";
 import {UsuariService} from "src/service/UsuariService";
 import {TipusDocumentService} from "src/service/TipusDocumentService";
@@ -77,7 +72,6 @@ import {TipusDocument} from "src/model/TipusDocument";
 import {TipusDocumentPropietari} from "src/model/TipusDocumentPropietari";
 
 const $q = useQuasar();
-const $route = useRoute()
 
 const autoritzats:Ref<Usuari[]> = ref([] as Usuari[]);
 const autoritzatSelected:Ref<Usuari> = ref({} as Usuari);
@@ -144,17 +138,6 @@ function filterFn (val:string, update:Function, abort:Function) {
     const needle = val.toLowerCase()
     alumnesFiltered.value = alumnes.value.filter( (v:Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
   })
-}
-
-async function migrar(){
-  const dialog = $q.dialog({
-    message: 'Migrant documents generals. NO TANQUI LA FINESTRA',
-    progress: true, // we enable default settings
-    persistent: true, // we want the user to not be able to close it
-    ok: false // we want the user to not be able to close it
-  })
-  await DocumentService.migrarDocumentsGenerals()
-  dialog.hide();
 }
 
 onMounted(async ()=>{
