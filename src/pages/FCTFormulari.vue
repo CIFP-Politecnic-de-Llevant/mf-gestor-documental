@@ -99,6 +99,8 @@
                        val="CF Grau Mitjà" label="CF Grau Mitjà"/>
               <q-radio size="sm" v-model="formData.estudis" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
                        val="CF Grau Superior" label="CF Grau Superior"/>
+              <q-radio size="sm" v-model="formData.estudis" checked-icon="task_alt" unchecked-icon="panorama_fish_eye"
+                       val="Certificat Professional" label="Certificat Professional"/>
             </div>
           </div>
 
@@ -799,7 +801,9 @@ const ciclesFormatius = [
   'CFGS Automoció',
   "CFGS Desenvolupament d'aplicacions web",
   'CFGS Gestió de Vendes i Espais Comercials',
-  'CFGS Màrketing i publicitat'
+  'CFGS Màrketing i publicitat',
+  'CP Automoció',
+  'CP Electricitat'
 ];
 
 const formData: Ref<DadesFormulari> = ref({
@@ -899,7 +903,15 @@ function selectStudent(student: Alumne) {
     Mapeig de Cicles Formatius
     "FP Bàsica", "CF Grau Mitjà", "CF Grau Superior"
    */
-  if (student.estudis === 'TMV11') {
+  const estudisCode = student.estudis || '';
+
+  if (estudisCode.length === 9 && estudisCode.startsWith('TMVG')) {
+    formData.value.cicleFormatiu = 'CP Automoció';
+    formData.value.estudis = 'Certificat Professional';
+  } else if (estudisCode.length === 9 && estudisCode.startsWith('ELES')) {
+    formData.value.cicleFormatiu = 'CP Electricitat';
+    formData.value.estudis = 'Certificat Professional';
+  } else if (student.estudis === 'TMV11') {
     formData.value.cicleFormatiu = ciclesFormatius[0];
     formData.value.estudis = 'FP Bàsica';
   } else if (student.estudis === 'COM11') {
