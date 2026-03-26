@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p class="text-h4 q-mb-md">Curs Convocatòria</p>
+    <p class="text-h4 q-mb-md">Configuració de Curs Acadèmic i Convocatòria</p>
 
     <div v-if="!isAuthorized">
       <h2>Usuari no autoritzat</h2>
@@ -9,10 +9,22 @@
     <div v-else class="q-gutter-y-md">
       <q-card flat bordered>
         <q-card-section>
-          <div class="text-subtitle1">Curs acadèmic actual</div>
-          <div class="text-body1">
-            {{ currentAcademicYear?.nom || 'No hi ha cap curs marcat com a actual' }}
-          </div>
+          <div class="text-subtitle1 q-mb-md">Tres darrers cursos acadèmics</div>
+
+          <q-option-group
+            v-model="selectedCurrentAcademicYearId"
+            :options="lastThreeAcademicYearOptions"
+            type="radio"
+          />
+
+          <q-btn
+            color="primary"
+            label="Guardar curs actual"
+            class="q-mt-md"
+            :disable="!selectedCurrentAcademicYearId || isUpdatingCurrent"
+            :loading="isUpdatingCurrent"
+            @click="updateCurrentAcademicYear"
+          />
         </q-card-section>
       </q-card>
 
@@ -63,10 +75,19 @@ const $q = useQuasar();
 const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || [];
 const isAuthorized = computed(() => rolsUser.some((r: string) => r === Rol.ADMINISTRADOR));
 
-const currentAcademicYear: Ref<CursAcademic | null> = ref(null);
+const lastThreeAcademicYears: Ref<CursAcademic[]> = ref([]);
+const selectedCurrentAcademicYearId = ref<number | null>(null);
 const nextAcademicYearName = ref('');
-const markAsCurrent = ref(false);
+const markAsCurrent = ref(true);
 const isSaving = ref(false);
+const isUpdatingCurrent = ref(false);
+
+const lastThreeAcademicYearOptions = computed(() =>
+  lastThreeAcademicYears.value.map((cursAcademic: CursAcademic) => ({
+    label: cursAcademic.nom,
+    value: cursAcademic.idcursAcademic
+  }))
+);
 
 function parseAcademicYearStart(nom: string): number | null {
   const match = nom.match(/^(\d{4})\/(\d{2}|\d{4})$/);
@@ -91,13 +112,47 @@ function buildNextAcademicYearName(cursosAcademics: CursAcademic[]): string {
 }
 
 async function loadData() {
-  const [allAcademicYears, actualAcademicYear] = await Promise.all([
-    CursAcademicService.getAllCursosAcademics(),
-    CursAcademicService.getCursAcademicActual()
-  ]);
+  const allAcademicYears = await CursAcademicService.getAllCursosAcademics();
+  const actualAcademicYear = allAcademicYears.find((cursAcademic: CursAcademic) => cursAcademic.actual) || null;
 
-  currentAcademicYear.value = actualAcademicYear;
+  lastThreeAcademicYears.value = allAcademicYears.slice(0, 3);
+  selectedCurrentAcademicYearId.value = actualAcademicYear?.idcursAcademic ?? null;
   nextAcademicYearName.value = buildNextAcademicYearName(allAcademicYears);
+}
+
+async function updateCurrentAcademicYear() {
+  const academicYearToUpdate = lastThreeAcademicYears.value.find((cursAcademic: CursAcademic) =>
+    cursAcademic.idcursAcademic === selectedCurrentAcademicYearId.value
+  );
+
+  if (!academicYearToUpdate) {
+    return;
+  }
+
+  isUpdatingCurrent.value = true;
+  try {
+    await CursAcademicService.save({
+      idcursAcademic: academicYearToUpdate.idcursAcademic,
+      nom: academicYearToUpdate.nom,
+      actual: true
+    });
+
+    $q.notify({
+      color: 'positive',
+      message: 'Curs actual actualitzat correctament',
+      icon: 'check'
+    });
+
+    await loadData();
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: 'No s\'ha pogut actualitzar el curs actual',
+      icon: 'report_problem'
+    });
+  } finally {
+    isUpdatingCurrent.value = false;
+  }
 }
 
 async function createNextAcademicYear() {
@@ -118,7 +173,7 @@ async function createNextAcademicYear() {
       icon: 'check'
     });
 
-    markAsCurrent.value = false;
+    markAsCurrent.value = true;
     await loadData();
   } catch (error) {
     $q.notify({
