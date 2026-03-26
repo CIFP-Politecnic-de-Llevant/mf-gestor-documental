@@ -5,4 +5,7 @@ export interface Convocatoria {
   actual: boolean;
   pathDesti?: string;
   idCursAcademic?: number;
+  pathOrigen?: string;
+  isUnitatOrganitzativaOrigen?: boolean;
+  isUnitatOrganitzativaDesti?: boolean;
 }

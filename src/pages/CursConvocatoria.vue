@@ -83,6 +83,7 @@
               :columns="convocatoriesColumns"
               row-key="id"
               binary-state-sort
+              :pagination="{ rowsPerPage: 0 }"
             >
               <template v-slot:header="props">
                 <q-tr :props="props">
@@ -97,15 +98,15 @@
                 </q-tr>
               </template>
               <template v-slot:body="props">
-                <q-tr :props="props">
+                <q-tr :props="props" :class="{ 'current-convocatoria-row': props.row.actual }">
                   <q-td key="nom" :props="props" class="text-wrap-center">
                     {{ props.row.nom }}
                   </q-td>
-                  <q-td key="actual" :props="props" class="text-wrap-center">
-                    {{ props.row.actual ? 'Sí' : 'No' }}
-                  </q-td>
                   <q-td key="cursAcademic" :props="props" class="text-wrap-center">
                     {{ props.row.cursAcademic }}
+                  </q-td>
+                  <q-td key="actual" :props="props" class="text-wrap-center">
+                    {{ props.row.actual ? 'Sí' : 'No' }}
                   </q-td>
                   <q-td key="pathDesti" :props="props" class="text-wrap-center">
                     {{ props.row.pathDesti }}
@@ -116,12 +117,91 @@
           </q-card-section>
         </q-card>
       </div>
+
+      <div class="col-12">
+        <q-card flat bordered>
+          <q-card-section>
+            <div class="section-title q-mb-md">Nova convocatòria</div>
+
+            <q-form ref="convocatoriaFormRef" @submit="createConvocatoria">
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-md-6">
+                  <q-input
+                    v-model="convocatoriaForm.nom"
+                    label="Nom"
+                    outlined
+                    :rules="[(val:any) => !!val || 'El camp és obligatori']"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <q-select
+                    v-model="convocatoriaForm.idCursAcademic"
+                    :options="academicYearSelectOptions"
+                    emit-value
+                    map-options
+                    outlined
+                    label="Curs acadèmic"
+                    :rules="[(val:any) => !!val || 'El camp és obligatori']"
+                  />
+                </div>
+
+                <div class="col-12">
+                  <q-checkbox
+                    v-model="convocatoriaForm.actual"
+                    label="Marcar com a convocatòria actual"
+                    :rules="[(val:any) => val === true || val === false || 'El camp és obligatori']"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <q-input
+                    v-model="convocatoriaForm.pathDesti"
+                    label="Path destí de la nova convocatòria"
+                    outlined
+                    :rules="[(val:any) => !!val || 'El camp és obligatori']"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <q-input
+                    :model-value="previousConvocatoria?.nom || 'No hi ha convocatòria anterior'"
+                    label="Convocatòria anterior"
+                    outlined
+                    readonly
+                  />
+                </div>
+
+                <div class="col-12">
+                  <q-input
+                    v-model="previousConvocatoriaPathDesti"
+                    label="Nou path destí de la convocatòria anterior"
+                    outlined
+                    :disable="!previousConvocatoria"
+                    :rules="[(val:any) => !!val || 'El camp és obligatori']"
+                  />
+                </div>
+
+                <div class="col-12">
+                  <q-btn
+                    type="submit"
+                    color="primary"
+                    label="Crear convocatòria"
+                    :loading="isSavingConvocatoria"
+                    :disable="!convocatoriaForm.nom || !convocatoriaForm.idCursAcademic || !convocatoriaForm.pathDesti || !previousConvocatoriaPathDesti"
+                  />
+                </div>
+              </div>
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, Ref} from "vue";
+import {computed, nextTick, onMounted, ref, Ref} from "vue";
 import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 import {CursAcademic} from "src/model/CursAcademic";
@@ -135,11 +215,15 @@ const rolsUser = JSON.parse(<string>localStorage.getItem("rol")) || [];
 const isAuthorized = computed(() => rolsUser.some((r: string) => r === Rol.ADMINISTRADOR));
 
 const lastThreeAcademicYears: Ref<CursAcademic[]> = ref([]);
+const allAcademicYears: Ref<CursAcademic[]> = ref([]);
 const selectedCurrentAcademicYearId = ref<number | null>(null);
 const nextAcademicYearName = ref('');
 const markAsCurrent = ref(true);
 const isSaving = ref(false);
 const isUpdatingCurrent = ref(false);
+const isSavingConvocatoria = ref(false);
+const convocatoriaFormRef = ref(null);
+const convocatories: Ref<Convocatoria[]> = ref([]);
 const convocatoriesTableRows = ref([] as {
   id: number;
   nom: string;
@@ -147,11 +231,18 @@ const convocatoriesTableRows = ref([] as {
   actual: boolean;
   pathDesti: string;
 }[]);
+const convocatoriaForm = ref({
+  nom: '',
+  actual: true,
+  idCursAcademic: null as number | null,
+  pathDesti: '00FCT Tramit Actual'
+});
+const previousConvocatoriaPathDesti = ref('');
 
 const convocatoriesColumns: QTableColumn[] = [
   {name: 'nom', label: 'Nom', field: 'nom', align: 'center', sortable: true},
-  {name: 'actual', label: 'Actual', field: 'actual', align: 'center', sortable: true},
   {name: 'cursAcademic', label: 'Curs acadèmic', field: 'cursAcademic', align: 'center', sortable: true},
+  {name: 'actual', label: 'Actual', field: 'actual', align: 'center', sortable: true},
   {name: 'pathDesti', label: 'Path destí', field: 'pathDesti', align: 'center', sortable: true}
 ];
 
@@ -160,6 +251,15 @@ const orderedLastThreeAcademicYears = computed(() =>
     a.nom.localeCompare(b.nom)
   )
 );
+
+const academicYearSelectOptions = computed(() =>
+  allAcademicYears.value.map((cursAcademic: CursAcademic) => ({
+    label: cursAcademic.nom,
+    value: cursAcademic.idcursAcademic
+  }))
+);
+
+const previousConvocatoria = computed(() => convocatories.value[0] || null);
 
 function parseAcademicYearStart(nom: string): number | null {
   const match = nom.match(/^(\d{4})\/(\d{2}|\d{4})$/);
@@ -184,23 +284,32 @@ function buildNextAcademicYearName(cursosAcademics: CursAcademic[]): string {
 }
 
 async function loadData() {
-  const allAcademicYears = await CursAcademicService.getAllCursosAcademics();
-  const convocatories = await ConvocatoriaService.getConvocatories();
-  const actualAcademicYear = allAcademicYears.find((cursAcademic: CursAcademic) => cursAcademic.actual) || null;
+  const academicYears = await CursAcademicService.getAllCursosAcademics();
+  const allConvocatories = await ConvocatoriaService.getAdminConvocatories();
+  const actualAcademicYear = academicYears.find((cursAcademic: CursAcademic) => cursAcademic.actual) || null;
   const academicYearNamesById = new Map(
-    allAcademicYears.map((cursAcademic: CursAcademic) => [cursAcademic.idcursAcademic, cursAcademic.nom])
+    academicYears.map((cursAcademic: CursAcademic) => [cursAcademic.idcursAcademic, cursAcademic.nom])
   );
 
-  lastThreeAcademicYears.value = allAcademicYears.slice(0, 3);
+  allAcademicYears.value = academicYears;
+  convocatories.value = [...allConvocatories].sort((a: Convocatoria, b: Convocatoria) => b.id - a.id);
+  lastThreeAcademicYears.value = academicYears.slice(0, 3);
   selectedCurrentAcademicYearId.value = actualAcademicYear?.idcursAcademic ?? null;
-  nextAcademicYearName.value = buildNextAcademicYearName(allAcademicYears);
-  convocatoriesTableRows.value = convocatories.map((convocatoria: Convocatoria) => ({
-    id: convocatoria.id,
-    nom: convocatoria.nom,
-    cursAcademic: academicYearNamesById.get(convocatoria.idCursAcademic) || '',
-    actual: convocatoria.actual,
-    pathDesti: convocatoria.pathDesti || ''
-  }));
+  nextAcademicYearName.value = buildNextAcademicYearName(academicYears);
+  convocatoriesTableRows.value = [...convocatories.value]
+    .sort((a: Convocatoria, b: Convocatoria) => a.id - b.id)
+    .map((convocatoria: Convocatoria) => ({
+      id: convocatoria.id,
+      nom: convocatoria.nom,
+      cursAcademic: academicYearNamesById.get(convocatoria.idCursAcademic) || '',
+      actual: convocatoria.actual,
+      pathDesti: convocatoria.pathDesti || ''
+    }));
+
+  if (!convocatoriaForm.value.idCursAcademic) {
+    convocatoriaForm.value.idCursAcademic = academicYears[0]?.idcursAcademic || null;
+  }
+  previousConvocatoriaPathDesti.value = '';
 }
 
 async function updateCurrentAcademicYear() {
@@ -269,6 +378,52 @@ async function createNextAcademicYear() {
   }
 }
 
+async function createConvocatoria() {
+  if (!convocatoriaForm.value.nom || !convocatoriaForm.value.idCursAcademic || !convocatoriaForm.value.pathDesti || !previousConvocatoriaPathDesti.value) {
+    return;
+  }
+
+  isSavingConvocatoria.value = true;
+  try {
+    await ConvocatoriaService.createConvocatoria({
+      convocatoria: {
+        nom: convocatoriaForm.value.nom,
+        isActual: convocatoriaForm.value.actual,
+        idCursAcademic: convocatoriaForm.value.idCursAcademic,
+        pathDesti: convocatoriaForm.value.pathDesti
+      },
+      previousConvocatoriaId: previousConvocatoria.value?.id,
+      previousPathDesti: previousConvocatoriaPathDesti.value
+    });
+
+    $q.notify({
+      color: 'positive',
+      message: 'Convocatòria creada correctament',
+      icon: 'check'
+    });
+
+    convocatoriaForm.value = {
+      nom: '',
+      actual: true,
+      idCursAcademic: allAcademicYears.value[0]?.idcursAcademic || null,
+      pathDesti: '00FCT Tramit Actual'
+    };
+    previousConvocatoriaPathDesti.value = '';
+    await nextTick();
+    convocatoriaFormRef.value?.resetValidation();
+
+    await loadData();
+  } catch (error) {
+    $q.notify({
+      color: 'negative',
+      message: 'No s\'ha pogut crear la convocatòria',
+      icon: 'report_problem'
+    });
+  } finally {
+    isSavingConvocatoria.value = false;
+  }
+}
+
 onMounted(async () => {
   if (!isAuthorized.value) {
     return;
@@ -307,6 +462,10 @@ onMounted(async () => {
 }
 
 .current-academic-year-label {
+  font-weight: 700;
+}
+
+.current-convocatoria-row {
   font-weight: 700;
 }
 </style>
