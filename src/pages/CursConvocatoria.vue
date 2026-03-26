@@ -6,69 +6,128 @@
       <h2>Usuari no autoritzat</h2>
     </div>
 
-    <div v-else class="q-gutter-y-md">
-      <q-card flat bordered>
-        <q-card-section>
-          <div class="text-subtitle1 q-mb-md">Tres darrers cursos acadèmics</div>
+    <div v-else class="row q-col-gutter-lg">
+      <div class="col-12 col-lg-6">
+        <q-card flat bordered class="full-height">
+          <q-card-section>
+            <div class="section-title q-mb-md">Tres darrers cursos acadèmics</div>
 
-          <q-option-group
-            v-model="selectedCurrentAcademicYearId"
-            :options="lastThreeAcademicYearOptions"
-            type="radio"
-          />
+          <div class="column q-gutter-sm">
+            <q-radio
+              v-for="cursAcademic in orderedLastThreeAcademicYears"
+              :key="cursAcademic.idcursAcademic"
+              v-model="selectedCurrentAcademicYearId"
+              :val="cursAcademic.idcursAcademic"
+            >
+              <span :class="{ 'current-academic-year-label': cursAcademic.actual }">
+                {{ cursAcademic.nom }}<span v-if="cursAcademic.actual"> (actual)</span>
+              </span>
+            </q-radio>
+          </div>
 
-          <q-btn
-            color="primary"
-            label="Guardar curs actual"
-            class="q-mt-md"
-            :disable="!selectedCurrentAcademicYearId || isUpdatingCurrent"
-            :loading="isUpdatingCurrent"
-            @click="updateCurrentAcademicYear"
-          />
-        </q-card-section>
-      </q-card>
-
-      <q-card flat bordered>
-        <q-card-section>
-          <div class="text-subtitle1 q-mb-md">Crear pròxim curs acadèmic</div>
-
-          <q-form @submit="createNextAcademicYear">
-            <q-input
-              v-model="nextAcademicYearName"
-              label="Pròxim curs acadèmic"
-              outlined
-              readonly
-              class="q-mb-md"
+            <q-btn
+              color="primary"
+              label="Guardar curs actual"
+              class="q-mt-md"
+              :disable="!selectedCurrentAcademicYearId || isUpdatingCurrent"
+              :loading="isUpdatingCurrent"
+              @click="updateCurrentAcademicYear"
             />
+          </q-card-section>
+        </q-card>
+      </div>
 
-            <q-checkbox
-              v-model="markAsCurrent"
-              label="Marcar com a curs actual"
-              class="q-mb-md"
-            />
+      <div class="col-12 col-lg-6">
+        <q-card flat bordered class="full-height">
+          <q-card-section>
+            <div class="section-title q-mb-md">Crear pròxim curs acadèmic</div>
 
-            <div>
-              <q-btn
-                type="submit"
-                color="primary"
-                label="Crear curs acadèmic"
-                :disable="!nextAcademicYearName || isSaving"
-                :loading="isSaving"
+            <q-form @submit="createNextAcademicYear">
+              <q-input
+                v-model="nextAcademicYearName"
+                label="Pròxim curs acadèmic"
+                outlined
+                readonly
+                class="q-mb-md"
               />
-            </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
+
+              <q-checkbox
+                v-model="markAsCurrent"
+                label="Marcar com a curs actual"
+                class="q-mb-md"
+              />
+
+              <div>
+                <q-btn
+                  type="submit"
+                  color="primary"
+                  label="Crear curs acadèmic"
+                  :disable="!nextAcademicYearName || isSaving"
+                  :loading="isSaving"
+                />
+              </div>
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <div class="col-12">
+        <q-card flat bordered>
+          <q-card-section>
+            <div class="section-title q-mb-md">Convocatòries</div>
+
+            <q-table
+              flat
+              bordered
+              :rows="convocatoriesTableRows"
+              :columns="convocatoriesColumns"
+              row-key="id"
+              binary-state-sort
+            >
+              <template v-slot:header="props">
+                <q-tr :props="props">
+                  <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                    class="text-wrap-center table-header-cell"
+                  >
+                    {{ col.label }}
+                  </q-th>
+                </q-tr>
+              </template>
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td key="nom" :props="props" class="text-wrap-center">
+                    {{ props.row.nom }}
+                  </q-td>
+                  <q-td key="actual" :props="props" class="text-wrap-center">
+                    {{ props.row.actual ? 'Sí' : 'No' }}
+                  </q-td>
+                  <q-td key="cursAcademic" :props="props" class="text-wrap-center">
+                    {{ props.row.cursAcademic }}
+                  </q-td>
+                  <q-td key="pathDesti" :props="props" class="text-wrap-center">
+                    {{ props.row.pathDesti }}
+                  </q-td>
+                </q-tr>
+              </template>
+            </q-table>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import {computed, onMounted, ref, Ref} from "vue";
-import {useQuasar} from "quasar";
+import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 import {CursAcademic} from "src/model/CursAcademic";
 import {CursAcademicService} from "src/service/CursAcademicService";
+import {ConvocatoriaService} from "src/service/ConvocatoriaService";
+import {Convocatoria} from "src/model/Convocatoria";
 
 const $q = useQuasar();
 
@@ -81,12 +140,25 @@ const nextAcademicYearName = ref('');
 const markAsCurrent = ref(true);
 const isSaving = ref(false);
 const isUpdatingCurrent = ref(false);
+const convocatoriesTableRows = ref([] as {
+  id: number;
+  nom: string;
+  cursAcademic: string;
+  actual: boolean;
+  pathDesti: string;
+}[]);
 
-const lastThreeAcademicYearOptions = computed(() =>
-  lastThreeAcademicYears.value.map((cursAcademic: CursAcademic) => ({
-    label: cursAcademic.nom,
-    value: cursAcademic.idcursAcademic
-  }))
+const convocatoriesColumns: QTableColumn[] = [
+  {name: 'nom', label: 'Nom', field: 'nom', align: 'center', sortable: true},
+  {name: 'actual', label: 'Actual', field: 'actual', align: 'center', sortable: true},
+  {name: 'cursAcademic', label: 'Curs acadèmic', field: 'cursAcademic', align: 'center', sortable: true},
+  {name: 'pathDesti', label: 'Path destí', field: 'pathDesti', align: 'center', sortable: true}
+];
+
+const orderedLastThreeAcademicYears = computed(() =>
+  [...lastThreeAcademicYears.value].sort((a: CursAcademic, b: CursAcademic) =>
+    a.nom.localeCompare(b.nom)
+  )
 );
 
 function parseAcademicYearStart(nom: string): number | null {
@@ -113,11 +185,22 @@ function buildNextAcademicYearName(cursosAcademics: CursAcademic[]): string {
 
 async function loadData() {
   const allAcademicYears = await CursAcademicService.getAllCursosAcademics();
+  const convocatories = await ConvocatoriaService.getConvocatories();
   const actualAcademicYear = allAcademicYears.find((cursAcademic: CursAcademic) => cursAcademic.actual) || null;
+  const academicYearNamesById = new Map(
+    allAcademicYears.map((cursAcademic: CursAcademic) => [cursAcademic.idcursAcademic, cursAcademic.nom])
+  );
 
   lastThreeAcademicYears.value = allAcademicYears.slice(0, 3);
   selectedCurrentAcademicYearId.value = actualAcademicYear?.idcursAcademic ?? null;
   nextAcademicYearName.value = buildNextAcademicYearName(allAcademicYears);
+  convocatoriesTableRows.value = convocatories.map((convocatoria: Convocatoria) => ({
+    id: convocatoria.id,
+    nom: convocatoria.nom,
+    cursAcademic: academicYearNamesById.get(convocatoria.idCursAcademic) || '',
+    actual: convocatoria.actual,
+    pathDesti: convocatoria.pathDesti || ''
+  }));
 }
 
 async function updateCurrentAcademicYear() {
@@ -208,3 +291,22 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000;
+  letter-spacing: 0.01em;
+}
+
+.table-header-cell {
+  background: #f3f3f3;
+  font-weight: 700;
+  color: #000;
+}
+
+.current-academic-year-label {
+  font-weight: 700;
+}
+</style>

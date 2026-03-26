@@ -1,5 +1,4 @@
 import {axios}  from 'boot/axios'
-import {Curs} from "src/model/Curs";
 import {Convocatoria} from "src/model/Convocatoria";
 
 export class ConvocatoriaService {
@@ -21,7 +20,9 @@ export class ConvocatoriaService {
     return {
       id: json.idConvocatoria,
       nom: json.nom,
-      actual: json.isActual
+      actual: json.isActual,
+      pathDesti: json.pathDesti,
+      idCursAcademic: json.idCursAcademic
     }
   }
 }
