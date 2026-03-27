@@ -257,8 +257,8 @@ export class DocumentService {
     });
   }
 
-  static async saveDocumentExtra(document: Document, curs: string, tipusDocument: string, idusuari?: number): Promise<Document> {
-    const response = await axios.post(process.env.API + '/api/gestordocumental/documents/saveDocumentExtra', {
+  static async saveDocumentExtra(document: Document, curs: string, tipusDocument: string, idConvocatoria: string, idusuari?: number): Promise<Document> {
+    const response = await axios.post(process.env.API + '/api/gestordocumental/documents/saveDocumentExtra?idConvocatoria=' + idConvocatoria, {
       document: document,
       curs: curs,
       idusuari: idusuari,

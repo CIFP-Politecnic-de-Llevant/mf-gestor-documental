@@ -616,7 +616,7 @@ async function selectGrup(grup: Grup) {
 
 async function saveDocumentExtra(document: Document, tipus: string, tipusDocument: string, idusuari?: number) {
   uploadDocument.value = true;
-  const documentSaved: Document = await DocumentService.saveDocumentExtra(document, grupSelected.value.curs.nom + grupSelected.value.nom, tipusDocument, idusuari);
+  const documentSaved: Document = await DocumentService.saveDocumentExtra(document, grupSelected.value.curs.nom + grupSelected.value.nom, tipusDocument, convocatoria.value.id.toString(), idusuari);
 
   documentSaved.file = document.file;
   await sendFile(documentSaved);
