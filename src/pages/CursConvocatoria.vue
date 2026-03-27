@@ -154,6 +154,13 @@
                   />
                 </div>
 
+                <div class="col-12">
+                  <q-checkbox
+                    v-model="convocatoriaForm.applyDriveChanges"
+                    label="Aplicar automàticament els canvis a la unitat compartida de Google Drive"
+                  />
+                </div>
+
                 <div class="col-12 col-md-6">
                   <q-input
                     v-model="convocatoriaForm.pathDesti"
@@ -235,7 +242,8 @@ const convocatoriaForm = ref({
   nom: '',
   actual: true,
   idCursAcademic: null as number | null,
-  pathDesti: '00FCT Tramit Actual'
+  pathDesti: '00FCT Tramit Actual',
+  applyDriveChanges: true
 });
 const previousConvocatoriaPathDesti = ref('');
 
@@ -393,7 +401,8 @@ async function createConvocatoria() {
         pathDesti: convocatoriaForm.value.pathDesti
       },
       previousConvocatoriaId: previousConvocatoria.value?.id,
-      previousPathDesti: previousConvocatoriaPathDesti.value
+      previousPathDesti: previousConvocatoriaPathDesti.value,
+      applyDriveChanges: convocatoriaForm.value.applyDriveChanges
     });
 
     $q.notify({
@@ -406,7 +415,8 @@ async function createConvocatoria() {
       nom: '',
       actual: true,
       idCursAcademic: allAcademicYears.value[0]?.idcursAcademic || null,
-      pathDesti: '00FCT Tramit Actual'
+      pathDesti: '00FCT Tramit Actual',
+      applyDriveChanges: true
     };
     previousConvocatoriaPathDesti.value = '';
     await nextTick();

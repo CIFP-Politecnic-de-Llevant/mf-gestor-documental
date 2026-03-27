@@ -38,6 +38,7 @@ export class ConvocatoriaService {
     };
     previousConvocatoriaId?: number;
     previousPathDesti?: string;
+    applyDriveChanges?: boolean;
   }): Promise<Convocatoria> {
     const response = await axios.post(process.env.API + '/api/gestordocumental/admin/convocatories', payload);
     return this.fromJSON(response.data);
