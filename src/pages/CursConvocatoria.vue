@@ -161,6 +161,55 @@
                   />
                 </div>
 
+                <div class="col-12">
+                  <q-banner class="bg-orange-2 text-dark q-mb-md" rounded>
+                    <div class="text-weight-bold q-mb-xs">ATENCIÓ</div>
+                    <div>Esborrar carpetes Q_FEMPO i FCT si no es tria fer-ho de forma automàtica</div>
+                  </q-banner>
+                </div>
+
+                <div class="col-12">
+                  <q-checkbox
+                    v-model="deleteOriginDocuments"
+                    label="Eliminar documents origen Q_FEMPO i FCT automàticament"
+                  />
+                </div>
+
+                <template v-if="deleteOriginDocuments">
+                  <div class="col-12">
+                    <q-banner class="bg-red-2 text-dark q-mb-md" rounded>
+                      <div class="text-weight-bold q-mb-xs">Avís</div>
+                      <div>Documents dins FCT s'esborraran automàticament</div>
+                    </q-banner>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="row items-center q-mb-sm">
+                      <div class="text-subtitle1 text-weight-bold q-mr-md">Selecció de carpetes Q_FEMPO a eliminar</div>
+                      <q-checkbox
+                        v-if="availableQFempoFolders.length > 0"
+                        :model-value="selectedQFempoFolders.length === availableQFempoFolders.length"
+                        :indeterminate-value="selectedQFempoFolders.length > 0 && selectedQFempoFolders.length < availableQFempoFolders.length"
+                        label="Seleccionar totes"
+                        @update:model-value="toggleSelectAllFempoFolders"
+                      />
+                    </div>
+                    <q-spinner v-if="isLoadingFempoFolders" />
+                    <div v-else-if="availableQFempoFolders.length === 0" class="text-grey">
+                      No s'han trobat carpetes Q_FEMPO
+                    </div>
+                    <div v-else class="row q-gutter-sm">
+                      <div v-for="folder in availableQFempoFolders" :key="folder" class="col-12 col-sm-6 col-md-4">
+                        <q-checkbox
+                          v-model="selectedQFempoFolders"
+                          :val="folder"
+                          :label="folder"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
                 <div class="col-12 col-md-6">
                   <q-input
                     v-model="convocatoriaForm.pathDesti"
@@ -208,7 +257,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, ref, Ref} from "vue";
+import {computed, nextTick, onMounted, ref, Ref, watch} from "vue";
 import {QTableColumn, useQuasar} from "quasar";
 import {Rol} from "src/model/Rol";
 import {CursAcademic} from "src/model/CursAcademic";
@@ -246,6 +295,14 @@ const convocatoriaForm = ref({
   applyDriveChanges: true
 });
 const previousConvocatoriaPathDesti = ref('');
+const deleteOriginDocuments = ref(false);
+const selectedQFempoFolders = ref<string[]>([]);
+const availableQFempoFolders = ref<string[]>([]);
+const isLoadingFempoFolders = ref(false);
+
+function toggleSelectAllFempoFolders(val: boolean) {
+  selectedQFempoFolders.value = val ? [...availableQFempoFolders.value] : [];
+}
 
 const convocatoriesColumns: QTableColumn[] = [
   {name: 'nom', label: 'Nom', field: 'nom', align: 'center', sortable: true},
@@ -268,6 +325,26 @@ const academicYearSelectOptions = computed(() =>
 );
 
 const previousConvocatoria = computed(() => convocatories.value[0] || null);
+
+watch(deleteOriginDocuments, async (newVal) => {
+  if (newVal) {
+    isLoadingFempoFolders.value = true;
+    try {
+      availableQFempoFolders.value = await ConvocatoriaService.getQFempoFolders();
+      selectedQFempoFolders.value = [];
+    } catch (error) {
+      $q.notify({
+        color: 'negative',
+        message: 'No s\'han pogut carregar les carpetes Q_FEMPO',
+        icon: 'report_problem'
+      });
+    } finally {
+      isLoadingFempoFolders.value = false;
+    }
+  } else {
+    selectedQFempoFolders.value = [];
+  }
+});
 
 function parseAcademicYearStart(nom: string): number | null {
   const match = nom.match(/^(\d{4})\/(\d{2}|\d{4})$/);
@@ -402,7 +479,9 @@ async function createConvocatoria() {
       },
       previousConvocatoriaId: previousConvocatoria.value?.id,
       previousPathDesti: previousConvocatoriaPathDesti.value,
-      applyDriveChanges: convocatoriaForm.value.applyDriveChanges
+      applyDriveChanges: convocatoriaForm.value.applyDriveChanges,
+      deleteOriginDocuments: deleteOriginDocuments.value,
+      selectedQFempoFolders: deleteOriginDocuments.value ? selectedQFempoFolders.value : []
     });
 
     $q.notify({
@@ -419,6 +498,8 @@ async function createConvocatoria() {
       applyDriveChanges: true
     };
     previousConvocatoriaPathDesti.value = '';
+    deleteOriginDocuments.value = false;
+    selectedQFempoFolders.value = [];
     await nextTick();
     convocatoriaFormRef.value?.resetValidation();
 

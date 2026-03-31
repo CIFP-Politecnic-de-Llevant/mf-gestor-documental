@@ -29,6 +29,16 @@ export class ConvocatoriaService {
     }
   }
 
+  static async getQFempoFolders(): Promise<string[]> {
+    try {
+      const response = await axios.get(process.env.API + '/api/gestordocumental/admin/convocatories/fempo-folders');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching FEMPO folders', error);
+      return [];
+    }
+  }
+
   static async createConvocatoria(payload: {
     convocatoria: {
       nom: string;
@@ -39,6 +49,8 @@ export class ConvocatoriaService {
     previousConvocatoriaId?: number;
     previousPathDesti?: string;
     applyDriveChanges?: boolean;
+    deleteOriginDocuments?: boolean;
+    selectedQFempoFolders?: string[];
   }): Promise<Convocatoria> {
     const response = await axios.post(process.env.API + '/api/gestordocumental/admin/convocatories', payload);
     return this.fromJSON(response.data);
