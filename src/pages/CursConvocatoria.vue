@@ -207,6 +207,18 @@
                         />
                       </div>
                     </div>
+                    <!-- Botó de test ocult per producció. Descomentar per provar el borrat de carpetes Q_FEMPO + FCT -->
+                    <!--
+                    <q-btn
+                      color="warning"
+                      text-color="dark"
+                      label="TEST: Esborrar carpetes Q_FEMPO seleccionades"
+                      class="q-mt-md"
+                      :disable="selectedQFempoFolders.length === 0 || isDeletingTestFempo"
+                      :loading="isDeletingTestFempo"
+                      @click="testDeleteFempoFolders"
+                    />
+                    -->
                   </div>
                 </template>
 
@@ -299,9 +311,41 @@ const deleteOriginDocuments = ref(false);
 const selectedQFempoFolders = ref<string[]>([]);
 const availableQFempoFolders = ref<string[]>([]);
 const isLoadingFempoFolders = ref(false);
+const isDeletingTestFempo = ref(false);
 
 function toggleSelectAllFempoFolders(val: boolean) {
   selectedQFempoFolders.value = val ? [...availableQFempoFolders.value] : [];
+}
+
+async function testDeleteFempoFolders() {
+  if (selectedQFempoFolders.value.length === 0) return;
+
+  $q.dialog({
+    title: 'Confirmar eliminació de test',
+    message: `S'esborraran ${selectedQFempoFolders.value.length} carpeta/es Q_FEMPO. Aquesta acció és irreversible.`,
+    cancel: true,
+    persistent: true
+  }).onOk(async () => {
+    isDeletingTestFempo.value = true;
+    try {
+      await ConvocatoriaService.testDeleteFempoFolders(selectedQFempoFolders.value);
+      $q.notify({
+        color: 'positive',
+        message: 'Carpetes Q_FEMPO esborrades correctament',
+        icon: 'check'
+      });
+      selectedQFempoFolders.value = [];
+      availableQFempoFolders.value = await ConvocatoriaService.getQFempoFolders();
+    } catch (error) {
+      $q.notify({
+        color: 'negative',
+        message: 'Error esborrant carpetes Q_FEMPO',
+        icon: 'report_problem'
+      });
+    } finally {
+      isDeletingTestFempo.value = false;
+    }
+  });
 }
 
 const convocatoriesColumns: QTableColumn[] = [

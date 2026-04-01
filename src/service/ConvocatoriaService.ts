@@ -39,6 +39,10 @@ export class ConvocatoriaService {
     }
   }
 
+  static async testDeleteFempoFolders(folderNames: string[]): Promise<void> {
+    await axios.post(process.env.API + '/api/gestordocumental/admin/convocatories/test-delete-fempo-folders', folderNames);
+  }
+
   static async createConvocatoria(payload: {
     convocatoria: {
       nom: string;
