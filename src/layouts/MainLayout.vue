@@ -98,6 +98,14 @@
             <q-item-label>Configuració Alumnes</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable to="/cursConvocatoria" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR)">
+          <q-item-section avatar>
+            <q-icon name="calendar_month" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Curs i Convocatòria</q-item-label>
+          </q-item-section>
+        </q-item>
         <!--q-item clickable to="/fct/programaFormatiu" v-if="rolsUser.find((rol:any)=>rol===rols.ADMINISTRADOR || rol===rols.ADMINISTRADOR_FCT)">
           <q-item-section avatar>
             <q-icon name="book" />

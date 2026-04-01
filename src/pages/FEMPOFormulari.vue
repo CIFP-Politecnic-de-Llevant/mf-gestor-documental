@@ -6,8 +6,15 @@
       </div>
       <div class="row col-md-8 q-mt-xs">
         <p class="q-pt-lg q-mr-sm text-apartat">Curs Escolar: </p>
-        <q-input placeholder="25/26" dense class="q-pt-sm q-mt-xs" color="primary" v-model="formData.anyCurs"
-                 label="      "/>
+        <q-select
+          dense
+          class="q-pt-sm q-mt-xs"
+          color="primary"
+          v-model="formData.anyCurs"
+          :options="academicYearOptions"
+          label="      "
+          :clearable="false"
+        />
       </div>
     </div>
     <div class="border">
@@ -1154,6 +1161,7 @@ import IStudentListItem from "src/Interfaces/IStudentListItem";
 import ICompanyListItem from "src/Interfaces/ICompanyListItem";
 import {GrupService} from "src/service/GrupService";
 import {TutorEmpresa} from "src/model/TutorEmpresa";
+import {CursAcademicService} from "src/service/CursAcademicService";
 
 const $q = useQuasar();
 
@@ -1185,6 +1193,7 @@ const tutorFCT: Ref<Usuari> = ref({} as Usuari);
 const formulariAlumnes = ref(null)
 
 const allNomGrups = ref([] as string[]);
+const academicYearOptions = ref([] as string[]);
 
 const ciclesFormatius = [
   'FP Bàsica Manteniment de vehicles',
@@ -1206,7 +1215,7 @@ const ciclesFormatius = [
 ];
 
 const formData: Ref<DadesFormulari> = ref({
-  anyCurs: '2025/26',
+  anyCurs: '',
   nomAlumne: '',
   llinatgesAlumne: '',
   poblacioAlumne: '',
@@ -1667,6 +1676,24 @@ async function updateCompanySelector() {
   selectedCompany.value = updatedEmpresa;
 }
 
+async function loadCurrentAcademicYear() {
+  try {
+    const [currentAcademicYear, allAcademicYears] = await Promise.all([
+      CursAcademicService.getCursAcademicActualNom(),
+      CursAcademicService.getAllCursAcademicNoms()
+    ]);
+
+    academicYearOptions.value = allAcademicYears;
+    formData.value.anyCurs = currentAcademicYear;
+  } catch (error) {
+    $q.notify({
+      color: 'warning',
+      message: "No s'han pogut carregar els cursos acadèmics",
+      icon: 'warning'
+    });
+  }
+}
+
 onMounted(async () => {
 
   const dialog = $q.dialog({
@@ -1679,6 +1706,7 @@ onMounted(async () => {
   allStudents.value = await UsuariService.allStudents();
   allCompanies.value = await EmpresaService.allCompanies();
   tutorFCT.value = await UsuariService.getProfile();
+  await loadCurrentAcademicYear();
 
   formData.value.nomTutor = tutorFCT.value.nom;
   formData.value.llinatgesTutor = tutorFCT.value.cognom1 + " " + tutorFCT.value.cognom2;
