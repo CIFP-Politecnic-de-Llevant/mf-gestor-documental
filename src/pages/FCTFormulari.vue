@@ -810,7 +810,7 @@ const ciclesFormatius = [
   'CFGS Automoció',
   "CFGS Desenvolupament d'aplicacions web",
   'CFGS Gestió de Vendes i Espais Comercials',
-  'CFGS Màrketing i publicitat',
+  'CFGS Màrqueting i publicitat',
   'CP Automoció',
   'CP Electricitat'
 ];
@@ -906,7 +906,7 @@ function selectStudent(student: Alumne) {
   11- 'CFGS Automoció', - TMV31
   12- "CFGS Desenvolupament d'aplicacions web", - IFC33
   13- 'CFGS Gestió de Vendes i Espais Comercials', - COM33
-  14- 'CFGS Màrketing i publicitat' - COM31
+  14- 'CFGS Màrqueting i publicitat' - COM31
    */
   /*
     Mapeig de Cicles Formatius
