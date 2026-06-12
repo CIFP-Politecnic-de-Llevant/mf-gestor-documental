@@ -585,8 +585,8 @@ async function selectGrup(grup: Grup) {
       return 0;
     });
 
-  // Del grup només mostrem 1 document, el MD020675
-  documentsGrup.value = documentsAll.filter(d => !d.usuari && (d.tipusDocument && d.tipusDocument.nom && d.tipusDocument.nom.startsWith('MD020675'))).sort((a: Document, b: Document) => {
+  // Del grup només mostrem els documents MD020675 i MD020681
+  documentsGrup.value = documentsAll.filter(d => !d.usuari && (d.tipusDocument && d.tipusDocument.nom && (d.tipusDocument.nom.startsWith('MD020675') || d.tipusDocument.nom.startsWith('MD020681')))).sort((a: Document, b: Document) => {
     if (!a.tipusDocument) {
       return -1;
     }
