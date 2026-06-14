@@ -95,7 +95,7 @@
                 </q-file>
 
                 <q-btn
-                  @click="sendFile(props.row)"
+                  @click="sendFileGrup(props.row)"
                   :color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
                   :text-color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
                   round
@@ -600,6 +600,21 @@ async function selectGrup(grup: Grup) {
     return 0;
   });
 
+  // Solució temporal: si el grup encara no té cap MD020681, mostrem una fila
+  // placeholder perquè es pugui crear i enviar amb el botó "send"
+  if (!documentsGrup.value.some(d => d.tipusDocument?.nom?.startsWith('MD020681'))) {
+    documentsGrup.value.push({
+      id: '', nomOriginal: '', id_googleDrive: '', documentEstat: '',
+      observacions: '', visibilitat: true,
+      tipusDocument: {
+        id: '', nom: 'MD020681 Memòria final FEMPO',
+        descripcio: 'MD020681 Memòria final FEMPO', propietari: 'GRUP'
+      }
+    });
+    documentsGrup.value.sort((a: Document, b: Document) =>
+      (a.tipusDocument?.descripcio || '').localeCompare(b.tipusDocument?.descripcio || ''));
+  }
+
   //Que es mostrin es visibles per defecte
   documentsUsuariFiltrats.value = documentsUsuari.value.filter(d => {
     return d.visibilitat;
@@ -659,6 +674,21 @@ async function sendFile(document: Document) {
   }
 }
 
+async function sendFileGrup(document: Document) {
+  if (!document.id) { // fila placeholder: encara no existeix a pll_document
+    if (!document.file) {
+      $q.notify({type: 'warning', message: "Adjunta un fitxer PDF abans d'enviar"});
+      return;
+    }
+    // crea el document de tipus 'Grup' (MD020681), hi puja el fitxer i l'afegeix a documentsGrup
+    await saveDocumentExtra(document, 'Grup', document.tipusDocument!.nom, undefined);
+    const idx = documentsGrup.value.indexOf(document);
+    if (idx > -1) documentsGrup.value.splice(idx, 1);
+  } else {
+    await sendFile(document);
+  }
+}
+
 async function getURL(document: Document) {
   const documentSaved: Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
   const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
@@ -677,6 +707,9 @@ async function viewPdf(document: Document) {
 }
 
 function checkDeletePermission(document: Document) {
+  if (!document.id)
+    return false;
+
   if (isAuthorizedDeleteDocuments.value)
     return true;
 
