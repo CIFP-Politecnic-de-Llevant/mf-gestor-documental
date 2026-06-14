@@ -395,7 +395,7 @@ function setTutors(index: number) {
 }
 
 function changeEstatDocument(document: Document, estat: string) {
-  DocumentService.changeEstatDocument(document, estat);
+  DocumentService.changeEstatDocument(document, estat, convocatoria.value.id.toString());
 }
 
 const debouncedChangeObservacionsDocument = debounce((document: Document, observacions: string) => {

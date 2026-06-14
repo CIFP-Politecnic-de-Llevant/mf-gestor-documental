@@ -211,8 +211,12 @@ export class DocumentService {
     }
   }
 
-  static async changeEstatDocument(document: Document, estat: string) {
-    const response = await axios.post(process.env.API + '/api/gestordocumental/document/canviarEstatDocument', {
+  static async changeEstatDocument(document: Document, estat: string, idConvocatoria: string) {
+    let url = process.env.API + '/api/gestordocumental/document/canviarEstatDocument';
+    if (idConvocatoria) {
+      url += '?idConvocatoria=' + idConvocatoria;
+    }
+    const response = await axios.post(url, {
       idDocument: document.id,
       estat: estat
     });
