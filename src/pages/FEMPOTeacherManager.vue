@@ -130,8 +130,8 @@
 
                 <q-btn
                   @click="deleteDocument(props.row)"
-                  :color="!props.row.fitxer ? 'white' : 'primary'"
-                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :color="checkDeletePermission(props.row) ? 'primary' : 'white'"
+                  :text-color="checkDeletePermission(props.row) ? 'white' : 'primary'"
                   :disable="!checkDeletePermission(props.row)"
                   round
                   dense
@@ -333,8 +333,8 @@
 
                 <q-btn
                   @click="deleteDocument(props.row)"
-                  :color="!props.row.fitxer ? 'white' : 'primary'"
-                  :text-color="!props.row.fitxer ? 'primary' : 'white'"
+                  :color="checkDeletePermission(props.row) ? 'primary' : 'white'"
+                  :text-color="checkDeletePermission(props.row) ? 'white' : 'primary'"
                   :disable="!checkDeletePermission(props.row)"
                   round
                   dense
@@ -725,7 +725,10 @@ function checkDeletePermission(document: Document) {
 function deleteDocument(document: Document) {
   $q.dialog({
     title: "Està segur que vol eliminar el document?",
-    message: "Aquesta acció no es pot desfer",
+    message: "Aquesta acció no es pot desfer.<br><br>" +
+      "<strong class='text-negative'>⚠️ ATENCIÓ: aquest procés elimina el document de l'aplicació i NO serveix per \"despenjar\" el document enviat. " +
+      "Es pot substituir el document enviat enviant un altre document.</strong>",
+    html: true,
     cancel: true
   }).onOk(async () => {
     await DocumentService.deleteDocument(document, convocatoria.value.id.toString());
