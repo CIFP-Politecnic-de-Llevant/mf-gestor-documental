@@ -5,6 +5,7 @@ import {FitxerBucket} from "src/model/google/FitxerBucket";
 export interface Document {
   id: string;
   nomOriginal: string;
+  nomDocument?: string;
   id_googleDrive:string;
   documentEstat: string;
   observacions: string;

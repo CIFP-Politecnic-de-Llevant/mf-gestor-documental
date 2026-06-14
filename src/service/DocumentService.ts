@@ -333,6 +333,7 @@ export class DocumentService {
       const document: Document = {
         id: json.idDocument,
         nomOriginal: json.nomOriginal,
+        nomDocument: json.nomDocument,
         id_googleDrive: json.idGoogleDrive,
         documentEstat: json.estat,
         observacions: json.observacions,

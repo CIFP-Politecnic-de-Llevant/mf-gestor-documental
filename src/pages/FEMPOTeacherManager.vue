@@ -69,6 +69,9 @@
               <span v-if="!props.row.id_googleDrive">{{ props.row.tipusDocument.descripcio }}</span-->
               {{ props.row.tipusDocument.descripcio }}
             </q-td>
+            <q-td key="nomDocument" :props="props" class="text-wrap">
+              {{ props.row.nomDocument }}
+            </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
                 v-if="props.row.documentSignatures && props.row.documentSignatures.find(s=>s.signatura.id===signatura.id)"
@@ -265,6 +268,9 @@
               <!--a class="text-secondary" v-if="props.row.id_googleDrive" :href="`https://docs.google.com/document/d/${props.row.id_googleDrive}`" target="_blank"><q-icon name="open_in_new" size="xs"></q-icon> {{props.row.tipusDocument.descripcio}}</a>
               <span v-if="!props.row.id_googleDrive">{{ props.row.tipusDocument.descripcio }}</span-->
               {{ props.row.tipusDocument.descripcio }}
+            </q-td>
+            <q-td key="nomDocument" :props="props" class="text-wrap">
+              {{ props.row.nomDocument }}
             </q-td>
             <q-td key="estat" :props="props" class="text-wrap">
               {{ props.row.documentEstat }}
@@ -951,6 +957,13 @@ onMounted(async () => {
   });
 
   columnsGrup.value.push({
+    name: 'nomDocument',
+    label: 'Nom',
+    field: row => row.nomDocument || '',
+    sortable: true
+  });
+
+  columnsGrup.value.push({
     name: 'document',
     label: 'Document',
     field: row => row,
@@ -969,6 +982,13 @@ onMounted(async () => {
     name: 'tipusDocument',
     label: 'Document',
     field: row => row.tipusDocument?.nom || '',
+    sortable: true
+  });
+
+  columnsUsuari.value.push({
+    name: 'nomDocument',
+    label: 'Nom',
+    field: row => row.nomDocument || '',
     sortable: true
   });
 
