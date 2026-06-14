@@ -70,7 +70,7 @@
               {{ props.row.tipusDocument.descripcio }}
             </q-td>
             <q-td key="nomDocument" :props="props" class="text-wrap">
-              {{ props.row.nomDocument }}
+              {{ props.row.nomDocument || props.row.tipusDocument.descripcio }}
             </q-td>
             <q-td v-for="signatura in signatures" :key="signatura.id" :props="props">
               <q-checkbox
@@ -270,7 +270,7 @@
               {{ props.row.tipusDocument.descripcio }}
             </q-td>
             <q-td key="nomDocument" :props="props" class="text-wrap">
-              {{ props.row.nomDocument }}
+              {{ props.row.nomDocument || props.row.tipusDocument.descripcio }}
             </q-td>
             <q-td key="estat" :props="props" class="text-wrap">
               {{ props.row.documentEstat }}
@@ -959,7 +959,7 @@ onMounted(async () => {
   columnsGrup.value.push({
     name: 'nomDocument',
     label: 'Nom',
-    field: row => row.nomDocument || '',
+    field: row => row.nomDocument || row.tipusDocument?.descripcio || '',
     sortable: true
   });
 
@@ -988,7 +988,7 @@ onMounted(async () => {
   columnsUsuari.value.push({
     name: 'nomDocument',
     label: 'Nom',
-    field: row => row.nomDocument || '',
+    field: row => row.nomDocument || row.tipusDocument?.descripcio || '',
     sortable: true
   });
 
