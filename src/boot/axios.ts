@@ -101,6 +101,8 @@ export default boot(({ app,router }) => {
     } else {
       console.log(error,error.response, error.request)
     }
+
+    return Promise.reject(error);
   });
 
   app.config.globalProperties.$axios = axios;

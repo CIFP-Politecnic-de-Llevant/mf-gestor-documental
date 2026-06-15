@@ -89,6 +89,8 @@
                   clearable
                   dense
                   :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
+                  :max-file-size="maxFileSize"
+                  @rejected="onFileRejected"
                   input-style="width: 50px;"
                   class="q-mr-xs"
                 >
@@ -101,6 +103,8 @@
                   @click="sendFileGrup(props.row)"
                   :color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
                   :text-color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
+                  :loading="props.row.sending"
+                  :disable="props.row.sending"
                   round
                   dense
                   icon="send"
@@ -292,6 +296,8 @@
                   clearable
                   dense
                   :disable="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat)"
+                  :max-file-size="maxFileSize"
+                  @rejected="onFileRejected"
                   input-style="width: 50px;"
                   class="q-mr-xs"
                 >
@@ -304,6 +310,8 @@
                   @click="sendFile(props.row)"
                   :color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'white' : 'primary'"
                   :text-color="props.row.documentSignatures && props.row.documentSignatures.some(s=>!s.signat) ? 'primary' : 'white'"
+                  :loading="props.row.sending"
+                  :disable="props.row.sending"
                   round
                   dense
                   icon="send"
@@ -439,6 +447,8 @@
               hint=".pdf"
               clearable
               dense
+              :max-file-size="maxFileSize"
+              @rejected="onFileRejected"
               class="q-mt-lg"
             >
               <template v-slot:prepend>
@@ -448,6 +458,7 @@
 
             <q-btn color="primary" class="q-mt-lg"
                    @click="saveDocumentExtra(documentExtra,tipusDocumentExtra,optionsDocumentExtraSelected,documentExtra.usuari?.id)"
+                   :loading="uploadDocument"
                    :disable="uploadDocument"
             >Enviar document
             </q-btn>
@@ -521,6 +532,7 @@ const estatSeleccionat: Ref<string | null> = ref('TOTS');
 const documentEstats = ['TOTS', 'PENDENT', 'ACCEPTAT', 'REBUTJAT'];
 
 // document
+const maxFileSize = 100 * 1024 * 1024; // 100MB
 const uploadDocument = ref(false);
 const showPdfDialog = ref(false);
 const pdf: Ref<FitxerBucket | null> = ref({} as FitxerBucket);
@@ -637,46 +649,64 @@ async function selectGrup(grup: Grup) {
 
 async function saveDocumentExtra(document: Document, tipus: string, tipusDocument: string, idusuari?: number) {
   uploadDocument.value = true;
-  const documentSaved: Document = await DocumentService.saveDocumentExtra(document, grupSelected.value.curs.nom + grupSelected.value.nom, tipusDocument, convocatoria.value.id.toString(), idusuari);
+  try {
+    const documentSaved: Document = await DocumentService.saveDocumentExtra(document, grupSelected.value.curs.nom + grupSelected.value.nom, tipusDocument, convocatoria.value.id.toString(), idusuari);
 
-  documentSaved.file = document.file;
-  await sendFile(documentSaved);
+    documentSaved.file = document.file;
+    await sendFile(documentSaved);
 
-  const documentFitxer: Document = await DocumentService.getDocumentById(documentSaved.id, convocatoria.value.id.toString());
-  const fitxer = await DocumentService.getURLFitxerDocument(documentFitxer);
+    const documentFitxer: Document = await DocumentService.getDocumentById(documentSaved.id, convocatoria.value.id.toString());
+    const fitxer = await DocumentService.getURLFitxerDocument(documentFitxer);
 
-  if (fitxer) {
-    documentSaved.fitxer = fitxer;
+    if (fitxer) {
+      documentSaved.fitxer = fitxer;
+    }
+
+    if (tipus === 'Grup') {
+      documentsGrup.value.push(documentSaved);
+    } else {
+      documentsUsuari.value.push(documentSaved);
+    }
+    filterDocuments();
+    addDocument.value = false;
+  } catch (e) {
+    console.log(e);
+    $q.notify({type: 'negative', message: "Error en enviar el document. Torna-ho a provar."});
+  } finally {
+    uploadDocument.value = false;
   }
-
-  if (tipus === 'Grup') {
-    documentsGrup.value.push(documentSaved);
-  } else {
-    documentsUsuari.value.push(documentSaved);
-  }
-  filterDocuments();
-  addDocument.value = false;
-  uploadDocument.value = false;
 }
 
 async function sendFile(document: Document) {
   console.log("Entra send file")
-  await DocumentService.uploadDocument(document, convocatoria.value.id.toString());
-  const documentSaved: Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
-  const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
-  if (fitxer) {
-    const documentGrup = documentsGrup.value.find(d => d.id === documentSaved.id);
-    const documentUsuari = documentsUsuari.value.find(d => d.id === documentSaved.id);
+  if (!document.file) {
+    $q.notify({type: 'warning', message: "Adjunta un fitxer PDF abans d'enviar"});
+    return;
+  }
+  document.sending = true;
+  try {
+    await DocumentService.uploadDocument(document, convocatoria.value.id.toString());
+    const documentSaved: Document = await DocumentService.getDocumentById(document.id, convocatoria.value.id.toString());
+    const fitxer = await DocumentService.getURLFitxerDocument(documentSaved);
+    if (fitxer) {
+      const documentGrup = documentsGrup.value.find(d => d.id === documentSaved.id);
+      const documentUsuari = documentsUsuari.value.find(d => d.id === documentSaved.id);
 
-    if (documentGrup) {
-      documentGrup!.fitxer = fitxer;
-      documentGrup!.documentEstat = documentSaved.documentEstat;
-    }
+      if (documentGrup) {
+        documentGrup!.fitxer = fitxer;
+        documentGrup!.documentEstat = documentSaved.documentEstat;
+      }
 
-    if (documentUsuari) {
-      documentUsuari!.fitxer = fitxer;
-      documentUsuari!.documentEstat = documentSaved.documentEstat;
+      if (documentUsuari) {
+        documentUsuari!.fitxer = fitxer;
+        documentUsuari!.documentEstat = documentSaved.documentEstat;
+      }
     }
+  } catch (e) {
+    console.log(e);
+    $q.notify({type: 'negative', message: "Error en enviar el document. Torna-ho a provar."});
+  } finally {
+    document.sending = false;
   }
 }
 
@@ -686,10 +716,18 @@ async function sendFileGrup(document: Document) {
       $q.notify({type: 'warning', message: "Adjunta un fitxer PDF abans d'enviar"});
       return;
     }
-    // crea el document de tipus 'Grup' (MD020681), hi puja el fitxer i l'afegeix a documentsGrup
-    await saveDocumentExtra(document, 'Grup', document.tipusDocument!.nom, undefined);
-    const idx = documentsGrup.value.indexOf(document);
-    if (idx > -1) documentsGrup.value.splice(idx, 1);
+    document.sending = true;
+    try {
+      // crea el document de tipus 'Grup' (MD020681), hi puja el fitxer i l'afegeix a documentsGrup
+      await saveDocumentExtra(document, 'Grup', document.tipusDocument!.nom, undefined);
+      const idx = documentsGrup.value.indexOf(document);
+      if (idx > -1) documentsGrup.value.splice(idx, 1);
+    } catch (e) {
+      console.log(e);
+      $q.notify({type: 'negative', message: "Error en enviar el document. Torna-ho a provar."});
+    } finally {
+      document.sending = false;
+    }
   } else {
     await sendFile(document);
   }
@@ -757,6 +795,10 @@ function filterFn(val: string, update: Function, abort: Function) {
       })
       .filter((v: Usuari) => v.nomComplet2.toLowerCase().indexOf(needle) > -1)
   })
+}
+
+function onFileRejected() {
+  $q.notify({type: 'negative', message: "El fitxer supera el màxim permès (100 MB)"});
 }
 
 function filterAlumnesOutOfGroup(val: string, update: Function, abort: Function) {

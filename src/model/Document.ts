@@ -14,4 +14,5 @@ export interface Document {
   usuari?: Usuari;
   file?: File;
   fitxer?: FitxerBucket;
+  sending?: boolean;
 }
