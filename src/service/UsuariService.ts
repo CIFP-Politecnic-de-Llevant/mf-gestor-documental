@@ -4,6 +4,10 @@ import {Alumne} from "src/model/Alumne";
 
 export class UsuariService {
 
+  // Cau de promeses per id, per evitar refer la mateixa petició /usuaris/profile/{id}
+  // quan diversos documents (del mateix alumne) la demanen alhora.
+  private static getByIdCache: Map<string, Promise<Usuari>> = new Map();
+
   static async getAutoritzats(): Promise<Array<Usuari>> {
     const response = await axios.get(process.env.API + '/api/gestordocumental/autoritzats');
     const data = await response.data;
@@ -48,10 +52,20 @@ export class UsuariService {
     return this.fromJSONUsuari(usuari);
   }
 
-  static async getById(id:string): Promise<Usuari> {
-    const responseUser = await axios.get(process.env.API + '/api/core/usuaris/profile/'+id);
-    const usuari:any = await responseUser.data;
-    return this.fromJSONUsuari(usuari);
+  static getById(id:string): Promise<Usuari> {
+    const cached = this.getByIdCache.get(id);
+    if (cached) {
+      return cached;
+    }
+
+    const promise = (async () => {
+      const responseUser = await axios.get(process.env.API + '/api/core/usuaris/profile/'+id);
+      const usuari:any = await responseUser.data;
+      return this.fromJSONUsuari(usuari);
+    })();
+
+    this.getByIdCache.set(id, promise);
+    return promise;
   }
 
   static async getProfile(): Promise<Usuari> {

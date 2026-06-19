@@ -845,25 +845,17 @@ function confirmDelete(id: number) {
 }
 
 async function getAlumnesAmbDocsFCT() {
-  const alumnesIds: number[] = [];
-  //const alumnesFCT:Usuari[] = [];
+  // Els documents ja porten l'usuari resolt (DocumentService.getDocumentsByGrupCodi),
+  // així que no cal tornar a demanar-lo per xarxa: només deduplicar per id.
+  const alumnesPerId = new Map<number, Usuari>();
 
   for (const doc of allDocumentsGrup.value) {
     if (doc.usuari !== undefined) {
-      alumnesIds.push(doc.usuari.id);
+      alumnesPerId.set(doc.usuari.id, doc.usuari);
     }
   }
 
-  const idsUnics = [...new Set(alumnesIds)];
-
-  const alumnesPromise = [];
-  for (const id of idsUnics) {
-    alumnesPromise.push(UsuariService.getById(String(id)));
-  }
-
-  const alumnesFCT: Usuari[] = await Promise.all(alumnesPromise)
-
-  return alumnesFCT;
+  return [...alumnesPerId.values()];
 }
 
 async function deleteAllDocumentsAlumneId(id: number) {
