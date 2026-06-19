@@ -64,11 +64,6 @@
         </template>
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="tipusDocument" :props="props" class="text-wrap">
-              <!--a class="text-secondary" v-if="props.row.id_googleDrive" :href="`https://docs.google.com/document/d/${props.row.id_googleDrive}`" target="_blank"><q-icon name="open_in_new" size="xs"></q-icon> {{props.row.tipusDocument.descripcio}}</a>
-              <span v-if="!props.row.id_googleDrive">{{ props.row.tipusDocument.descripcio }}</span-->
-              {{ props.row.tipusDocument.descripcio }}
-            </q-td>
             <q-td key="nomDocument" :props="props" class="text-wrap">
               {{ props.row.nomDocument || props.row.tipusDocument.descripcio }}
             </q-td>
@@ -267,11 +262,6 @@
           <q-tr :props="props">
             <q-td key="alumne" :props="props" class="text-wrap">
               {{ props.row.usuari.nomComplet2 }}
-            </q-td>
-            <q-td key="tipusDocument" :props="props" class="text-wrap">
-              <!--a class="text-secondary" v-if="props.row.id_googleDrive" :href="`https://docs.google.com/document/d/${props.row.id_googleDrive}`" target="_blank"><q-icon name="open_in_new" size="xs"></q-icon> {{props.row.tipusDocument.descripcio}}</a>
-              <span v-if="!props.row.id_googleDrive">{{ props.row.tipusDocument.descripcio }}</span-->
-              {{ props.row.tipusDocument.descripcio }}
             </q-td>
             <q-td key="nomDocument" :props="props" class="text-wrap">
               {{ props.row.nomDocument || props.row.tipusDocument.descripcio }}
@@ -993,13 +983,6 @@ onMounted(async () => {
 
   //Grup
   columnsGrup.value.push({
-    name: 'tipusDocument',
-    label: 'Document',
-    field: row => row.tipusDocument.descripcio,
-    sortable: true
-  });
-
-  columnsGrup.value.push({
     name: 'nomDocument',
     label: 'Nom',
     field: row => row.nomDocument || row.tipusDocument?.descripcio || '',
@@ -1018,13 +1001,6 @@ onMounted(async () => {
     name: 'alumne',
     label: 'Alumne',
     field: row => row.usuari.nomComplet2,
-    sortable: true
-  });
-
-  columnsUsuari.value.push({
-    name: 'tipusDocument',
-    label: 'Document',
-    field: row => row.tipusDocument?.nom || '',
     sortable: true
   });
 
