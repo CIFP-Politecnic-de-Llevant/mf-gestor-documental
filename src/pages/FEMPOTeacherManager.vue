@@ -494,6 +494,7 @@ import {FitxerBucket} from "src/model/google/FitxerBucket";
 import {useRoute, useRouter} from "vue-router";
 import {ConvocatoriaService} from "src/service/ConvocatoriaService";
 import {Convocatoria} from "src/model/Convocatoria";
+import {TipusDocumentPropietari} from "src/model/TipusDocumentPropietari";
 
 const myUser: Ref<Usuari> = ref({} as Usuari);
 const isSearching: Ref<boolean> = ref(false);
@@ -603,8 +604,13 @@ async function selectGrup(grup: Grup) {
       return 0;
     });
 
-  // Del grup només mostrem els documents MD020675 i MD020681
-  documentsGrup.value = documentsAll.filter(d => !d.usuari && (d.tipusDocument && d.tipusDocument.nom && (d.tipusDocument.nom.startsWith('MD020675') || d.tipusDocument.nom.startsWith('MD020681')))).sort((a: Document, b: Document) => {
+  // Del grup mostrem els documents MD020675/MD020681 i qualsevol altre document de tipus GRUP
+  // (p. ex. "Altra documentació grup" afegit manualment pel tutor), perquè el tutor
+  // sempre vegi el que ell mateix ha afegit.
+  documentsGrup.value = documentsAll.filter(d => !d.usuari && d.tipusDocument && (
+    d.tipusDocument.propietari === TipusDocumentPropietari.GRUP ||
+    (d.tipusDocument.nom && (d.tipusDocument.nom.startsWith('MD020675') || d.tipusDocument.nom.startsWith('MD020681')))
+  )).sort((a: Document, b: Document) => {
     if (!a.tipusDocument) {
       return -1;
     }
