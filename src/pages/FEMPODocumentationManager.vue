@@ -96,14 +96,7 @@
                       </q-input>
                     </q-td>
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
-                      {{ props.row.tipusDocument.descripcio }}
-                    </q-td>
-                    <q-td>
-                      <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
-                        <p v-for="nom in props.row.fitxer.signants">
-                          {{ nom }}
-                        </p>
-                      </div>
+                      {{ props.row.nomDocument || props.row.tipusDocument.descripcio }}
                     </q-td>
                     <q-td>
                       <div class="flex flex-center" style="width: 100px;">
@@ -177,14 +170,7 @@
                       {{ props.row.usuari.nomComplet2 }}
                     </q-td>
                     <q-td key="tipusDocument" :props="props" class="text-wrap">
-                      {{ props.row.tipusDocument.descripcio }}
-                    </q-td>
-                    <q-td>
-                      <div v-if="props.row.fitxer && props.row.fitxer.signants.length > 0" class="flex flex-center">
-                        <p v-for="nom in props.row.fitxer.signants">
-                          {{ nom }}
-                        </p>
-                      </div>
+                      {{ props.row.nomDocument || props.row.tipusDocument.descripcio }}
                     </q-td>
                     <q-td>
                       <div class="flex flex-center" style="width: 100px;">
@@ -531,16 +517,9 @@ onMounted(async () => {
 
   columnsGrup.value.push({
     name: 'tipusDocument',
-    label: 'Document',
-    field: row => row.tipusDocument.nom,
+    label: 'Nom',
+    field: row => row.nomDocument || row.tipusDocument?.descripcio || '',
     sortable: true
-  });
-
-  columnsGrup.value.push({
-    name: 'signants',
-    label: 'Signants',
-    field: row => row,
-    sortable: false
   });
 
   columnsGrup.value.push({
@@ -574,16 +553,9 @@ onMounted(async () => {
 
   columnsUsuari.value.push({
     name: 'tipusDocument',
-    label: 'Document',
-    field: row => row.tipusDocument.nom,
+    label: 'Nom',
+    field: row => row.nomDocument || row.tipusDocument?.descripcio || '',
     sortable: true
-  });
-
-  columnsUsuari.value.push({
-    name: 'signants',
-    label: 'Signants',
-    field: row => row,
-    sortable: false
   });
 
   columnsUsuari.value.push({
