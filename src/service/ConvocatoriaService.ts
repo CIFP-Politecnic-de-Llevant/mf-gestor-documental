@@ -39,8 +39,8 @@ export class ConvocatoriaService {
     }
   }
 
-  static async testDeleteFempoFolders(folderNames: string[]): Promise<void> {
-    await axios.post(process.env.API + '/api/gestordocumental/admin/convocatories/test-delete-fempo-folders', folderNames);
+  static async testEmptyFempoFolders(folderNames: string[]): Promise<void> {
+    await axios.post(process.env.API + '/api/gestordocumental/admin/convocatories/test-empty-fempo-folders', folderNames);
   }
 
   static async createConvocatoria(payload: {
@@ -57,15 +57,15 @@ export class ConvocatoriaService {
     selectedQFempoFolders?: string[];
   }): Promise<{
     convocatoria: Convocatoria;
-    carpetesEsborrades: string[];
-    carpetesNoEsborrades: string[];
+    carpetesBuidades: string[];
+    carpetesNoBuidades: string[];
     fitxersOrigenNoEsborrats: number;
   }> {
     const response = await axios.post(process.env.API + '/api/gestordocumental/admin/convocatories', payload);
     return {
       convocatoria: this.fromJSON(response.data.convocatoria),
-      carpetesEsborrades: response.data.carpetesEsborrades || [],
-      carpetesNoEsborrades: response.data.carpetesNoEsborrades || [],
+      carpetesBuidades: response.data.carpetesBuidades || [],
+      carpetesNoBuidades: response.data.carpetesNoBuidades || [],
       fitxersOrigenNoEsborrats: response.data.fitxersOrigenNoEsborrats || 0
     };
   }

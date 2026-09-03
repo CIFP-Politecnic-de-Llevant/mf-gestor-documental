@@ -164,14 +164,14 @@
                 <div class="col-12">
                   <q-banner class="bg-orange-2 text-dark q-mb-md" rounded>
                     <div class="text-weight-bold q-mb-xs">ATENCIÓ</div>
-                    <div>Esborrar carpetes Q_FEMPO i FCT si no es tria fer-ho de forma automàtica</div>
+                    <div>Buidar carpetes Q_FEMPO i FCT si no es tria fer-ho de forma automàtica</div>
                   </q-banner>
                 </div>
 
                 <div class="col-12">
                   <q-checkbox
                     v-model="deleteOriginDocuments"
-                    label="Eliminar documents origen Q_FEMPO i FCT automàticament"
+                    label="Buidar carpetes origen Q_FEMPO i FCT automàticament"
                   />
                 </div>
 
@@ -179,13 +179,13 @@
                   <div class="col-12">
                     <q-banner class="bg-red-2 text-dark q-mb-md" rounded>
                       <div class="text-weight-bold q-mb-xs">Avís</div>
-                      <div>Documents dins FCT s'esborraran automàticament</div>
+                      <div>Els documents dins FCT i dins les carpetes Q_FEMPO seleccionades s'esborraran automàticament. Les carpetes es mantindran, només es buidarà el seu contingut.</div>
                     </q-banner>
                   </div>
 
                   <div class="col-12">
                     <div class="row items-center q-mb-sm">
-                      <div class="text-subtitle1 text-weight-bold q-mr-md">Selecció de carpetes Q_FEMPO a eliminar</div>
+                      <div class="text-subtitle1 text-weight-bold q-mr-md">Selecció de carpetes Q_FEMPO a buidar</div>
                       <q-checkbox
                         v-if="availableQFempoFolders.length > 0"
                         :model-value="selectedQFempoFolders.length === availableQFempoFolders.length"
@@ -207,16 +207,16 @@
                         />
                       </div>
                     </div>
-                    <!-- Botó de test ocult per producció. Descomentar per provar el borrat de carpetes Q_FEMPO + FCT -->
+                    <!-- Botó de test ocult per producció. Descomentar per provar el buidat de carpetes Q_FEMPO + FCT -->
                     <!--
                     <q-btn
                       color="warning"
                       text-color="dark"
-                      label="TEST: Esborrar carpetes Q_FEMPO seleccionades"
+                      label="TEST: Buidar carpetes Q_FEMPO seleccionades"
                       class="q-mt-md"
-                      :disable="selectedQFempoFolders.length === 0 || isDeletingTestFempo"
-                      :loading="isDeletingTestFempo"
-                      @click="testDeleteFempoFolders"
+                      :disable="selectedQFempoFolders.length === 0 || isEmptyingTestFempo"
+                      :loading="isEmptyingTestFempo"
+                      @click="testEmptyFempoFolders"
                     />
                     -->
                   </div>
@@ -311,27 +311,27 @@ const deleteOriginDocuments = ref(false);
 const selectedQFempoFolders = ref<string[]>([]);
 const availableQFempoFolders = ref<string[]>([]);
 const isLoadingFempoFolders = ref(false);
-const isDeletingTestFempo = ref(false);
+const isEmptyingTestFempo = ref(false);
 
 function toggleSelectAllFempoFolders(val: boolean) {
   selectedQFempoFolders.value = val ? [...availableQFempoFolders.value] : [];
 }
 
-async function testDeleteFempoFolders() {
+async function testEmptyFempoFolders() {
   if (selectedQFempoFolders.value.length === 0) return;
 
   $q.dialog({
-    title: 'Confirmar eliminació de test',
-    message: `S'esborraran ${selectedQFempoFolders.value.length} carpeta/es Q_FEMPO. Aquesta acció és irreversible.`,
+    title: 'Confirmar buidat de test',
+    message: `Es buidarà el contingut de ${selectedQFempoFolders.value.length} carpeta/es Q_FEMPO. Les carpetes es mantindran. Aquesta acció és irreversible.`,
     cancel: true,
     persistent: true
   }).onOk(async () => {
-    isDeletingTestFempo.value = true;
+    isEmptyingTestFempo.value = true;
     try {
-      await ConvocatoriaService.testDeleteFempoFolders(selectedQFempoFolders.value);
+      await ConvocatoriaService.testEmptyFempoFolders(selectedQFempoFolders.value);
       $q.notify({
         color: 'positive',
-        message: 'Carpetes Q_FEMPO esborrades correctament',
+        message: 'Carpetes Q_FEMPO buidades correctament',
         icon: 'check'
       });
       selectedQFempoFolders.value = [];
@@ -339,11 +339,11 @@ async function testDeleteFempoFolders() {
     } catch (error) {
       $q.notify({
         color: 'negative',
-        message: 'Error esborrant carpetes Q_FEMPO',
+        message: 'Error buidant carpetes Q_FEMPO',
         icon: 'report_problem'
       });
     } finally {
-      isDeletingTestFempo.value = false;
+      isEmptyingTestFempo.value = false;
     }
   });
 }
@@ -528,9 +528,9 @@ async function createConvocatoria() {
       selectedQFempoFolders: deleteOriginDocuments.value ? selectedQFempoFolders.value : []
     });
 
-    // El resultat real del borrat el notifica el backend via notifyMessage (interceptor d'axios).
-    if (result.carpetesNoEsborrades.length > 0) {
-      console.warn('Carpetes Q_FEMPO no esborrades:', result.carpetesNoEsborrades);
+    // El resultat real del buidat el notifica el backend via notifyMessage (interceptor d'axios).
+    if (result.carpetesNoBuidades.length > 0) {
+      console.warn('Carpetes Q_FEMPO no buidades:', result.carpetesNoBuidades);
     }
 
     convocatoriaForm.value = {
