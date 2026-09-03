@@ -157,6 +157,7 @@
               :options="allNomGrups"
               label="Grup"
               :clearable="false"
+              :rules="[(val:any) => !!val || 'El camp és obligatori']"
             />
           </div>
 
@@ -1300,7 +1301,19 @@ async function selectStudent(student: Alumne) {
     const alumneGestib = await UsuariService.getByNumeroExpedient(student.numeroExpedient);
     formData.value.emailAlumne = alumneGestib.email;
   }
-  formData.value.grup = allNomGrups.value.find(g => g === ((student.estudis || '') + (student.grup || ''))) || allNomGrups.value[0];
+  // Si el grup de l'alumne no està configurat per a FEMPO deixam el camp buit i avisam,
+  // en comptes d'assignar-ne un altre en silenci.
+  const codiGrupAlumne = (student.estudis || '') + (student.grup || '');
+  const grupConfigurat = allNomGrups.value.find(g => g === codiGrupAlumne);
+  formData.value.grup = grupConfigurat || '';
+
+  if (!grupConfigurat && codiGrupAlumne) {
+    $q.notify({
+      color: 'warning',
+      message: `El grup ${codiGrupAlumne} de l'alumne no està configurat per a FEMPO. Selecciona el grup manualment.`,
+      icon: 'warning'
+    });
+  }
 
   formData.value.cicleFormatiu = ciclesFormatius[0];
   //Fem el mapeig de les dades de l'usuari
@@ -1729,13 +1742,31 @@ onMounted(async () => {
   filteredCompanyOptions.value = companySelectList;
 
 
-  const allGrups = await GrupService.findAllGrups();
-  for (const grup of allGrups) {
-    const nomGrup = grup.curs.nom + grup.nom;
-    allNomGrups.value.push(nomGrup);
-  }
-  allNomGrups.value.sort((a, b) => a.localeCompare(b));
+  const [allGrups, grupsFempo] = await Promise.all([
+    GrupService.findAllGrups(),
+    GrupService.findAllGrupsFempo()
+  ]);
+
+  // Només oferim els grups que estan donats d'alta al gestor documental amb carpeta
+  // de Drive i full de càlcul: la resta no es poden desar i el formulari fallaria.
+  const codisFempo = new Set(grupsFempo.map(grup => grup.nom).filter(nom => !!nom));
+
+  allNomGrups.value = allGrups
+    .map(grup => (grup.curs?.nom || '') + grup.nom)
+    .filter(nomGrup => codisFempo.has(nomGrup))
+    .sort((a, b) => a.localeCompare(b));
+
   dialog.hide();
+
+  if (allNomGrups.value.length === 0) {
+    $q.notify({
+      color: 'warning',
+      message: "Cap dels teus grups està configurat per a FEMPO. Avisa l'administrador.",
+      icon: 'warning',
+      timeout: 0,
+      actions: [{label: 'Tancar', color: 'white'}]
+    });
+  }
 })
 </script>
 <style scoped>

@@ -27,6 +27,19 @@ export class GrupService {
     }));
   }
 
+  /**
+   * Grups donats d'alta al gestor documental amb carpeta de Drive i full de càlcul.
+   * Són els únics per als quals es pot desar un formulari FEMPO.
+   */
+  static async findAllGrupsFempo(): Promise<Array<Grup>> {
+    const response = await axios.get(process.env.API + '/api/gestordocumental/grup/fempo');
+    const grups = await response.data;
+
+    return grups.map((grup:any)=>{
+      return this.fromJSONGrupGestorDocumental(grup);
+    });
+  }
+
   static async getRelacions(id: number): Promise<Grup[]> {
     const response = await axios.get(`${process.env.API}/api/gestordocumental/grup/${id}/relacions`);
     const grups = response.data;
