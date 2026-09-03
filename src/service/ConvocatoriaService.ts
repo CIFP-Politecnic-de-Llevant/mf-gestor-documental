@@ -55,9 +55,19 @@ export class ConvocatoriaService {
     applyDriveChanges?: boolean;
     deleteOriginDocuments?: boolean;
     selectedQFempoFolders?: string[];
-  }): Promise<Convocatoria> {
+  }): Promise<{
+    convocatoria: Convocatoria;
+    carpetesEsborrades: string[];
+    carpetesNoEsborrades: string[];
+    fitxersOrigenNoEsborrats: number;
+  }> {
     const response = await axios.post(process.env.API + '/api/gestordocumental/admin/convocatories', payload);
-    return this.fromJSON(response.data);
+    return {
+      convocatoria: this.fromJSON(response.data.convocatoria),
+      carpetesEsborrades: response.data.carpetesEsborrades || [],
+      carpetesNoEsborrades: response.data.carpetesNoEsborrades || [],
+      fitxersOrigenNoEsborrats: response.data.fitxersOrigenNoEsborrats || 0
+    };
   }
 
   static fromJSON(json:any):Convocatoria{

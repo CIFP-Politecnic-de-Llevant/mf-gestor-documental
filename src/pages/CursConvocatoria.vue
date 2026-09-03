@@ -514,7 +514,7 @@ async function createConvocatoria() {
 
   isSavingConvocatoria.value = true;
   try {
-    await ConvocatoriaService.createConvocatoria({
+    const result = await ConvocatoriaService.createConvocatoria({
       convocatoria: {
         nom: convocatoriaForm.value.nom,
         isActual: convocatoriaForm.value.actual,
@@ -528,11 +528,10 @@ async function createConvocatoria() {
       selectedQFempoFolders: deleteOriginDocuments.value ? selectedQFempoFolders.value : []
     });
 
-    $q.notify({
-      color: 'positive',
-      message: 'Convocatòria creada correctament',
-      icon: 'check'
-    });
+    // El resultat real del borrat el notifica el backend via notifyMessage (interceptor d'axios).
+    if (result.carpetesNoEsborrades.length > 0) {
+      console.warn('Carpetes Q_FEMPO no esborrades:', result.carpetesNoEsborrades);
+    }
 
     convocatoriaForm.value = {
       nom: '',
